@@ -139,6 +139,7 @@
 ### Dos:
     • Always ask for clarification. Do not assume your assumption is correct.
     • Understand the requirements of the problem.
+    • Given the time constraints, we should clarify what parts of the system we will be focusing on.
     • There is neither the right answer nor the best answer. A solution designed to solve the problems of a young startup is different from that of an established company with millions of users. Make sure you understand the requirements.
     • Let the interviewer know what you are thinking. Communicate with your interview.
     • Suggest multiple approaches if possible.
