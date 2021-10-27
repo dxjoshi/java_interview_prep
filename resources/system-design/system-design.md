@@ -146,7 +146,7 @@
         - Between internal platform layer and database.
 
 **Caching:**    
-    - Caches take advantage of the locality of reference principle: recently requested data is likely to be requested again.
+    - Caches take advantage of the locality of reference principle: recently requested data is likely to be requested again.    
     - Types of Caches:  
         - **Write-through cache:** Data is written into the cache and the corresponding database simultaneously. The cached data allows for fast retrieval and, since the same data gets written in the permanent storage, we will have complete data consistency between the cache and the storage. Also, this scheme ensures that nothing will get lost in case of a crash, power failure, or other system disruptions.   
         - **Write-around cache:** Similar to write-through cache, but data is written directly to permanent storage, bypassing the cache. This can reduce the cache being flooded with write operations that will not subsequently be re-read, but has the disadvantage that a read request for recently written data will create a “cache miss” and must be read from slower back-end storage and experience higher latency.   
