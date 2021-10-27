@@ -2,7 +2,10 @@
 
 ## Topics:
 * [Concurrency](#concurrency)
-* 
+* Generics
+Exception
+Collections
+Overloading and Overriding
 
 
 
@@ -122,5 +125,63 @@
             }
         }          
         
-* 
+* Executors typically manage a pool of threads and are capable of running asynchronous tasks using that pool.    
+* Executors keep listening for new tasks and **need to be stopped explicitly**. An ExecutorService provides two methods for that purpose:      
+    1. **shutdown()** waits for currently running tasks to finish.   
+    2. **shutdownNow()** interrupts all running tasks and shut the executor down immediately.    
+
+        try {
+            System.out.println("Shutting down executor");
+        // shutdown() initiates an orderly shutdown in which previously submitted tasks are executed, but no new tasks will be accepted. 
+        // Invocation has no additional effect if already shut down. This method does not wait for previously submitted tasks to complete execution.
+            executorService.shutdown();
+
+        // awaitTermination() blocks until all tasks have completed execution after a shutdown request, or the timeout occurs, 
+        // or the current thread is interrupted, whichever happens first.
+            executorService.awaitTermination(2, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Tasks interrupted");
+        } finally {
+        // isTerminated() returns true if all tasks have completed following shut down.
+            if (!executorService.isTerminated()) {
+                System.out.println("Cancelling all pending tasks");
+            }
+
+        // shutdownNow() attempts(not guarantees) to stop all actively executing tasks, halts the processing of waiting tasks, 
+        // and returns a list of the tasks that were awaiting execution. It does not wait for actively executing tasks to terminate.   
+        // For example, typical implementations will cancel via Thread.interrupt(), so any task that fails to respond to interrupts may never terminate.
+            executorService.shutdownNow();
+            System.out.println("shutdown complete");
+        }
+
+* The class Executors provides convenient factory methods for creating different kinds of executor services.    
+
+* **Callables** are functional interfaces just like runnables but instead of being void they return a value.    
+* ExecutorService.submit() doesn't wait until the callable task completes, rather returns a **Future** representing the pending results of the task. 
+  The Future's get(), a blocking method, will return the task's result upon successful completion.   
+  The Future's isDone() tells if the future has already finished execution.
+
+        public static <T> T getResult(Future<T> callableResult)  {
+            T result = null;
+            try {
+                // isDone() returns true if this task completed due to normal termination, an exception, or cancellation
+                System.out.println(callableResult.isDone());
+                // get() waits if necessary for the computation to complete, and then retrieves its result.
+                result = callableResult.get();
+    
+                // get(long timeout, TimeUnit unit) waits if necessary for at most the given time for the computation to complete, 
+                // and then retrieves its result, if available.
+                result = callableResult.get(1, TimeUnit.SECONDS);
+    
+            } catch (InterruptedException e) {  // if the current thread was interrupted while waiting
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException e) {    // if the current thread was interrupted while waiting
+                Thread.currentThread().interrupt();
+            } catch (TimeoutException e) {
+                System.out.println("Due to callableResult.get(1, TimeUnit.SECONDS)");
+            }
+            return result;
+        }
+  
         
