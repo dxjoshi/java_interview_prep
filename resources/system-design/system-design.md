@@ -1,4 +1,3 @@
-[test-url](#back-of-the-envelope-estimations:)   
 
 ### System Design Template (Credit: [Topcat](https://leetcode.com/topcat/))
 
