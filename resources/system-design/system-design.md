@@ -1,14 +1,14 @@
-[test-url](#back-of-the-envelope-estimations)   
+[test-url](#back-of-the-envelope-estimations:)   
 
 ### System Design Template (Credit: [Topcat](https://leetcode.com/topcat/))
 
-####(1) FEATURE EXPECTATIONS: Functional & Non Functional Requirements [5 min]    
+#### (1) FEATURE EXPECTATIONS: Functional & Non Functional Requirements [5 min]    
         (1) Use cases   
         (2) Scenarios that will not be covered  
         (3) Who will use    
         (4) How many will use   
         (5) Usage patterns  
-####(2) ESTIMATIONS [5 min] (Ask if needed to do the estimations) 
+#### (2) ESTIMATIONS [5 min] (Ask if needed to do the estimations) 
         (1) Throughput (QPS for read and write queries) 
         (2) Latency expected from the system (for read and write queries)   
         (3) Read/Write ratio    
@@ -20,15 +20,15 @@
                 - If we are using a cache, what is the kind of data we want to store in cache   
                 - How much RAM and how many machines do we need for us to achieve this ?    
                 - Amount of data you want to store in disk/ssd  
-####(3) DESIGN GOALS [5 min]    
+#### (3) DESIGN GOALS [5 min]    
         (1) Latency and Throughput requirements 
         (2) Consistency vs Availability  [Weak/strong/eventual => consistency | Failover/replication => availability]   
-####(4) HIGH LEVEL DESIGN [5-10 min]    
+#### (4) HIGH LEVEL DESIGN [5-10 min]    
         (1) APIs for Read/Write scenarios for crucial components    
         (2) Database schema 
         (3) Basic algorithm 
         (4) High level design for Read/Write scenario   
-####(5) DEEP DIVE [15-20 min]   
+#### (5) DEEP DIVE [15-20 min]   
         (1) Scaling the algorithm   
         (2) Scaling individual components:  
                 -> Availability, Consistency and Scale story for each component 
@@ -65,7 +65,7 @@
                         > UDP   
                         > REST  
                         > RPC   
-####(6) JUSTIFY [5 min] 
+#### (6) JUSTIFY [5 min] 
 	(1) Throughput of each layer    
 	(2) Latency caused between each layer   
 	(3) Overall latency justification   
@@ -112,7 +112,7 @@
     1 ms = 10^-3 seconds = 1,000 us = 1,000,000 ns
 
 
-### Back of the envelope estimations
+### Back of the envelope estimations:
     Example: Estimate Twitter QPS and storage requirements
     Please note the following numbers are for this exercise only as they are not real numbers
     from Twitter.
@@ -135,32 +135,7 @@
     • Media storage: 150 million * 2 * 10% * 1 MB = 30 TB per day
     • 5-year media storage: 30 TB * 365 * 5 = ~55 PB
     
-    
-    
-### Dos:
-    • Always ask for clarification. Do not assume your assumption is correct.
-    • Understand the requirements of the problem.
-    • Given the time constraints, we should clarify what parts of the system we will be focusing on.
-    • There is neither the right answer nor the best answer. A solution designed to solve the problems of a young startup is different from that of an established company with millions of users. Make sure you understand the requirements.
-    • Let the interviewer know what you are thinking. Communicate with your interview.
-    • Suggest multiple approaches if possible.
-    • Once you agree with your interviewer on the blueprint, go into details on each component. Design the most critical components first.
-    • Bounce ideas off the interviewer. A good interviewer works with you as a teammate.
-    • Never give up.
-
-### Dont's:
-    • Don't be unprepared for typical interview questions.
-    • Don’t jump into a solution without clarifying the requirements and assumptions.
-    • Don’t go into too much detail on a single component in the beginning. Give the highlevel design first then drills down.
-    • If you get stuck, don't hesitate to ask for hints.
-    • Again, communicate. Don't think in silence.
-    • Don’t think your interview is done once you give the design. You are not done until your interviewer says you are done. Ask for feedback early and often.
-    
-
-**Top Articles:**   
-    - [Introduction to architecting systems for scale](https://lethain.com/introduction-to-architecting-systems-for-scale/) 
-    - 
-    
+  
 **Load Balancer (LB)**  
     - It helps to spread the traffic across a cluster of servers to improve responsiveness and availability of applications, websites or databases.
     - A load balancer sits between the client and the server accepting incoming network and application traffic and distributing the traffic across multiple backend servers using various algorithms.
@@ -199,28 +174,28 @@
     - A reverse proxy retrieves resources on behalf of a client from one or more servers. These resources are then returned to the client, appearing as if they originated from the proxy server itself.    
     
 **NoSQL DBs:**  
-    - **Key-Value Stores:** Data is stored in an array of key-value pairs. The ‘key’ is an attribute name which is linked to a ‘value’. ex. Redis, Voldemort, and Dynamo.
-    - **Document Databases:** In these databases, data is stored in documents (instead of rows and columns in a table) and these documents are grouped together in collections. Each document can have an entirely different structure. ex. CouchDB and MongoDB.
-    - **Wide-Column Databases:** Instead of ‘tables,’ in columnar databases we have column families, which are containers for rows. Unlike relational databases, we don’t need to know all the columns up front and each row doesn’t have to have the same number of columns. Columnar databases are best suited for analyzing large datasets - ex. Cassandra and HBase.
+    - **Key-Value Stores:** Data is stored in an array of key-value pairs. The ‘key’ is an attribute name which is linked to a ‘value’. ex. Redis, Voldemort, and Dynamo.   
+    - **Document Databases:** In these databases, data is stored in documents (instead of rows and columns in a table) and these documents are grouped together in collections. Each document can have an entirely different structure. ex. CouchDB and MongoDB.    
+    - **Wide-Column Databases:** Instead of ‘tables,’ in columnar databases we have column families, which are containers for rows. Unlike relational databases, we don’t need to know all the columns up front and each row doesn’t have to have the same number of columns. Columnar databases are best suited for analyzing large datasets - ex. Cassandra and HBase.    
     - **Graph Databases:** These databases are used to store data whose relations are best represented in a graph. Data is saved in graph structures with nodes (entities), properties (information about the entities), and lines (connections between the entities). ex. Neo4J and InfiniteGraph.    
     
 **CAP Theorem:**
-    - In the presence of a network partition, a distributed system must choose either Consistency(chosen by RDBMS) or Availability(chosen by NoSQL DBs).  
-    - **Consistency (C):** All nodes see the same data at the same time. This means users can read or write from/to any node in the system and will receive the same data. It is equivalent to having a single up-to-date copy of the data. 
-    - **Availability (A):** Availability means every request received by a non-failing node in the system must result in a response. Even when severe network failures occur, every request must terminate. In simple terms, availability refers to a system’s ability to remain accessible even if one or more nodes in the system go down.    
-    - **Partition tolerance (P):** A partition is a communication break (or a network failure) between any two nodes in the system, i.e., both nodes are up but cannot communicate with each other. A partition-tolerant system continues to operate even if there are partitions in the system. Such a system can sustain any network failure that does not result in the failure of the entire network.    
+    - In the presence of a network partition, a distributed system must choose either Consistency(chosen by RDBMS) or Availability(chosen by NoSQL DBs).    
+    - **Consistency (C):** All nodes see the same data at the same time. This means users can read or write from/to any node in the system and will receive the same data. It is equivalent to having a single up-to-date copy of the data.  
+    - **Availability (A):** Availability means every request received by a non-failing node in the system must result in a response. Even when severe network failures occur, every request must terminate. In simple terms, availability refers to a system’s ability to remain accessible even if one or more nodes in the system go down.        
+    - **Partition tolerance (P):** A partition is a communication break (or a network failure) between any two nodes in the system, i.e., both nodes are up but cannot communicate with each other. A partition-tolerant system continues to operate even if there are partitions in the system. Such a system can sustain any network failure that does not result in the failure of the entire network.       
 
 **PACELC Theorem:**
-    - The PACELC theorem states that in a system that replicates data:
-        - If there is a partition (‘P’), a distributed system can tradeoff between availability and consistency (i.e., ‘A’ and ‘C’);
-        - **ELSE (‘E’)**, when the system is running normally in the absence of partitions, the system can tradeoff between latency (‘L’) and consistency (‘C’).
-    - The whole thesis is assuming we maintain high availability by replication.
+    - The PACELC theorem states that in a system that replicates data:  
+        - If there is a partition (‘P’), a distributed system can tradeoff between availability and consistency (i.e., ‘A’ and ‘C’);    
+        - **ELSE (‘E’)**, when the system is running normally in the absence of partitions, the system can tradeoff between latency (‘L’) and consistency (‘C’).    
+    - The whole thesis is assuming we maintain high availability by replication.    
     - Dynamo and Cassandra are **PA/EL**    
-    - BigTable and HBase are **PC/EC**  
-    - MongoDB can be considered **PA/EC**:  In the case of a network partition, MongoDB chooses availability(as replication is done asynchronously from primary to secondary), but otherwise guarantees consistency.
+    - BigTable and HBase are **PC/EC**      
+    - MongoDB can be considered **PA/EC**:  In the case of a network partition, MongoDB chooses availability(as replication is done asynchronously from primary to secondary), but otherwise guarantees consistency.    
 
-**Consistent Hashing:**
-    - It maps data to physical nodes and ensures that only a small set of keys move when servers are added or removed.
+**Consistent Hashing:**     
+    - It maps data to physical nodes and ensures that only a small set of keys move when servers are added or removed.  
     - Consistent Hashing stores the data managed by a distributed system in a ring. Each node in the ring is assigned a range of data.
     - When a node is removed, the next node becomes responsible for all of the keys stored on the outgoing node. However, this scheme can result in non-uniform data and load distribution. This problem can be solved with the help of Virtual nodes.    
     
@@ -241,15 +216,40 @@
         - The client establishes a persistent and long-term connection with the server. The server uses this connection to send data to a client. 
         - If the client wants to send data to the server, it would require the use of another technology/protocol to do so. 
         
-**Bloom Filters:**  
-    -  Bloom filter data structure tells whether an element may be in a set, or definitely is not. The only possible errors are false positives.
+**Bloom Filters:**      
+    -  Bloom filter data structure tells whether an element may be in a set, or definitely is not. The only possible errors are false positives.    
         
-**Quorum:** 
-    - Once a system decides to maintain multiple copies of data, another problem arises: how to make sure that all replicas are consistent, i.e., if they all have the latest copy of the data and that all clients see the same view of the data?
-    - **A Quorum** is the minimum number of servers on which a distributed operation needs to be performed successfully before declaring the operation’s overall success.
-    - Quorum enforces the consistency requirement needed for distributed operations.
-    - Quorum is achieved when nodes follow the below protocol: R + W > N, where:
-        - N = nodes in the quorum group
-        - W = minimum write nodes
-        - R = minimum read nodes            
-    -     
+**Quorum:**     
+    - Once a system decides to maintain multiple copies of data, another problem arises: how to make sure that all replicas are consistent, i.e., if they all have the latest copy of the data and that all clients see the same view of the data?  
+    - **A Quorum** is the minimum number of servers on which a distributed operation needs to be performed successfully before declaring the operation’s overall success.   
+    - Quorum enforces the consistency requirement needed for distributed operations.    
+    - Quorum is achieved when nodes follow the below protocol: R + W > N, where:    
+        - N = nodes in the quorum group 
+        - W = minimum write nodes   
+        - R = minimum read nodes                
+    
+    
+### Dos:
+    • Always ask for clarification. Do not assume your assumption is correct.
+    • Understand the requirements of the problem.
+    • Given the time constraints, we should clarify what parts of the system we will be focusing on.
+    • There is neither the right answer nor the best answer. A solution designed to solve the problems of a young startup is different from that of an established company with millions of users. Make sure you understand the requirements.
+    • Let the interviewer know what you are thinking. Communicate with your interview.
+    • Suggest multiple approaches if possible.
+    • Once you agree with your interviewer on the blueprint, go into details on each component. Design the most critical components first.
+    • Bounce ideas off the interviewer. A good interviewer works with you as a teammate.
+    • Never give up.
+
+### Dont's:
+    • Don't be unprepared for typical interview questions.
+    • Don’t jump into a solution without clarifying the requirements and assumptions.
+    • Don’t go into too much detail on a single component in the beginning. Give the highlevel design first then drills down.
+    • If you get stuck, don't hesitate to ask for hints.
+    • Again, communicate. Don't think in silence.
+    • Don’t think your interview is done once you give the design. You are not done until your interviewer says you are done. Ask for feedback early and often.
+    
+
+**Top Articles:**   
+    - [Introduction to architecting systems for scale](https://lethain.com/introduction-to-architecting-systems-for-scale/) 
+    
+    
