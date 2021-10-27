@@ -14,7 +14,9 @@ public class ThreadState {
             Thread childThread = new Thread(childTask);
             childThread.start();
             try {
-                childThread.join(); // this joins childThread to current parentThread, so it can't execute ahead until childThread finishes
+                // this joins childThread to current parentThread,
+                // so it can't execute ahead until childThread finishes
+                childThread.join();
             } catch (InterruptedException e) {
                 // https://stackoverflow.com/questions/3976344/handling-interruptedexception-in-java
                 Thread.currentThread().interrupt();

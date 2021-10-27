@@ -52,7 +52,9 @@
                     Thread childThread = new Thread(childTask);
                     childThread.start();
                     try {
-                        childThread.join(); // this joins childThread to current parentThread, so it can't execute ahead until childThread finishes
+                        // this joins childThread to current parentThread, 
+                        // so it can't execute ahead until childThread finishes
+                        childThread.join(); 
                     } catch (InterruptedException e) {
                         // https://stackoverflow.com/questions/3976344/handling-interruptedexception-in-java
                         Thread.currentThread().interrupt();
@@ -99,4 +101,26 @@
             }
         }
 
-          
+* thread.start() causes this thread to begin execution, the JVM calls the run() of this thread.     
+  The result is that two threads are running concurrently: the current thread (which returns from the call to start() and the other thread which executes its run().        
+  If we don’t override run() new thread object gets created and its run() is called.    
+  If we override start(), run() method will not be called until called explicitly inside start().   
+  If we call thread.run() explicitly, it will not execute in a new thread, but in the same thread.    
+  If we call thread.start() a 2nd time, it throws **IllegalStateException()**   
+  
+        /**
+         * If this thread was constructed using a separate
+         * <code>Runnable</code> run object, then that
+         * <code>Runnable</code> object's <code>run</code> method is called;
+         * otherwise, this method does nothing and returns.
+         * Subclasses of <code>Thread</code> should override this method.
+         */
+        @Override
+        public void run() {
+            if (target != null) {
+                target.run();
+            }
+        }          
+        
+* 
+        
