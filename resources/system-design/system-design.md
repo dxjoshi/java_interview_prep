@@ -162,13 +162,13 @@
     - **Vertical Partitioning:** We divide our data to store tables related to a specific feature in their own server. eg. if we are building an Instagram-like application - where we need to store data related to users, photos they upload, and people they follow - we can decide to place user profile information on one DB server, friend lists on another, and photos on a third server.   
     
 **Indexes:**    
-    - The goal of creating an index on a particular table in a database is to make it faster to search through the table and find the row or rows that we want. 
-    - **Disadvantage:** An index can dramatically speed up data retrieval but may itself be large due to the additional keys, **which slow down data insertion & update.**    
+    - The goal of creating an index on a particular table in a database is to make it faster to search through the table and find the row or rows that we want.  
+    - **Disadvantage:** An index can dramatically speed up data retrieval but may itself be large due to the additional keys, **which slow down data insertion & update.**      
 
 **Proxy:**  
-    - A proxy server is an intermediate server between the client and the back-end server. 
-    - Clients connect to proxy servers to make a request for a service like a web page, file, connection, etc. 
-    - In short, a proxy server is a piece of software or hardware that acts as an intermediary for requests from clients seeking resources from other servers.    
+    - A proxy server is an intermediate server between the client and the back-end server.   
+    - Clients connect to proxy servers to make a request for a service like a web page, file, connection, etc.   
+    - In short, a proxy server is a piece of software or hardware that acts as an intermediary for requests from clients seeking resources from other servers.      
 
 **Reverse Proxy:**      
     - A reverse proxy retrieves resources on behalf of a client from one or more servers. These resources are then returned to the client, appearing as if they originated from the proxy server itself.    
@@ -179,13 +179,13 @@
     - **Wide-Column Databases:** Instead of ‘tables,’ in columnar databases we have column families, which are containers for rows. Unlike relational databases, we don’t need to know all the columns up front and each row doesn’t have to have the same number of columns. Columnar databases are best suited for analyzing large datasets - ex. Cassandra and HBase.    
     - **Graph Databases:** These databases are used to store data whose relations are best represented in a graph. Data is saved in graph structures with nodes (entities), properties (information about the entities), and lines (connections between the entities). ex. Neo4J and InfiniteGraph.    
     
-**CAP Theorem:**
+**CAP Theorem:**    
     - In the presence of a network partition, a distributed system must choose either Consistency(chosen by RDBMS) or Availability(chosen by NoSQL DBs).    
     - **Consistency (C):** All nodes see the same data at the same time. This means users can read or write from/to any node in the system and will receive the same data. It is equivalent to having a single up-to-date copy of the data.  
     - **Availability (A):** Availability means every request received by a non-failing node in the system must result in a response. Even when severe network failures occur, every request must terminate. In simple terms, availability refers to a system’s ability to remain accessible even if one or more nodes in the system go down.        
     - **Partition tolerance (P):** A partition is a communication break (or a network failure) between any two nodes in the system, i.e., both nodes are up but cannot communicate with each other. A partition-tolerant system continues to operate even if there are partitions in the system. Such a system can sustain any network failure that does not result in the failure of the entire network.       
 
-**PACELC Theorem:**
+**PACELC Theorem:** 
     - The PACELC theorem states that in a system that replicates data:  
         - If there is a partition (‘P’), a distributed system can tradeoff between availability and consistency (i.e., ‘A’ and ‘C’);    
         - **ELSE (‘E’)**, when the system is running normally in the absence of partitions, the system can tradeoff between latency (‘L’) and consistency (‘C’).    
@@ -194,7 +194,7 @@
     - BigTable and HBase are **PC/EC**      
     - MongoDB can be considered **PA/EC**:  In the case of a network partition, MongoDB chooses availability(as replication is done asynchronously from primary to secondary), but otherwise guarantees consistency.    
 
-**Consistent Hashing:**     
+**Consistent Hashing:**      
     - It maps data to physical nodes and ensures that only a small set of keys move when servers are added or removed.      
     - Consistent Hashing stores the data managed by a distributed system in a ring. Each node in the ring is assigned a range of data.  
     - When a node is removed, the next node becomes responsible for all of the keys stored on the outgoing node. However, this scheme can result in non-uniform data and load distribution. This problem can be solved with the help of Virtual nodes.      
