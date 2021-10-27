@@ -136,12 +136,12 @@
     • 5-year media storage: 30 TB * 365 * 5 = ~55 PB
     
   
-**Load Balancer (LB)**  
-    - It helps to spread the traffic across a cluster of servers to improve responsiveness and availability of applications, websites or databases.
-    - A load balancer sits between the client and the server accepting incoming network and application traffic and distributing the traffic across multiple backend servers using various algorithms.
-    - It prevents any one application server from becoming a single point of failure.
-    - We can add LBs at three places:
-        - Between the user and the web server.
+**Load Balancer (LB)**      
+    - It helps to spread the traffic across a cluster of servers to improve responsiveness and availability of applications, websites or databases.     
+    - A load balancer sits between the client and the server accepting incoming network and application traffic and distributing the traffic across multiple backend servers using various algorithms.      
+    - It prevents any one application server from becoming a single point of failure.       
+    - We can add LBs at three places:   
+        - Between the user and the web server.      
         - Between web servers and an internal platform layer, like application servers or cache servers.
         - Between internal platform layer and database.
 
@@ -195,26 +195,26 @@
     - MongoDB can be considered **PA/EC**:  In the case of a network partition, MongoDB chooses availability(as replication is done asynchronously from primary to secondary), but otherwise guarantees consistency.    
 
 **Consistent Hashing:**     
-    - It maps data to physical nodes and ensures that only a small set of keys move when servers are added or removed.  
-    - Consistent Hashing stores the data managed by a distributed system in a ring. Each node in the ring is assigned a range of data.
-    - When a node is removed, the next node becomes responsible for all of the keys stored on the outgoing node. However, this scheme can result in non-uniform data and load distribution. This problem can be solved with the help of Virtual nodes.    
+    - It maps data to physical nodes and ensures that only a small set of keys move when servers are added or removed.      
+    - Consistent Hashing stores the data managed by a distributed system in a ring. Each node in the ring is assigned a range of data.  
+    - When a node is removed, the next node becomes responsible for all of the keys stored on the outgoing node. However, this scheme can result in non-uniform data and load distribution. This problem can be solved with the help of Virtual nodes.      
     
 **Communication Protocols:**  
     - **Ajax Polling:**  
-        - The basic idea is that the client repeatedly polls (or requests) a server for data. The client makes a request and waits for the server to respond with data. If no data is available, an empty response is returned. 
-        - The problem with Polling is that the client has to keep asking the server for any new data. As a result, a lot of responses are empty, creating HTTP overhead.     
-    - **HTTP Long-Polling:**    
-        - the client requests information from the server exactly as in normal polling, but with the expectation that the server may not respond immediately. That’s why this technique is sometimes referred to as a “Hanging GET”.    
-        - If the server does not have any data available for the client, instead of sending an empty response, the server holds the request and waits until some data becomes available a timeout has occurred.
+        - The basic idea is that the client repeatedly polls (or requests) a server for data. The client makes a request and waits for the server to respond with data. If no data is available, an empty response is returned.  
+        - The problem with Polling is that the client has to keep asking the server for any new data. As a result, a lot of responses are empty, creating HTTP overhead.         
+    - **HTTP Long-Polling:**        
+        - the client requests information from the server exactly as in normal polling, but with the expectation that the server may not respond immediately. That’s why this technique is sometimes referred to as a “Hanging GET”.        
+        - If the server does not have any data available for the client, instead of sending an empty response, the server holds the request and waits until some data becomes available a timeout has occurred.     
         - Each Long-Poll request has a timeout. The client has to reconnect periodically after the connection is closed due to timeouts.        
     - **WebSockets:**
-        - WebSocket provides Full duplex(bi-directional) communication channels over a single TCP connection. 
-        - It provides a persistent connection between a client and a server that both parties can use to start sending data at any time. 
-        - The client establishes a WebSocket connection through a process known as the WebSocket handshake. If the process succeeds, then the server and client can exchange data in real-time with lower overheads. 
-        - This is made possible by providing a standardized way for the server to send content to the browser without being asked by the client and allowing for messages to be passed back and forth while keeping the connection open. 
-    - **Server-Sent Events(SSEs):**   
-        - The client establishes a persistent and long-term connection with the server. The server uses this connection to send data to a client. 
-        - If the client wants to send data to the server, it would require the use of another technology/protocol to do so. 
+        - WebSocket provides Full duplex(bi-directional) communication channels over a single TCP connection.   
+        - It provides a persistent connection between a client and a server that both parties can use to start sending data at any time.     
+        - The client establishes a WebSocket connection through a process known as the WebSocket handshake. If the process succeeds, then the server and client can exchange data in real-time with lower overheads.     
+        - This is made possible by providing a standardized way for the server to send content to the browser without being asked by the client and allowing for messages to be passed back and forth while keeping the connection open.         
+    - **Server-Sent Events(SSEs):**     
+        - The client establishes a persistent and long-term connection with the server. The server uses this connection to send data to a client.    
+        - If the client wants to send data to the server, it would require the use of another technology/protocol to do so.     
         
 **Bloom Filters:**      
     -  Bloom filter data structure tells whether an element may be in a set, or definitely is not. The only possible errors are false positives.    
@@ -224,7 +224,7 @@
     - **A Quorum** is the minimum number of servers on which a distributed operation needs to be performed successfully before declaring the operation’s overall success.   
     - Quorum enforces the consistency requirement needed for distributed operations.    
     - Quorum is achieved when nodes follow the below protocol: R + W > N, where:    
-        - N = nodes in the quorum group 
+        - N = nodes in the quorum group     
         - W = minimum write nodes   
         - R = minimum read nodes                
     
@@ -248,7 +248,8 @@
     • Again, communicate. Don't think in silence.
     • Don’t think your interview is done once you give the design. You are not done until your interviewer says you are done. Ask for feedback early and often.
     
-
+    
+    
 **Top Articles:**   
     - [Introduction to architecting systems for scale](https://lethain.com/introduction-to-architecting-systems-for-scale/) 
     
