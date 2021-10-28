@@ -348,6 +348,9 @@ Overloading and Overriding
         IntStream.range(1, 5).forEach(i -> executorService.submit(readTask));
 
   3. **StampedLock**      
-     
+     In contrast to ReadWriteLock the locking methods of a StampedLock return a stamp represented by a long value.      
+     You can use these stamps to either release a lock or to check if the lock is still valid. Additionally stamped locks support another lock mode called optimistic locking.      
+     Keep in mind that stamped locks don't implement reentrant characteristics. Each call to lock returns a new stamp and blocks if no lock is available even if the same thread already holds a lock. 
+     So you have to pay particular attention not to run into deadlocks.
 
         

@@ -10,14 +10,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.StampedLock;
 import java.util.stream.IntStream;
 
 public class LocksTutorial {
     public static void main(String[] args) {
         // Lock Interface
-//Commonly, a lock provides exclusive access to a shared resource: only one thread at a time can acquire the lock and all access to the shared resource requires that the lock be acquired first.
-//However, some locks may allow concurrent access to a shared resource, such as the read lock of a ReadWriteLock
+        //Commonly, a lock provides exclusive access to a shared resource: only one thread at a time can acquire the lock and all access to the shared resource requires that the lock be acquired first.
+        //However, some locks may allow concurrent access to a shared resource, such as the read lock of a ReadWriteLock
+        reenterantLock();
+        readWriteLock();
+        stampedLock();
+    }
 
+    private static void reenterantLock() {
         // ReenterantLock
         ReentrantLock reentrantLock = new ReentrantLock();
 
@@ -43,6 +49,9 @@ public class LocksTutorial {
         System.out.println("Locked: " + reentrantLock.isLocked()); // Only to check if this lock is held by any thread.
         System.out.println("Held by me: " + reentrantLock.isHeldByCurrentThread()); // Only to check if this lock is held by the current thread.
 
+    }
+
+    private static void readWriteLock() {
         // ReadWriteLock
         ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
         ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -82,5 +91,46 @@ public class LocksTutorial {
         IntStream.range(1, 5).forEach(i -> executorService.submit(readTask));
 
         ExecutorServiceTutorial.shutdown(executorService);
+
+    }
+
+    private static void stampedLock() {
+        // StampedLock
+        StampedLock stampedLock = new StampedLock();
+        ExecutorService executorServiceTwo = Executors.newFixedThreadPool(2);
+        Map<String, String> map = new HashMap<>();
+        Runnable writeTaskTwo = () -> {
+            long stamp = stampedLock.writeLock();
+            try {
+                TimeUnit.SECONDS.sleep(1);
+                map.put("key", "value");
+            } catch (Exception ex) {
+                System.out.println("Error while updating data");
+            } finally {
+                //If the current thread is the holder of this lock then the hold count is decremented.
+                //If the hold count is now zero then the lock is released.
+                //If the current thread is not the holder of this lock then IllegalMonitorStateException is thrown.
+                stampedLock.unlock(stamp);
+            }
+        };
+        executorServiceTwo.submit(writeTaskTwo);
+
+        Runnable readTaskTwo = () -> {
+            //Acquires the read lock if the write lock is not held by another thread and returns immediately.
+            //If the write lock is held by another thread then the current thread waits until the read lock has been acquired.
+            long stamp = stampedLock.readLock();
+            try {
+                map.get("key");
+            } catch (Exception ex) {
+                System.out.println("Error while fetching data");
+            } finally {
+                // If the number of readers is now zero then the lock is made available for write lock attempts.
+                stampedLock.unlock(stamp);
+            }
+        };
+        IntStream.range(1, 5).forEach(i -> executorServiceTwo.submit(readTaskTwo));
+
+        ExecutorServiceTutorial.shutdown(executorServiceTwo);
+
     }
 }
