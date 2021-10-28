@@ -54,6 +54,13 @@ public class ExecutorServiceTutorial {
 
         Integer result = getResult(callableResult);
 
+        shutdown(executorService);
+
+        Integer resultTwo = getResult(callableResultTwo);   // throws InterruptedException as shutdownNow() got called while this task was ongoing
+
+    }
+
+    public static void shutdown(ExecutorService executorService) {
         try {
             System.out.println("Shutting down executor");
             // shutdown() initiates an orderly shutdown in which previously submitted tasks are executed, but no new tasks will be accepted.
@@ -78,9 +85,6 @@ public class ExecutorServiceTutorial {
             executorService.shutdownNow();
             System.out.println("shutdown complete");
         }
-
-        Integer resultTwo = getResult(callableResultTwo);   // throws InterruptedException as shutdownNow() got called while this task was ongoing
-
     }
 
     public static <T> T getResult(Future<T> callableResult)  {
