@@ -33,7 +33,7 @@ public class ThreadState {
         sleepThread(5);
         System.out.println("Current State: "+ parentThread.getState());   // TERMINATED
 
-        // ------------------For Blocked state-------------
+        // ------------------case for creating blocked state-------------
         Runnable infiniteTask = () -> {
             synchronized (Runnable.class) {
                 while (true) {

@@ -74,7 +74,7 @@ Overloading and Overriding
                 sleepThread(5);
                 System.out.println("Current State: "+ parentThread.getState());   // TERMINATED
         
-                // ------------------For Blocked state-------------
+                // ------------------case for creating blocked state-------------
                 Runnable infiniteTask = () -> {
                     synchronized (Runnable.class) {
                         while (true) {
@@ -159,8 +159,47 @@ Overloading and Overriding
 
 * **Callables** are functional interfaces just like runnables but instead of being void they return a value.    
 * ExecutorService.submit() doesn't wait until the callable task completes, rather returns a **Future** representing the pending results of the task. 
-  The Future's get(), a blocking method, will return the task's result upon successful completion.   
-  The Future's isDone() tells if the future has already finished execution.
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Future<Integer> callableResult = executorService.submit(simpleCallable);
+
+* ExecutorService also has invokeAll() and invokeAny() methods which takes in a collection of tasks.
+
+        ExecutorService executorService = Executors.newWorkStealingPool();
+        ExecutorService executorServiceTwo = Executors.newWorkStealingPool();
+        List<Callable<Integer>> tasks = Arrays.asList(simpleCallable, simpleCallable, simpleCallable);
+        try {
+            // invokeAll(tasks) executes the given tasks, returning a list of Futures holding their status and results when all complete(either normally or by throwing an exception).
+            // Future.isDone() is true for each element of the returned list.
+            // The results of this method are undefined if the given collection is modified while this operation is in progress.
+            List<Future<Integer>> results = executorService.invokeAll(tasks);
+
+            // invokeAll(tasks, 10, TimeUnit.SECONDS) executes the given tasks, returning a list of Futures holding their status and results when all complete(either normally or by throwing an exception) or the timeout expires, whichever happens first.
+            // Upon return, tasks that have not completed are cancelled.
+            List<Future<Integer>> resultsWithTimeOut = executorServiceTwo.invokeAll(tasks, 10, TimeUnit.SECONDS);
+
+            // Executes the given tasks, returning the result of one that has completed successfully (i.e., without throwing an exception), if any do.
+            // Upon normal or exceptional return,tasks that have not completed are cancelled.
+            Integer result = executorService.invokeAny(tasks);
+
+            // Executes the given tasks, returning the result of one that has completed successfully (i.e., without throwing an exception), if any do before the given timeout elapses.
+            // Upon normal or exceptional return, tasks that have not completed are cancelled.
+            Integer resultTwo = executorService.invokeAny(tasks, 10, TimeUnit.SECONDS);
+
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            System.out.println("Task interrupted!!");
+        } catch (ExecutionException ex) {   // if no task successfully completes
+            ex.printStackTrace();
+        } catch (TimeoutException ex) {     // if the given timeout elapses before any task successfully completes
+            ex.printStackTrace();
+        } catch (RejectedExecutionException ex) {
+            ex.printStackTrace();           // if tasks cannot be scheduled for execution
+        }
+
+* Future has following important methods:
+    1. **get()**, a blocking method, will return the task's result upon successful completion.   
+    2. **isDone()** tells if the future has already finished execution.
 
         public static <T> T getResult(Future<T> callableResult)  {
             T result = null;
@@ -184,4 +223,31 @@ Overloading and Overriding
             return result;
         }
   
+* A ScheduledExecutorService is capable of scheduling tasks to run either periodically(scheduleAtFixedRate(), scheduleWithFixedDelay()) or once(schedule()) after a certain amount of time has elapsed. 
+* scheduleAtFixedRate() doesn't take into account the actual duration of the task. So if you specify a period of one second but the task needs 2 seconds to be executed then the thread pool will working to capacity very soon.
+
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        // Creates and executes a ScheduledFuture that becomes enabled after the given delay.
+        ScheduledFuture<Integer> scheduledCallableResult = executorService.schedule(Callables.simpleCallable, 5, TimeUnit.SECONDS);
+
+        long initialDelay = 1;
+        long delay = 2;
+
+        // Creates and executes a periodic action that executes after the given initial delay, and subsequently with the given delay between the termination of one execution and the commencement of the next.
+        // If any execution of the task encounters an exception, subsequent executions are suppressed.Otherwise, the task will only terminate via cancellation or termination of the executor.
+        executorService.scheduleWithFixedDelay(Runnables.simpleRunnable, initialDelay, delay, TimeUnit.SECONDS);
+
+        // Creates and executes a periodic action whose executions commence after initialDelay then initialDelay+period and so on.
+        // If any execution of the task encounters an exception, subsequent executions are suppressed. Otherwise, the task will only terminate via cancellation or termination of the executor.
+        // If any execution of this task takes longer than its period, then subsequent executions may start late, but will not concurrently execute.
+        executorService.scheduleAtFixedRate(Runnables.simpleRunnable, initialDelay, delay, TimeUnit.SECONDS);
+
+
+        TimeUnit.SECONDS.sleep(2);
+        // getDelay() returns the remaining delay associated with the ScheduledFuture object, in the given time unit. 
+        // zero or negative values indicate that the delay has already elapsed. 
+        System.out.printf("Remaining delay: %d sec%n", scheduledCallableResult.getDelay(TimeUnit.SECONDS));
+
+    
+
         
