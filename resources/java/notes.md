@@ -353,4 +353,84 @@ Overloading and Overriding
      Keep in mind that stamped locks don't implement reentrant characteristics. Each call to lock returns a new stamp and blocks if no lock is available even if the same thread already holds a lock. 
      So you have to pay particular attention not to run into deadlocks.
 
-        
+        StampedLock stampedLock = new StampedLock();
+        ExecutorService executorServiceTwo = Executors.newFixedThreadPool(2);
+        Map<String, String> map = new HashMap<>();
+        Runnable writeTask = () -> {
+            //Possibly blocks waiting for exclusive access, returning a stamp that can be used in unlockWrite() to release the lock. Untimed and timed versions of tryWriteLock are also provided.
+            //When the lock is held in write mode, no read locks may be obtained, and all optimistic read validations will fail.
+            long stamp = stampedLock.writeLock();
+            try {
+                TimeUnit.SECONDS.sleep(1);
+                map.put("key", "value");
+            } catch (Exception ex) {
+                System.out.println("Error while updating data");
+            } finally {
+                //If the lock state matches the given stamp, releases the corresponding mode of the lock.
+                stampedLock.unlock(stamp);
+            }
+        };
+        executorServiceTwo.submit(writeTask);
+
+        Runnable readTask = () -> {
+            //Possibly blocks waiting for non-exclusive access, returning a stamp that can be used in unlockRead() to release the lock.
+            //Untimed and timed versions of tryReadLock() are also provided.
+            long stamp = stampedLock.readLock();
+            try {
+                map.get("key");
+            } catch (Exception ex) {
+                System.out.println("Error while fetching data");
+            } finally {
+                //If the lock state matches the given stamp, releases the corresponding mode of the lock.
+                stampedLock.unlock(stamp);
+            }
+        };
+        IntStream.range(1, 5).forEach(i -> executorServiceTwo.submit(readTask));
+
+        ExecutorServiceTutorial.shutdown(executorServiceTwo);
+
+     An optimistic read lock is acquired by calling **tryOptimisticRead()** which always returns a stamp without blocking the current thread, no matter if the lock is actually available.       
+     If there's already a write lock active the returned stamp equals zero. You can always check if a stamp is valid by calling **lock.validate(stamp)**.    
+     An optimistic lock doesn't prevent other threads to obtain a write lock instantaneously, waiting for the optimistic read lock to be released.  
+     From this point the optimistic read lock is no longer valid. Even when the write lock is released the optimistic read locks stays invalid.     
+     So when working with optimistic locks you have to validate the lock every time after accessing any shared mutable variable to make sure the read was still valid.
+
+        Runnable readTask = () -> {
+          //Returns a non-zero stamp only if the lock is not currently held in write mode. validate() returns true if the lock has not been acquired in write mode since obtaining a given stamp.  
+          //This mode can be thought of as an extremely weak version of a read-lock, that can be broken by a writer at any time.  
+          //The use of optimistic mode for short read-only code segments often reduces contention and improves throughput.  However, its use is inherently fragile.
+          //Optimistic read sections should only read fields and hold them in local variables for later use after validation. 
+          //Fields read while in optimistic mode may be wildly inconsistent, so usage applies only when you are familiar enough with data representations to check consistency and/or repeatedly invoke method validate().
+          long stamp = stampedLock.tryOptimisticRead();
+          try {
+              System.out.println("Optimistic lock valid: " + stampedLock.validate(stamp));
+              TimeUnit.SECONDS.sleep(1);
+              System.out.println("Optimistic lock valid: " + stampedLock.validate(stamp));
+              TimeUnit.SECONDS.sleep(2);
+              System.out.println("Optimistic lock valid: " + stampedLock.validate(stamp));
+          } catch (Exception ex) {
+              System.out.println("Error while fetching data");
+          } finally {
+              stampedLock.unlock(stamp);
+          }
+        };
+     
+     StampedLock provides non-blocking **tryConvertToWriteLock()** for converting a read lock into a write lock without unlocking and locking again:   
+
+        long stamp = stampedLock.readLock();
+        try {
+            //If the lock state matches the given stamp, performs one of the following actions: 
+            //If the stamp represents holding a write lock, returns it.  
+            //Or, if a read lock, if the write lock is available, releases the read lock and returns a write stamp.
+            //Or, if an optimistic read, returns a write stamp only if immediately available. This method returns zero in all other cases.
+            stamp = stampedLock.tryConvertToWriteLock(stamp);
+            if ( stamp == 0L) {
+                // couldn't get write lock
+                stamp = stampedLock.writeLock();
+            }
+        } catch (Exception ex) {
+            System.out.println("Exception while getting lock");
+        } finally {
+            stampedLock.unlock(stamp);
+        }
+     
