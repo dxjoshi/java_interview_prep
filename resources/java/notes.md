@@ -434,3 +434,40 @@ Overloading and Overriding
             stampedLock.unlock(stamp);
         }
      
+* **Semaphores** are often used to restrict the number of threads than can access some (physical or logical) resource, by maintaining set of permits.  
+  Each acquire() blocks if necessary until a permit is available, and then takes it. Each release() adds a permit, potentially releasing a blocking acquirer.   
+  However, no actual permit objects are used; the Semaphore just keeps a count of the number available and acts accordingly.    
+  
+        Runnable task = () -> {
+            boolean hasPermit = false;
+            //Acquires the given number of permits, if they are available, and returns true immediately, reducing the number of available permits by the given amount.
+            //If insufficient permits are available then this method will return false immediately and the number of available permits is unchanged.
+            hasPermit = semaphore.tryAcquire(1);
+            //acquire() acquires a permit, if available and returns immediately, reducing the number of available permits by one.
+            //If no permit is available then the current thread waits/blocks until other thread invokes the release() method for this semaphore and the current thread is next to be assigned a permit OR some other thread interrupts the current thread.
+            //semaphore.acquire();
+
+            //acquireUninterruptibly(permits) the given number of permits from this semaphore, blocking until all are available.
+            //If the current thread is interrupted while waiting for permits then it will continue to wait and its position in the queue is not affected.  
+            //When the thread does return from this method its interrupt status will be set.
+            //semaphore.acquireUninterruptibly(2);
+            try {
+                if (hasPermit) {
+                    System.out.println("Acquired a permit");
+                    TimeUnit.SECONDS.sleep(5);
+                } else {
+                    System.out.println("Couldn't acquire permit");
+                }
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                ex.printStackTrace();
+            } finally {
+                //Releases a permit, increasing the number of available permits by one.  If any threads are trying to acquire a permit, then one is selected and given the permit that was just released.
+                if (hasPermit) {
+                    semaphore.release();
+                }
+            }
+        };
+
+
+     
