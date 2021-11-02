@@ -4,11 +4,23 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 public class LockTutorialsTwo {
     public static void main(String[] args) {
         semaphores();
+        atomicInteger();
+    }
+
+    private static void atomicInteger() {
+        //An int value that may be updated atomically. An AtomicInteger is used in applications such as atomically incremented counters, and cannot be used as a replacement for a java.lang.Integer.
+        //However, this class does extend Number to allow uniform access by tools and utilities that deal with numerically-based classes.
+        AtomicInteger counter = new AtomicInteger(0);
+        counter.incrementAndGet();
+        counter.compareAndSet(0, 5);
+        counter.updateAndGet(x -> x + 2);
+        counter.accumulateAndGet(0, (a,b) -> a + b);
     }
 
     private static void semaphores() {
@@ -52,4 +64,5 @@ public class LockTutorialsTwo {
         ExecutorServiceTutorial.shutdown(executorService);
 
     }
+
 }

@@ -6,11 +6,13 @@
 Exception
 Collections
 Overloading and Overriding
+Serialization
 
 
 
 ### Concurrency
 * [Concurrency vs. Parallelism](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism)
+* [Atomic vs. Volatile vs. Synchronized](https://stackoverflow.com/questions/9749746/what-is-the-difference-between-atomic-volatile-synchronized)   
 * Threads can be created by either implementing java.lang.Runnable interface or extending java.lang.Thread class.     
     
         class CustomThread extends Thread {
@@ -130,30 +132,30 @@ Overloading and Overriding
     1. **shutdown()** waits for currently running tasks to finish.   
     2. **shutdownNow()** interrupts all running tasks and shut the executor down immediately.    
 
-        try {
-            System.out.println("Shutting down executor");
-        // shutdown() initiates an orderly shutdown in which previously submitted tasks are executed, but no new tasks will be accepted. 
-        // Invocation has no additional effect if already shut down. This method does not wait for previously submitted tasks to complete execution.
-            executorService.shutdown();
-
-        // awaitTermination() blocks until all tasks have completed execution after a shutdown request, or the timeout occurs, 
-        // or the current thread is interrupted, whichever happens first.
-            executorService.awaitTermination(2, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            System.out.println("Tasks interrupted");
-        } finally {
-        // isTerminated() returns true if all tasks have completed following shut down.
-            if (!executorService.isTerminated()) {
-                System.out.println("Cancelling all pending tasks");
+            try {
+                System.out.println("Shutting down executor");
+            // shutdown() initiates an orderly shutdown in which previously submitted tasks are executed, but no new tasks will be accepted. 
+            // Invocation has no additional effect if already shut down. This method does not wait for previously submitted tasks to complete execution.
+                executorService.shutdown();
+    
+            // awaitTermination() blocks until all tasks have completed execution after a shutdown request, or the timeout occurs, 
+            // or the current thread is interrupted, whichever happens first.
+                executorService.awaitTermination(2, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.out.println("Tasks interrupted");
+            } finally {
+            // isTerminated() returns true if all tasks have completed following shut down.
+                if (!executorService.isTerminated()) {
+                    System.out.println("Cancelling all pending tasks");
+                }
+    
+            // shutdownNow() attempts(not guarantees) to stop all actively executing tasks, halts the processing of waiting tasks, 
+            // and returns a list of the tasks that were awaiting execution. It does not wait for actively executing tasks to terminate.   
+            // For example, typical implementations will cancel via Thread.interrupt(), so any task that fails to respond to interrupts may never terminate.
+                executorService.shutdownNow();
+                System.out.println("shutdown complete");
             }
-
-        // shutdownNow() attempts(not guarantees) to stop all actively executing tasks, halts the processing of waiting tasks, 
-        // and returns a list of the tasks that were awaiting execution. It does not wait for actively executing tasks to terminate.   
-        // For example, typical implementations will cancel via Thread.interrupt(), so any task that fails to respond to interrupts may never terminate.
-            executorService.shutdownNow();
-            System.out.println("shutdown complete");
-        }
 
 * The class Executors provides convenient factory methods for creating different kinds of executor services.    
 
@@ -283,69 +285,70 @@ Overloading and Overriding
 
 * Concurrency API supports explicit locks specified by the Lock interface, for finer grained lock control thus are more expressive than implicit monitors(synchronized).   
   1. **ReentrantLock**  
-        ReentrantLock reentrantLock = new ReentrantLock();
-
-        //tryLock() acquires the lock only if it is not held by another thread at the time of invocation, but doesn't wait for the lock.
-        //If the current thread already holds this lock then hold count is incremented by one and the method returns true, else will immediately return false.
-        if (reentrantLock.tryLock()) {
-            //Acquires the lock if it is not held by another thread and returns immediately, setting the lock hold count to one.
-            //If the current thread already holds the lock then the hold count is incremented by one and the method returns immediately.
-            //If the lock is held by another thread then the current thread lies dormant until the lock has been acquired, at which time the lock hold count is set to one.
-            reentrantLock.lock();
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            } finally {
-                //If the current thread is the holder of this lock then the hold count is decremented.
-                //If the hold count is now zero then the lock is released.
-                //If the current thread is not the holder of this lock then IllegalMonitorStateException is thrown.
-                reentrantLock.unlock();
+            ReentrantLock reentrantLock = new ReentrantLock();
+    
+            //tryLock() acquires the lock only if it is not held by another thread at the time of invocation, but doesn't wait for the lock.
+            //If the current thread already holds this lock then hold count is incremented by one and the method returns true, else will immediately return false.
+            if (reentrantLock.tryLock()) {
+                //Acquires the lock if it is not held by another thread and returns immediately, setting the lock hold count to one.
+                //If the current thread already holds the lock then the hold count is incremented by one and the method returns immediately.
+                //If the lock is held by another thread then the current thread lies dormant until the lock has been acquired, at which time the lock hold count is set to one.
+                reentrantLock.lock();
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                } finally {
+                    //If the current thread is the holder of this lock then the hold count is decremented.
+                    //If the hold count is now zero then the lock is released.
+                    //If the current thread is not the holder of this lock then IllegalMonitorStateException is thrown.
+                    reentrantLock.unlock();
+                }
             }
-        }
-
-        System.out.println("Locked: " + reentrantLock.isLocked()); // Only to check if this lock is held by any thread.
-        System.out.println("Held by me: " + reentrantLock.isHeldByCurrentThread()); // Only to check if this lock is held by the current thread.
+    
+            System.out.println("Locked: " + reentrantLock.isLocked()); // Only to check if this lock is held by any thread.
+            System.out.println("Held by me: " + reentrantLock.isHeldByCurrentThread()); // Only to check if this lock is held by the current thread.
  
-  2. **ReentrantReadWriteLock** 
+  2. **ReentrantReadWriteLock**     
      The idea behind read-write locks is that it's usually safe to read mutable variables concurrently as long as nobody is writing to this variable.   
-     So the read-lock can be held simultaneously by multiple threads as long as no threads hold the write-lock. This can improve performance and throughput in case that reads are more frequent than writes.   
-        ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
-        Map<String, String> data = new HashMap<>();
-        Runnable writeTask = () -> {
-            //Acquires the write lock if neither the read nor write lock are held by another thread and returns immediately, setting the write lock hold count to one.
-            //If the current thread already holds the write lock then the hold count is incremented by one and the method returns immediately.
-            //If the lock is held by another thread then the current thread becomes disabled for thread scheduling purposes and lies dormant until the write lock has been acquired, at which time the write lock hold count is set to one.
-            reentrantReadWriteLock.writeLock().lock();
-            try {
-                TimeUnit.SECONDS.sleep(1);
-                data.put("key", "value");
-            } catch (Exception ex) {
-                System.out.println("Error while updating data");
-            } finally {
-                //If the current thread is the holder of this lock then the hold count is decremented.
-                //If the hold count is now zero then the lock is released.
-                //If the current thread is not the holder of this lock then IllegalMonitorStateException is thrown.
-                reentrantReadWriteLock.writeLock().unlock();
-            }
-        };
-        executorService.submit(writeTask);
+     So the read-lock can be held simultaneously by multiple threads as long as no threads hold the write-lock. This can improve performance and throughput in case that reads are more frequent than writes.      
 
-        Runnable readTask = () -> {
-            //Acquires the read lock if the write lock is not held by another thread and returns immediately.
-            //If the write lock is held by another thread then the current thread waits until the read lock has been acquired.
-            reentrantReadWriteLock.readLock().lock();
-            try {
-                data.get("key");
-            } catch (Exception ex) {
-                System.out.println("Error while fetching data");
-            } finally {
-                // If the number of readers is now zero then the lock is made available for write lock attempts.
-                reentrantReadWriteLock.readLock().unlock();
-            }
-        };
-        IntStream.range(1, 5).forEach(i -> executorService.submit(readTask));
+            ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
+            ExecutorService executorService = Executors.newFixedThreadPool(2);
+            Map<String, String> data = new HashMap<>();
+            Runnable writeTask = () -> {
+                //Acquires the write lock if neither the read nor write lock are held by another thread and returns immediately, setting the write lock hold count to one.
+                //If the current thread already holds the write lock then the hold count is incremented by one and the method returns immediately.
+                //If the lock is held by another thread then the current thread becomes disabled for thread scheduling purposes and lies dormant until the write lock has been acquired, at which time the write lock hold count is set to one.
+                reentrantReadWriteLock.writeLock().lock();
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                    data.put("key", "value");
+                } catch (Exception ex) {
+                    System.out.println("Error while updating data");
+                } finally {
+                    //If the current thread is the holder of this lock then the hold count is decremented.
+                    //If the hold count is now zero then the lock is released.
+                    //If the current thread is not the holder of this lock then IllegalMonitorStateException is thrown.
+                    reentrantReadWriteLock.writeLock().unlock();
+                }
+            };
+            executorService.submit(writeTask);
+    
+            Runnable readTask = () -> {
+                //Acquires the read lock if the write lock is not held by another thread and returns immediately.
+                //If the write lock is held by another thread then the current thread waits until the read lock has been acquired.
+                reentrantReadWriteLock.readLock().lock();
+                try {
+                    data.get("key");
+                } catch (Exception ex) {
+                    System.out.println("Error while fetching data");
+                } finally {
+                    // If the number of readers is now zero then the lock is made available for write lock attempts.
+                    reentrantReadWriteLock.readLock().unlock();
+                }
+            };
+            IntStream.range(1, 5).forEach(i -> executorService.submit(readTask));
 
   3. **StampedLock**      
      In contrast to ReadWriteLock the locking methods of a StampedLock return a stamp represented by a long value.      
@@ -353,41 +356,40 @@ Overloading and Overriding
      Keep in mind that stamped locks don't implement reentrant characteristics. Each call to lock returns a new stamp and blocks if no lock is available even if the same thread already holds a lock. 
      So you have to pay particular attention not to run into deadlocks.
 
-        StampedLock stampedLock = new StampedLock();
-        ExecutorService executorServiceTwo = Executors.newFixedThreadPool(2);
-        Map<String, String> map = new HashMap<>();
-        Runnable writeTask = () -> {
-            //Possibly blocks waiting for exclusive access, returning a stamp that can be used in unlockWrite() to release the lock. Untimed and timed versions of tryWriteLock are also provided.
-            //When the lock is held in write mode, no read locks may be obtained, and all optimistic read validations will fail.
-            long stamp = stampedLock.writeLock();
-            try {
-                TimeUnit.SECONDS.sleep(1);
-                map.put("key", "value");
-            } catch (Exception ex) {
-                System.out.println("Error while updating data");
-            } finally {
-                //If the lock state matches the given stamp, releases the corresponding mode of the lock.
-                stampedLock.unlock(stamp);
-            }
-        };
-        executorServiceTwo.submit(writeTask);
-
-        Runnable readTask = () -> {
-            //Possibly blocks waiting for non-exclusive access, returning a stamp that can be used in unlockRead() to release the lock.
-            //Untimed and timed versions of tryReadLock() are also provided.
-            long stamp = stampedLock.readLock();
-            try {
-                map.get("key");
-            } catch (Exception ex) {
-                System.out.println("Error while fetching data");
-            } finally {
-                //If the lock state matches the given stamp, releases the corresponding mode of the lock.
-                stampedLock.unlock(stamp);
-            }
-        };
-        IntStream.range(1, 5).forEach(i -> executorServiceTwo.submit(readTask));
-
-        ExecutorServiceTutorial.shutdown(executorServiceTwo);
+            StampedLock stampedLock = new StampedLock();
+            ExecutorService executorServiceTwo = Executors.newFixedThreadPool(2);
+            Map<String, String> map = new HashMap<>();
+            Runnable writeTask = () -> {
+                //Possibly blocks waiting for exclusive access, returning a stamp that can be used in unlockWrite() to release the lock. Untimed and timed versions of tryWriteLock are also provided.
+                //When the lock is held in write mode, no read locks may be obtained, and all optimistic read validations will fail.
+                long stamp = stampedLock.writeLock();
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                    map.put("key", "value");
+                } catch (Exception ex) {
+                    System.out.println("Error while updating data");
+                } finally {
+                    //If the lock state matches the given stamp, releases the corresponding mode of the lock.
+                    stampedLock.unlock(stamp);
+                }
+            };
+            executorServiceTwo.submit(writeTask);
+    
+            Runnable readTask = () -> {
+                //Possibly blocks waiting for non-exclusive access, returning a stamp that can be used in unlockRead() to release the lock.
+                //Untimed and timed versions of tryReadLock() are also provided.
+                long stamp = stampedLock.readLock();
+                try {
+                    map.get("key");
+                } catch (Exception ex) {
+                    System.out.println("Error while fetching data");
+                } finally {
+                    //If the lock state matches the given stamp, releases the corresponding mode of the lock.
+                    stampedLock.unlock(stamp);
+                }
+            };
+            IntStream.range(1, 5).forEach(i -> executorServiceTwo.submit(readTask));
+            ExecutorServiceTutorial.shutdown(executorServiceTwo);
 
      An optimistic read lock is acquired by calling **tryOptimisticRead()** which always returns a stamp without blocking the current thread, no matter if the lock is actually available.       
      If there's already a write lock active the returned stamp equals zero. You can always check if a stamp is valid by calling **lock.validate(stamp)**.    
@@ -395,48 +397,51 @@ Overloading and Overriding
      From this point the optimistic read lock is no longer valid. Even when the write lock is released the optimistic read locks stays invalid.     
      So when working with optimistic locks you have to validate the lock every time after accessing any shared mutable variable to make sure the read was still valid.
 
-        Runnable readTask = () -> {
-          //Returns a non-zero stamp only if the lock is not currently held in write mode. validate() returns true if the lock has not been acquired in write mode since obtaining a given stamp.  
-          //This mode can be thought of as an extremely weak version of a read-lock, that can be broken by a writer at any time.  
-          //The use of optimistic mode for short read-only code segments often reduces contention and improves throughput.  However, its use is inherently fragile.
-          //Optimistic read sections should only read fields and hold them in local variables for later use after validation. 
-          //Fields read while in optimistic mode may be wildly inconsistent, so usage applies only when you are familiar enough with data representations to check consistency and/or repeatedly invoke method validate().
-          long stamp = stampedLock.tryOptimisticRead();
-          try {
-              System.out.println("Optimistic lock valid: " + stampedLock.validate(stamp));
-              TimeUnit.SECONDS.sleep(1);
-              System.out.println("Optimistic lock valid: " + stampedLock.validate(stamp));
-              TimeUnit.SECONDS.sleep(2);
-              System.out.println("Optimistic lock valid: " + stampedLock.validate(stamp));
-          } catch (Exception ex) {
-              System.out.println("Error while fetching data");
-          } finally {
-              stampedLock.unlock(stamp);
-          }
-        };
+            Runnable readTask = () -> {
+              //Returns a non-zero stamp only if the lock is not currently held in write mode. validate() returns true if the lock has not been acquired in write mode since obtaining a given stamp.  
+              //This mode can be thought of as an extremely weak version of a read-lock, that can be broken by a writer at any time.  
+              //The use of optimistic mode for short read-only code segments often reduces contention and improves throughput.  However, its use is inherently fragile.
+              //Optimistic read sections should only read fields and hold them in local variables for later use after validation. 
+              //Fields read while in optimistic mode may be wildly inconsistent, so usage applies only when you are familiar enough with data representations to check consistency and/or repeatedly invoke method validate().
+              long stamp = stampedLock.tryOptimisticRead();
+              try {
+                  System.out.println("Optimistic lock valid: " + stampedLock.validate(stamp));
+                  TimeUnit.SECONDS.sleep(1);
+                  System.out.println("Optimistic lock valid: " + stampedLock.validate(stamp));
+                  TimeUnit.SECONDS.sleep(2);
+                  System.out.println("Optimistic lock valid: " + stampedLock.validate(stamp));
+              } catch (Exception ex) {
+                  System.out.println("Error while fetching data");
+              } finally {
+                  stampedLock.unlock(stamp);
+              }
+            };
      
      StampedLock provides non-blocking **tryConvertToWriteLock()** for converting a read lock into a write lock without unlocking and locking again:   
 
-        long stamp = stampedLock.readLock();
-        try {
-            //If the lock state matches the given stamp, performs one of the following actions: 
-            //If the stamp represents holding a write lock, returns it.  
-            //Or, if a read lock, if the write lock is available, releases the read lock and returns a write stamp.
-            //Or, if an optimistic read, returns a write stamp only if immediately available. This method returns zero in all other cases.
-            stamp = stampedLock.tryConvertToWriteLock(stamp);
-            if ( stamp == 0L) {
-                // couldn't get write lock
-                stamp = stampedLock.writeLock();
+            long stamp = stampedLock.readLock();
+            try {
+                //If the lock state matches the given stamp, performs one of the following actions: 
+                //If the stamp represents holding a write lock, returns it.  
+                //Or, if a read lock, if the write lock is available, releases the read lock and returns a write stamp.
+                //Or, if an optimistic read, returns a write stamp only if immediately available. This method returns zero in all other cases.
+                stamp = stampedLock.tryConvertToWriteLock(stamp);
+                if ( stamp == 0L) {
+                    // couldn't get write lock
+                    stamp = stampedLock.writeLock();
+                }
+            } catch (Exception ex) {
+                System.out.println("Exception while getting lock");
+            } finally {
+                stampedLock.unlock(stamp);
             }
-        } catch (Exception ex) {
-            System.out.println("Exception while getting lock");
-        } finally {
-            stampedLock.unlock(stamp);
-        }
      
 * **Semaphores** are often used to restrict the number of threads than can access some (physical or logical) resource, by maintaining set of permits.  
   Each acquire() blocks if necessary until a permit is available, and then takes it. Each release() adds a permit, potentially releasing a blocking acquirer.   
   However, no actual permit objects are used; the Semaphore just keeps a count of the number available and acts accordingly.    
+
+        Semaphore semaphore = new Semaphore(5);
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
   
         Runnable task = () -> {
             boolean hasPermit = false;
@@ -470,4 +475,21 @@ Overloading and Overriding
         };
 
 
+* Atomic classes that support lock-free thread-safe programming on single variables, make heavy use of compare-and-swap (CAS), an atomic instruction directly supported by most modern CPUs(much faster than synchronizing via locks).     
+  **boolean compareAndSet(expectedValue, updateValue)** (atomically sets a variable to updateValue if it currently holds the expectedValue, reporting true on success). 
+  
+* **Volatile Keyword:**  
+  1. If one thread updates the shared variable/object, we cannot know for sure when exactly this change will be visible to the other thread, due to CPU caching. Each thread that uses the variable makes a local copy (i.e. cache) of its value on the CPU itself. 
+  2. **Visibility** When a variable is marked volatile, the JVM guarantees that each write operation's result isn't written in the local memory but rather in the main memory. 
+  3. **Happens-before relationship:** This relationship is simply a guarantee that memory writes by one specific statement are visible to another specific statement. 
+  4. Volatile keyword guarantees visibility and happens before order, but does not guarantee mutual exclusion.(**synchronized keyword ensures both visibility and mutual exclusion but is slow**)   
+
+* **Synchronized Keyword:** 
+  1. For a synchronized block, the lock is acquired on the object specified in the parentheses after the synchronized keyword
+     For a synchronized static method, the lock is acquired on the .class object
+     For a synchronized instance method, the lock is acquired on the current instance of that class i.e. this instance
      
+
+* **Functional Interface:** Must contain exactly one abstract method declaration(abstract method which override Object class's public method does not count).   
+         
+      
