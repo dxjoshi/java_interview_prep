@@ -4,8 +4,9 @@ import annotation.FieldName;
 
 public class Student {
 
-    @FieldName(name = "fullName")
+    @FieldName(key = "Full Name")
     private String name;
+/*    @FieldName(key = "Age")*/
     private int age;
 
     public Student(String name, int age) {
