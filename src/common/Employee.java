@@ -40,6 +40,18 @@ public class Employee implements Comparable<Employee> {
     }
 
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Object cloneObj = super.clone();
+        //Make copies of mutable fields, if any, and replace these copies into the received clone object reference
+        return cloneObj;
+    }
+
+    @Override
+    public void finalize() throws Throwable {
+        super.finalize();
+    }
+
     public Employee(String name, Integer age) {
         this.name = name;
         this.age = age;

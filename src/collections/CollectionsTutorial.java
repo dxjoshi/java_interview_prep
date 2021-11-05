@@ -1,20 +1,21 @@
 package collections;
 
 import common.Employee;
-import common.Student;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.*;
 
-public class CollectionsTutorial {
-    public static void main(String[] args) {
+public class CollectionsTutorial implements Serializable {
+    public static void main(String[] args) throws Throwable {
         iterators();
         collectionsClass();
         arraysClass();
-        objectsClass();
+        objectsUtilityClass();
+        objectClass();
         comparableAndComparator();
         maps();
         sets();
@@ -22,7 +23,81 @@ public class CollectionsTutorial {
         queues();
     }
 
-    private static void objectsClass() {
+    private static void objectClass() throws InterruptedException, CloneNotSupportedException, Throwable {
+        //ArrayList<Integer> obj = new ArrayList<>(10);
+        Employee obj = new Employee("John Doe", 40);
+
+        //getClass() - Returns the runtime class of this Object. The returned Class object is the object that is locked by static synchronized methods of the represented class.
+        Class<? extends Object> objectClass = obj.getClass();
+        System.out.println("objectClass: " + objectClass);
+
+        //hashCode() - Returns a hash code value for the object. The general contract of {@code hashCode} is:
+        //Multiple invocations of hashCode() must consistently return the same integer, if no information used in equals() comparisons on the object is modified, for the same run of java application.
+        //If two objects are equal according to the equals(), then calling the hashCode() on each of the two objects must produce the same integer result.
+        //If two objects are unequal according to the equals(), then calling the hashCode() on both objects CAN/CAN NOT produce the same integer result.
+        obj.hashCode();
+
+        //equals() - Indicates whether some other object is "equal to" this one.
+        //The equals() method implements an equivalence relation on non-null object references:
+        //x.equals(x) should return true(reflexive)
+        //y.equals(x)==true iff x.equals(y)==true (symmetric)
+        //if x.equals(y)==true and y.equals(z)==true then x.equals(z)==true(transitive)
+        //multiple invocations of x.equals(y) should consistently return true/false (consistent)
+        //x.equals(null)==false
+        obj.equals(obj);
+
+        //clone() - Creates and returns a shallow copy of this object.
+        //First, if the class of this object does not implement the interface Cloneable, then a CloneNotSupportedException is thrown.
+        //Also, the class whose object’s copy is to be made must have a public clone method in it or in one of its parent class.
+        //Also need to copy any mutable objects that comprise the internal structure of the object being cloned and replacing the references to these objects with references to the copies.
+        obj.clone();    //object's clone() can't be called directly as it will throw Runtime Exception
+
+        //toString() - Returns a string representation of the object. Default form:- getClass().getName() + '@' + Integer.toHexString(hashCode())
+        obj.toString();
+
+        //notify() - If any threads are waiting on this object(by calling wait()), one of them is chosen to be awakened(arbitrarily chosen)
+        //The awakened thread will not be able to proceed until the current thread relinquishes the lock on this object.
+        //This method should only be called by a thread that is the owner of this object's monitor, in one of three possible ways:
+        //1. By executing a synchronized instance method of that object.
+        //2. By executing the body of a synchronized statement that synchronizes on the object.
+        //3. For objects of type Class by executing a synchronized static method of that class.
+        obj.notify(); //IllegalMonitorStateException if the current thread is not the owner of this object's monitor.
+
+        //notifyAll() - Same as notify() except it wakes up all threads that are waiting on this object's monitor.
+        obj.notifyAll();    //IllegalMonitorStateException if the current thread is not the owner of this object's monitor.
+
+        //wait() - This method causes the current thread **T** to place itself in the wait set for this object and then to relinquish any and all synchronization claims on this object and becomes disabled for thread scheduling purposes and lies dormant until one of four things happens:
+        //Other thread invokes notify() method for this object and T happens to be arbitrarily chosen as the thread to be awakened.
+        //Some other thread invokes the notifyAll() method for this object.
+        //Some other thread interrupts T.
+        //The specified amount of real time has elapsed, more or less. If it is zero, however, then real time is not taken into consideration and the thread simply waits until notified.
+
+        //The thread T is then removed from the wait set for this object and re-enabled for thread scheduling. It then competes in the usual manner with other threads for the right to synchronize on the object.
+        //Once it has gained control of the object, all its synchronization claims on the object are restored to the situation as of the time that the  wait() was invoked and T then returns from wait().
+
+        obj.wait(100);     //IllegalMonitorStateException if the current thread is not the owner of this object's monitor.
+
+        //wait() - same as wait(0) Causes the current thread to release ownership of this monitor(lock) and wait until another thread invokes notify() or notifyAll()
+        //As in the one argument version, interrupts and spurious wakeups are possible, and this method should always be used in a loop:
+        //    synchronized (obj) {
+        //        while (&lt;condition does not hold&gt;)
+        //            obj.wait();
+        //        ... // Perform action appropriate to condition
+        //    }
+        obj.wait();     //IllegalMonitorStateException if the current thread is not the owner of this object's monitor.
+
+        //wait() - same as wait(timeout), additionally provides finer control(in nanoseconds) over timeout
+        obj.wait(90, 100000);     //IllegalMonitorStateException if the current thread is not the owner of this object's monitor.
+
+        //finalize() - Called by the garbage collector on an object when garbage collection determines that there are no more references to the object.
+        //It is not public because it shouldn't be invoked by anyone other than JVM. However, it must be protected so that it can be overridden by subclasses who need to define behavior for it.
+        //It is not guaranteed which thread will invoke the finalize() method for any given object.
+        //It is guaranteed, however, that the thread that invokes finalize will not be holding any user-visible synchronization locks when finalize is invoked.
+        //If an uncaught exception is thrown by the finalize method, the exception is ignored and finalization of that object terminates.
+        obj.finalize(); // protected access, only called by JVM
+    }
+
+    private static void objectsUtilityClass() {
         //equals() - Returns true if the arguments are equal to each other and false otherwise.
         boolean equals = Objects.equals(new Integer(1), new Integer(1));
         System.out.println("equals: " + equals);
