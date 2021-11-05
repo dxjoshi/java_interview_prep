@@ -1,7 +1,14 @@
 ## Java Interview Refresher:  
 
 ## Topics:
-* [Concurrency](#concurrency)
+* [Thread Basics](#thread-basics)
+* [ThreadPoolExecutor](#threadpoolexecutor)
+* [ForkJoinPool](#forkjoinpool)
+* [CompletionService](#completionservice)
+* [Executor Factory Methods](#executor-factory-methods)
+* [Concurrency Questions](#concurrency-questions)
+* [Java 8](#java-8)
+
 * Generics
 Exception
 Collections
@@ -10,9 +17,8 @@ Serialization
 
 
 
-### Concurrency
-* [Concurrency vs. Parallelism](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism)
-* [Atomic vs. Volatile vs. Synchronized](https://stackoverflow.com/questions/9749746/what-is-the-difference-between-atomic-volatile-synchronized)   
+### Thread Basics        
+* Threads are managed by a thread-scheduler of JVM(Java Virtual Machine). [These threads are not directly mapped to a native OS thread](https://baptiste-wicht.com/posts/2010/05/java-concurrency-part-1-threads.html). 
 * Threads can be created by either implementing java.lang.Runnable interface or extending java.lang.Thread class.     
     
         class CustomThread extends Thread {
@@ -34,6 +40,7 @@ Serialization
                 threadInstanceTwo.start();
             }
         }
+        
         
 * A thread can be in one of the following states:   
   **NEW:**  A thread that has not yet started is in this state.(thread object before start() gets called)  
@@ -126,6 +133,268 @@ Serialization
                 target.run();
             }
         }          
+        
+### ThreadPoolExecutor
+   
+1. Thread pools address two different problems:  
+    1. They usually provide improved performance when executing large numbers of asynchronous tasks, due to reduced per-task invocation overhead,
+    2. They provide a means of bounding and managing the resources, including threads, consumed when executing a collection of tasks.
+
+2. **Core and maximum pool sizes:**     
+When a new task is submitted in method execute(Runnable), and fewer than corePoolSize threads are running, a new thread is created to handle the request, even if other worker threads are idle.  
+If there are more than corePoolSize but less than maximumPoolSize threads running, a new thread will be created only if the queue is full.  
+By setting corePoolSize and maximumPoolSize the same, you create a fixed-size thread pool.  
+By setting maximumPoolSize to an essentially unbounded value such as  Integer.MAX_VALUE, you allow the pool to accommodate an arbitrary number of concurrent tasks. 
+By default, even core threads are initially created and started only when new tasks arrive, but this can be overridden dynamically using prestartCoreThread() or prestartAllCoreThreads().  You probably want to prestart threads if you construct the pool with a non-empty queue.  
+
+3. **BlockingQueue:**    
+    1. Any BlockingQueue may be used to transfer and hold submitted tasks.  The use of this queue interacts with pool sizing:
+    2. If fewer than corePoolSize threads are running, the Executor always prefers adding a new thread rather than queuing.
+    3. If corePoolSize or more threads are running, the Executor always prefers queuing a request rather than adding a new thread.
+    4. If a request cannot be queued, a new thread is created unless this would exceed maximumPoolSize, in which case, the task will be rejected.
+    5. There are three general strategies for queuing:  
+        1. **Direct handoffs:**  
+        A SynchronousQueue that hands off tasks to threads without otherwise holding them. Here, an attempt to queue a task will fail if no threads are immediately available to run it, so a new thread will be constructed.   
+        There is a possibility of unbounded thread growth when commands continue to arrive on average faster than they can be processed.    
+        
+        2. **Unbounded queues:**    
+        Using an unbounded queue, LinkedBlockingQueue(without a predefined capacity), will cause new tasks to wait in the queue when all corePoolSize threads are busy.      
+        Thus, no more than corePoolSize threads will ever be created. (And the value of the maximumPoolSize therefore doesn't have any effect).     
+        There is possibility of unbounded work queue growth when commands continue to arrive on average faster than they can be processed.      
+        
+        3. **Bounded queues:**      
+        A bounded queue (ArrayBlockingQueue) helps prevent resource exhaustion when used with finite maximumPoolSizes, but can be more difficult to tune and control.Queue sizes and maximum pool sizes may be traded off for each other:       
+        Using large queues and small pools minimizes CPU usage, OS resources, and context-switching overhead, but can lead to artificially low throughput.      
+        If tasks frequently block (for example if they are I/O bound), a system may be able to schedule time for more threads than you otherwise allow.     
+        Use of small queues generally requires larger pool sizes, which keeps CPUs busier but may encounter unacceptable scheduling overhead, which also decreases throughput.      
+
+                List<Runnable> initialList = Arrays.asList(Runnables.simpleRunnable, Runnables.simpleRunnable, Runnables.simpleRunnable);
+                //Creates an ArrayBlockingQueue with the given (fixed) capacity, the specified access policy and initially containing the elements of the given collection, added in traversal order of the collection's iterator.
+                BlockingQueue<Runnable> arrayBlockingQueue = new ArrayBlockingQueue<>(10, true, initialList);
+                //Creates a LinkedBlockingQueue with a capacity of Integer#MAX_VALUE.
+                BlockingQueue<Runnable> linkedBlockingQueue = new LinkedBlockingQueue<>();
+                //Creates a SynchronousQueue with the specified fairness policy.
+                BlockingQueue<Runnable> synchronousQueue = new SynchronousQueue<>(true);
+
+4. **Rejected tasks:**      
+    1. New tasks submitted in execute(Runnable) will be rejected when the Executor has been shut down, and also when the Executor uses finite bounds for both maximum threads and work queue capacity, and is saturated. In either case, rejectedExecution(Runnable, ThreadPoolExecutor) of its RejectedExecutionHandler is invoked.
+    2. Four predefined rejected handler policies are provided:
+        1. In default **ThreadPoolExecutor.AbortPolicy**, the handler throws a runtime RejectedExecutionException upon rejection.
+        2. In **ThreadPoolExecutor.CallerRunsPolicy**, the thread that invokes execute() itself runs the task. This provides a simple feedback control mechanism that will slow down the rate that new tasks are submitted. 
+        3. In **ThreadPoolExecutor.DiscardPolicy**, a task that cannot be executed is simply dropped.
+        4. In **ThreadPoolExecutor.DiscardOldestPolicy**, if the executor is not shut down, the task at the head of the work queue is dropped, and then execution is retried (which can fail again, causing this to be repeated.) 
+
+                //A handler that may be invoked by a ThreadPoolExecutor when execute() cannot accept a task.
+                //This may occur when no more threads or queue slots are available because their bounds would be exceeded, or upon shutdown of the Executor.
+                //In the absence of other alternatives, the method may throw an unchecked RejectedExecutionException, which will be propagated to the caller of execute().
+                RejectedExecutionHandler rejectedExecutionHandler = new RejectedExecutionHandler() {
+                    @Override
+                    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                        System.out.println("Unable to process the runnable: "+ r);
+                    }
+                };
+        
+                RejectedExecutionHandler discardOldestPolicy =  new ThreadPoolExecutor.DiscardOldestPolicy();
+
+5. **Hook methods:**
+    1. This class provides protected overridable beforeExecute(Thread, Runnable) and afterExecute(Runnable, Throwable) that are called before and after execution of each task.   
+    These can be used to manipulate the execution environment; for example, reinitializing ThreadLocals, gathering statistics, or adding log entries.   
+    2. Additionally, terminated() can be overridden to perform any special processing that needs to be done once the Executor has fully terminated.      
+    3. If hook or callback methods throw exceptions, internal worker threads may in turn fail and abruptly terminate.       
+        
+            //Constructs a new Thread.  Implementations may also initialize priority, name, daemon status, ThreadGroup, etc.
+            ThreadFactory threadFactory = new ThreadFactory() {
+                @Override
+                public Thread newThread(Runnable r) {
+                    return new Thread(r);
+                }
+            };
+    
+            //This factory creates all new threads used by an Executor in the same ThreadGroup. If there is a  java.lang.SecurityManager, it uses the group of System#getSecurityManager, else the group of the thread invoking this defaultThreadFactory method.
+            //Each new thread is created as a non-daemon thread with priority set to the smaller of Thread.NORM_PRIORITY and the maximum priority permitted in the thread group.
+            //New threads have names accessible via name  pool-N-thread-M, where N is the sequence number of this factory, and M is the sequence number of the thread created by this factory.
+            ThreadFactory defaultThreadFactory = Executors.defaultThreadFactory();
+            ThreadFactory priviledgedThradFactory = Executors.privilegedThreadFactory();
+    
+            //corePoolSize - #threads to keep in the pool, even if they are idle, unless allowCoreThreadTimeOut is set.
+            //maximumPoolSize - maximum #threads to allow in the pool
+            //keepAliveTime - when #threads is greater than the core, this is the maximum time that excess idle threads will wait for new tasks before terminating.
+            //unit - the time unit for the keepAliveTime argument
+            //workQueue - the queue to use for holding tasks before they are executed.  This queue will hold only  Runnable tasks submitted by the execute() method.
+            //threadFactory - the factory to use when the executor creates a new thread
+            //rejectionHandler - the handler to use when execution is blocked because the thread bounds and queue capacities are reached
+            ThreadPoolExecutor threadPoolExecutorOne = new ThreadPoolExecutor(2, 10 , 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(20), Executors.defaultThreadFactory(), discardOldestPolicy);
+            ThreadPoolExecutor threadPoolExecutorTwo = new ThreadPoolExecutor(2, 10 , 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(20), rejectedExecutionHandler);
+            ThreadPoolExecutor threadPoolExecutorThree = new ThreadPoolExecutor(2, 10 , 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(20), Executors.defaultThreadFactory());
+            ThreadPoolExecutor threadPoolExecutorFour = new ThreadPoolExecutor(2, 10 , 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(20));
+    
+### ForkJoinPool    
+
+1. ForkJoinPool differs from other ExecutorService due to work-stealing: all threads in the pool attempt to find and execute tasks submitted to the pool and/or created by other active tasks (eventually blocking waiting for work if none exist). Simply put - free threads try to “steal” work from deques of busy threads.
+2. This enables efficient processing when most tasks spawn other subtasks (as do most ForkJoinTasks, as well as when many small tasks are submitted to the pool from external clients.     
+3. Especially when asyncMode is true in constructors, ForkJoinPools may also be appropriate for use with event-style tasks that are never joined.      
+4. A static commonPool() is available and appropriate for most applications. The common pool is used by any ForkJoinTask that is not explicitly submitted to a specified pool.
+   Using the common pool normally reduces resource usage (its threads are slowly reclaimed during periods of non-use, and reinstated upon subsequent use). 
+5. For applications that require separate or custom pools, a ForkJoinPool may be constructed with a given target parallelism level; by default, equal to the number of available processors.    
+   The pool attempts to maintain enough active (or available) threads by dynamically adding, suspending, or resuming internal worker threads, even if some tasks are stalled waiting to join others.However, no such adjustments are guaranteed in the face of blocked I/O or other unmanaged synchronization.   
+
+        RecursiveAction recursiveAction = new RecursiveAction() {
+            @Override
+            protected void compute() {
+                System.out.println("Dummy action");
+            }
+        };
+
+        RecursiveTask<Integer> recursiveTask = new RecursiveTask<Integer>() {
+            int val = 1;
+            @Override
+            protected Integer compute() {
+                return val*2;
+            }
+        };
+
+        CountedCompleter<Integer> countedCompleter = new CountedCompleter<Integer>() {
+            @Override
+            public void compute() {
+                System.out.println("NoOp");
+            }
+        };
+
+
+        ForkJoinPool.ForkJoinWorkerThreadFactory defaultForkJoinWorkerThreadFactory = ForkJoinPool.defaultForkJoinWorkerThreadFactory;
+
+        //parallelism - the parallelism level. For default value, use java.lang.Runtime#availableProcessors()
+        //factory - the factory for creating new threads. For default value, use defaultForkJoinWorkerThreadFactory
+        //handler - the handler for internal worker threads that terminate due to unrecoverable errors encountered while executing tasks. For default value, use null.
+        //asyncMode - if true, establishes local FIFO scheduling mode for forked tasks that are never joined. else LIFO (by default)
+        //public ForkJoinPool(int parallelism, ForkJoinWorkerThreadFactory factory, UncaughtExceptionHandler handler,boolean asyncMode) {
+        ForkJoinPool forkJoinPool = new ForkJoinPool(4, defaultForkJoinWorkerThreadFactory, null, true);
+
+        //Returns the common pool instance. This pool is statically constructed; its run state is unaffected by attempts to shutdown() or shutdownNow().
+        //However this pool and any ongoing processing are automatically terminated upon program System.exit().
+        ForkJoinPool commonPool = ForkJoinPool.commonPool();
+
+        forkJoinPool.execute(recursiveTask);
+        forkJoinPool.submit(recursiveTask);
+        forkJoinPool.invoke(recursiveTask);
+
+### Fork Join F/W   
+
+1. **Fork** - Recursively breaking the task into smaller independent subtasks until they are simple enough to be executed asynchronously.   
+2. **Join** - Results of all subtasks are recursively joined into a single result, or in the case of a task which returns void, the program simply waits until every subtask is executed.   
+3. ForkJoinTask is the base type for tasks executed inside ForkJoinPool. In practice, one of its two subclasses should be extended: the RecursiveAction for void tasks and the RecursiveTask<V> for tasks that return a value.
+   
+        RecursiveAction recursiveAction = new RecursiveAction() {
+            @Override
+            protected void compute() {
+                System.out.println("Dummy action");
+            }
+        };
+
+        RecursiveTask<Integer> recursiveTask = new RecursiveTask<Integer>() {
+            int val = 1;
+            @Override
+            protected Integer compute() {
+                return val*2;
+            }
+        };
+
+        CountedCompleter<Integer> countedCompleter = new CountedCompleter<Integer>() {
+            @Override
+            public void compute() {
+                System.out.println("NoOp");
+            }
+        };
+
+        ForkJoinPool.ForkJoinWorkerThreadFactory defaultForkJoinWorkerThreadFactory = ForkJoinPool.defaultForkJoinWorkerThreadFactory;
+
+        //parallelism - the parallelism level. For default value, use java.lang.Runtime#availableProcessors()
+        //factory - the factory for creating new threads. For default value, use defaultForkJoinWorkerThreadFactory
+        //handler - the handler for internal worker threads that terminate due to unrecoverable errors encountered while executing tasks. For default value, use null.
+        //asyncMode - if true, establishes local FIFO scheduling mode for forked tasks that are never joined. else LIFO (by default)
+        //public ForkJoinPool(int parallelism, ForkJoinWorkerThreadFactory factory, UncaughtExceptionHandler handler,boolean asyncMode) {
+        ForkJoinPool forkJoinPool = new ForkJoinPool(4, defaultForkJoinWorkerThreadFactory, null, true);
+
+        //Returns the common pool instance. This pool is statically constructed; its run state is unaffected by attempts to shutdown() or shutdownNow().
+        //However this pool and any ongoing processing are automatically terminated upon program System.exit().
+        ForkJoinPool commonPool = ForkJoinPool.commonPool();
+
+        //Arranges for (asynchronous) execution of the given task.
+        forkJoinPool.execute(recursiveTask);
+        
+        //Submits a ForkJoinTask for execution.
+        forkJoinPool.submit(recursiveTask);
+        
+        //Performs the given task, returning its result upon completion.
+        //If the computation encounters an unchecked Exception or Error, it is rethrown as the outcome of this invocation.
+        //Rethrown exceptions behave in the same way as regular exceptions, but, when possible, contain stack traces of both the current thread as well as the thread actually encountering the exception;minimally only the latter.
+        forkJoinPool.invoke(recursiveTask);
+
+
+### CompletionService   
+1. A service that decouples the production of new asynchronous tasks from the consumption of the results of completed tasks. 
+2. Producers submit tasks for execution. Consumers take completed tasks and process their results in the order they complete.  
+   
+           ExecutorService executorService = Executors.newFixedThreadPool(2);
+           BlockingQueue unboundedBlockingQueue = new LinkedBlockingQueue();
+   
+           //It can for example be used to manage asynchronous I/O, in which tasks that perform reads are submitted in one part of a program or system, and then acted upon in a different part of the program when the reads complete, possibly in a different order than they were requested.
+           //A CompletionService that uses a supplied Executor to execute tasks.  This class arranges that submitted tasks are, upon completion, placed on a queue accessible using take.
+           ExecutorCompletionService completionService = new ExecutorCompletionService(executorService, unboundedBlockingQueue);
+   
+           for (int i = 1; i < 11; i++) {
+               completionService.submit(Callables.simpleCallable);
+           }
+   
+           for (int i = 1; i < 11; i++) {
+               try {
+                   completionService.take().get();
+               } catch (InterruptedException e) {
+                   Thread.currentThread().interrupt();
+                   e.printStackTrace();
+               } catch (ExecutionException e) {
+                   e.printStackTrace();
+               }
+           }
+        
+
+### Executor Factory Methods
+
+        /*--------------------------------ThreadPoolExecutor-----------------------------------*/
+
+        //return new FinalizableDelegatedExecutorService(new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), threadFactory));
+        ExecutorService newSingleThreadExecutor = Executors.newSingleThreadExecutor(Executors.defaultThreadFactory());
+
+        //return new ThreadPoolExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), threadFactory);
+        //At any point, at most nThreads threads will be active processing tasks. If additional tasks are submitted when all threads are active, they will wait in the queue until a thread is available.
+        //If any thread terminates due to a failure during execution prior to shutdown, a new one will take its place if needed to execute subsequent tasks.  The threads in the pool will exist until it is explicitly shutdown.
+        ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(5, Executors.defaultThreadFactory());
+
+        //return new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), threadFactory);
+        //Creates a thread pool that creates new threads as needed, but will reuse previously constructed threads when they are available, and uses the provided ThreadFactory to create new threads when needed.
+        // USUALLY FOR SHORT-LIVED TASKS
+        ExecutorService newCachedThreadPool = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
+
+        /*--------------------------------ScheduledThreadPoolExecutor-----------------------------------*/
+
+        //super(1, Integer.MAX_VALUE, 0, NANOSECONDS, new DelayedWorkQueue(), threadFactory);
+        //Creates a single-threaded executor that can schedule commands to run after a given delay, or to execute periodically.
+        //Tasks are guaranteed to execute sequentially, and no more than one task will be active at any given time.
+        //Unlike the otherwise equivalent newScheduledThreadPool(1) the returned executor is guaranteed not to be reconfigurable to use additional threads.
+        ExecutorService newSingleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor(Executors.defaultThreadFactory());
+
+        //super(corePoolSize, Integer.MAX_VALUE, 0, NANOSECONDS, new DelayedWorkQueue(), threadFactory);
+        //Creates a thread pool that can schedule commands to run after a given delay, or to execute periodically.
+        ExecutorService newScheduledThreadPool = Executors.newScheduledThreadPool(5, Executors.defaultThreadFactory());
+
+        /*--------------------------------ForkJoinPool-----------------------------------*/
+
+        //return new ForkJoinPool(parallelism, ForkJoinPool.defaultForkJoinWorkerThreadFactory, null, true);
+        //Creates a thread pool that maintains enough threads to support the given parallelism level, and may use multiple queues to reduce contention.
+        //The parallelism level corresponds to the maximum number of threads actively engaged in, or available to engage in, task processing. The actual number of threads may grow and shrink dynamically.
+        //A work-stealing pool makes no guarantees about the order in which submitted tasks are executed.
+        ExecutorService newWorkStealingPool = Executors.newWorkStealingPool(4);
+
         
 * Executors typically manage a pool of threads and are capable of running asynchronous tasks using that pool.    
 * Executors keep listening for new tasks and **need to be stopped explicitly**. An ExecutorService provides two methods for that purpose:      
@@ -488,8 +757,15 @@ Serialization
   1. For a synchronized block, the lock is acquired on the object specified in the parentheses after the synchronized keyword
      For a synchronized static method, the lock is acquired on the .class object
      For a synchronized instance method, the lock is acquired on the current instance of that class i.e. this instance
-     
+    
 
+### Concurrency Questions   
+* [Concurrency vs. Parallelism](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism)
+* [Atomic vs. Volatile vs. Synchronized](https://stackoverflow.com/questions/9749746/what-is-the-difference-between-atomic-volatile-synchronized)   
+
+    
+     
+### Java-8
 * **Functional Interface:** Must contain exactly one abstract method declaration(abstract method which override Object class's public method does not count).   
 
         //public interface Function<T, R> { R apply(T t); }
