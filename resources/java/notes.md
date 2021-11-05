@@ -7,9 +7,14 @@
 * [CompletionService](#completionservice)
 * [Executor Factory Methods](#executor-factory-methods)
 * [Concurrency Questions](#concurrency-questions)
+* [Iterators](#iterators)
+* [Collections](#collections)
+* [Arrays Class](#arrays-class)
+* [Collections Class](#collections-class)
+* [ConcurrentModificationException](#concurrentmodificationexception)
 * [Java 8](#java-8)
 
-* Generics
+Generics
 Exception
 Collections
 Overloading and Overriding
@@ -228,6 +233,24 @@ By default, even core threads are initially created and started only when new ta
             ThreadPoolExecutor threadPoolExecutorThree = new ThreadPoolExecutor(2, 10 , 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(20), Executors.defaultThreadFactory());
             ThreadPoolExecutor threadPoolExecutorFour = new ThreadPoolExecutor(2, 10 , 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(20));
     
+### Fork Join F/W   
+
+1. **Fork** - Recursively breaking the task into smaller independent subtasks until they are simple enough to be executed asynchronously.   
+2. **Join** - Results of all subtasks are recursively joined into a single result, or in the case of a task which returns void, the program simply waits until every subtask is executed.   
+3. ForkJoinTask is the base type for tasks executed inside ForkJoinPool. In practice, one of its two subclasses should be extended: the RecursiveAction for void tasks and the RecursiveTask<V> for tasks that return a value.
+   
+        Result solve(Problem problem) {
+            if (problem is small)
+                directly solve problem
+            else {
+                split problem into independent parts
+                fork new subtasks to solve each part
+                join all subtasks
+                compose result from subresults
+            }
+        }
+
+
 ### ForkJoinPool    
 
 1. ForkJoinPool differs from other ExecutorService due to work-stealing: all threads in the pool attempt to find and execute tasks submitted to the pool and/or created by other active tasks (eventually blocking waiting for work if none exist). Simply put - free threads try to “steal” work from deques of busy threads.
@@ -238,52 +261,6 @@ By default, even core threads are initially created and started only when new ta
 5. For applications that require separate or custom pools, a ForkJoinPool may be constructed with a given target parallelism level; by default, equal to the number of available processors.    
    The pool attempts to maintain enough active (or available) threads by dynamically adding, suspending, or resuming internal worker threads, even if some tasks are stalled waiting to join others.However, no such adjustments are guaranteed in the face of blocked I/O or other unmanaged synchronization.   
 
-        RecursiveAction recursiveAction = new RecursiveAction() {
-            @Override
-            protected void compute() {
-                System.out.println("Dummy action");
-            }
-        };
-
-        RecursiveTask<Integer> recursiveTask = new RecursiveTask<Integer>() {
-            int val = 1;
-            @Override
-            protected Integer compute() {
-                return val*2;
-            }
-        };
-
-        CountedCompleter<Integer> countedCompleter = new CountedCompleter<Integer>() {
-            @Override
-            public void compute() {
-                System.out.println("NoOp");
-            }
-        };
-
-
-        ForkJoinPool.ForkJoinWorkerThreadFactory defaultForkJoinWorkerThreadFactory = ForkJoinPool.defaultForkJoinWorkerThreadFactory;
-
-        //parallelism - the parallelism level. For default value, use java.lang.Runtime#availableProcessors()
-        //factory - the factory for creating new threads. For default value, use defaultForkJoinWorkerThreadFactory
-        //handler - the handler for internal worker threads that terminate due to unrecoverable errors encountered while executing tasks. For default value, use null.
-        //asyncMode - if true, establishes local FIFO scheduling mode for forked tasks that are never joined. else LIFO (by default)
-        //public ForkJoinPool(int parallelism, ForkJoinWorkerThreadFactory factory, UncaughtExceptionHandler handler,boolean asyncMode) {
-        ForkJoinPool forkJoinPool = new ForkJoinPool(4, defaultForkJoinWorkerThreadFactory, null, true);
-
-        //Returns the common pool instance. This pool is statically constructed; its run state is unaffected by attempts to shutdown() or shutdownNow().
-        //However this pool and any ongoing processing are automatically terminated upon program System.exit().
-        ForkJoinPool commonPool = ForkJoinPool.commonPool();
-
-        forkJoinPool.execute(recursiveTask);
-        forkJoinPool.submit(recursiveTask);
-        forkJoinPool.invoke(recursiveTask);
-
-### Fork Join F/W   
-
-1. **Fork** - Recursively breaking the task into smaller independent subtasks until they are simple enough to be executed asynchronously.   
-2. **Join** - Results of all subtasks are recursively joined into a single result, or in the case of a task which returns void, the program simply waits until every subtask is executed.   
-3. ForkJoinTask is the base type for tasks executed inside ForkJoinPool. In practice, one of its two subclasses should be extended: the RecursiveAction for void tasks and the RecursiveTask<V> for tasks that return a value.
-   
         RecursiveAction recursiveAction = new RecursiveAction() {
             @Override
             protected void compute() {
@@ -764,6 +741,199 @@ By default, even core threads are initially created and started only when new ta
 * [Atomic vs. Volatile vs. Synchronized](https://stackoverflow.com/questions/9749746/what-is-the-difference-between-atomic-volatile-synchronized)   
 
     
+### Iterators
+
+        //public interface Iterator<E>
+        //public interface Spliterator<T>
+        //public interface ListIterator<E> extends Iterator<E>
+
+        List<Integer> list = Arrays.asList(1,2,3);
+
+        // An iterator over a collection which allow the caller to remove elements from the underlying collection during the iteration with well-defined semantics.
+        //hasNext() - Returns true if this list iterator has more elements
+        //next() - Returns the next element in the list and advances the cursor position.
+        //remove() - Removes from the underlying collection the last element returned by this iterator and can be called only once per call to next().
+        //The behavior is unspecified if the underlying collection is modified while the iteration is in progress in any way other than by calling this method.
+        Iterator<Integer> iterator = list.iterator();
+
+        //An object for traversing and partitioning elements of a source. A Spliterator may traverse elements individually using tryAdvance() or sequentially in bulk using forEachRemaining().
+        //It may also partition off some of its elements (using trySplit() as another Spliterator, to be used in possibly-parallel operations.
+        //Operations using a Spliterator that cannot split, or does so in a highly imbalanced or inefficient manner, are unlikely to benefit from parallelism.
+        //Traversal and splitting exhaust elements, each Spliterator is useful for only a single bulk computation.
+        //Spliterator API was designed to support efficient parallel traversal in addition to sequential traversal, by supporting decomposition as well as single-element iteration.
+        //In addition, the protocol for accessing elements via a Spliterator is designed to impose smaller per-element overhead than Iterator, and to avoid the inherent race involved in having separate methods for hasNext() and next().
+        Spliterator<Integer> spliterator = list.spliterator();
+
+        //An iterator for lists that allows the programmer to traverse the list in either direction, modify the list during iteration, and obtain the iterator's current position in the list.
+        //It has no current element; its cursor position always lies between the element that would be returned by a call to previous() and the element that would be returned by a call to next().
+        //hasNext() - Returns true if this list iterator has more elements
+        //next() - Returns the next element in the list and advances the cursor position.
+        //hasPrevious() - Returns {@code true} if this list iterator has more elements when traversing in reverse direction.
+        //previous() - Returns the previous element in the list and moves the cursor position backwards.
+        //nextIndex() - Returns the index of the element that would be returned by next(). Returns list size if the list iterator is at the end of the list.
+        //previousIndex() - Returns the index of the element that would be returned by previous(). Returns -1 if the list iterator is at the beginning of the list.
+        //
+        //remove() - Removes from the list the last element that was returned by next() or previous().  This call can only be made once per call to next() or previous().
+        //It can be made only if add() has not been called after the last call to next() or previous().
+        //
+        //set() - Replaces the last element returned by next() or previous() with the specified element.
+        //This call can be made only if neither remove() or add() have been called after the last call to next() or previous().
+        //
+        //add() - Inserts the specified element into the list immediately before the element that would be returned by next(), if any, and after the element that would be returned by previous(), if any.
+        //If the list contains no elements, the new element becomes the sole element on the list.
+        //The new element is inserted before the implicit cursor: a subsequent call to next() would be unaffected, but previous() would return the new element.
+        //It increases by one the value that would be returned by nextIndex() previousIndex()
+        ListIterator<Integer> listIterator = list.listIterator();
+
+
+### Arrays Class
+
+        Integer[] arr = new Integer[10];
+        //Assigns the specified Object reference to each element of the specified array
+        Arrays.fill(arr, 1);
+        sout(arr, "arr");
+
+        //Copies the specified array, truncating or padding with nulls (if necessary)so the copy has the specified length and returns the new copy array
+        arr = Arrays.copyOf(arr, 20);
+        sout(arr, "arr");
+
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == null) arr[i] = i;
+        }
+        sout(arr, "arr");
+
+        //Copies the specified range of the specified array into a new array. The initial index of the range from must lie between zero and original.length, inclusive. 
+        Integer[] arr2 = Arrays.copyOfRange(arr, 12,17);
+        sout(arr2, "arr2");
+
+        int key = 12;
+        //Searches the specified array for the specified object using the binary search algorithm. The array must be sorted into ascending order.
+        int result = Arrays.binarySearch(arr, key);
+        System.out.println( "Key: " + key + " found at index: " + result);
+
+        //Returns a fixed-size list backed by the specified array.  (Changes to the returned list "write through" to the array.)  
+        List<Integer> list = Arrays.asList(arr);
+        sout(list.toArray(new Integer[list.size()]), "list");
+
+        List<Integer> listTwo = Arrays.stream(arr).map(x-> x*2).collect(Collectors.toList());
+        sout(listTwo.toArray(new Integer[listTwo.size()]), "listTwo");
+
+        //Sorts the specified array of objects according to the order induced by the specified comparator.
+        //All elements in the array must be mutually comparable by the specified comparator (that is, c.compare(e1, e2) must not throw a ClassCastException fro elements e1, e2 in array.
+        //This sort is guaranteed to be stable equal elements will not be reordered as a result of the sort.
+        Arrays.sort(arr, Comparator.reverseOrder());
+        sout(arr, "arr");
+
+        //Cumulates, in parallel, each element of the given array in place, using the supplied function.
+        Arrays.parallelPrefix(arr, (a,b) -> a+b);
+        sout(arr, "arr");
+
+        //Set all elements of the specified array, using the provided generator function to compute each element.
+        Arrays.setAll(arr, i-> i*5);
+        sout(arr, "arr");
+
+
+### Collections Class
+
+        System.out.println("------------------Collections Methods---------------------");
+        List<Integer> list = Arrays.asList(1,2,3,4,5,6,7,8);
+        System.out.println(list);
+
+        //Reverses the order of the elements in the specified list.
+        reverse(list);
+        System.out.println(list);
+
+        //Sorts the specified list into ascending order, according to the Comparable of its elements.
+        sort(list);
+        System.out.println(list);
+
+        //Searches the specified list for the specified object using the binary search algorithm.  The list must be sorted into ascending order.
+        int key = 2;
+        int result = binarySearch(list, 2);
+        System.out.println( "Key: " + key + " found at index: " + result);
+
+        //Sorts the specified list according to the order induced by the specified comparator. All elements in the list must be mutually comparable using the specified comparator.
+        sort(list, (a,b) -> b.compareTo(a));    //sort(list, Comparator.reverseOrder())) works same
+        System.out.println(list);
+
+        shuffle(list);
+        System.out.println(list);
+
+        //Swaps the elements at the specified positions in the specified list.
+        swap(list, 3 ,5);
+        System.out.println(list);
+
+        //Returns the minimum element of the given collection, according to the natural ordering of its elements.
+        Integer min = min(list);
+        System.out.println(list + " Min: " + min);
+
+        //Returns the maximum element of the given collection, according to the natural ordering of its elements.
+        Integer max = max(list);
+        System.out.println(list + " Max: " + max);
+
+        //Rotates the elements in the specified list by the specified distance.
+        rotate(list, 3);
+        System.out.println(list);
+
+        // Replaces all of the elements of the specified list with the specified element.
+        fill(list, 5);
+        System.out.println(list);
+
+        //Returns an empty list (immutable).  This list is serializable.
+        List<Integer> emptyList = Collections.emptyList();
+
+        //Returns an unmodifiable view of the specified list.  This method allows modules to provide users with "read-only" access to internal lists.
+        //Query operations on the returned list "read through" to the specified list, and attempts to modify the returned list, whether direct or via its iterator, result in an UnsupportedOperationException.
+        List<Integer> unmodifiableList = Collections.unmodifiableList(emptyList);
+
+        //Returns a synchronized (thread-safe) list backed by the specified list.
+        List<Integer> synchronizedList = Collections.synchronizedList(emptyList);
+
+        //Returns an empty set (immutable).  This set is serializable.
+        Set<Integer> emptySet = Collections.emptySet();
+
+        //Returns an unmodifiable view of the specified set.  This method allows modules to provide users with "read-only" access to internal sets.
+        //Query operations on the returned set "read through" to the specified set, and attempts to modify the returned set, whether direct or via its iterator, result in an UnsupportedOperationException.
+        Set<Integer> unmodifiableSet = Collections.unmodifiableSet(emptySet);
+
+        //Returns a synchronized (thread-safe) set backed by the specified set. In order to guarantee serial access, it is critical that all access to the backing set is accomplished through the returned set.
+        //It is imperative that the user manually synchronize on the returned set when iterating over it:
+        Set<Integer> synchronizedSet = Collections.synchronizedSet(emptySet);
+
+        //Returns an empty map (immutable).  This map is serializable.
+        Map<Integer, Integer> emptyMap = Collections.emptyMap();
+
+        //Returns an unmodifiable view of the specified map.  This method allows modules to provide users with "read-only" access to internal maps.
+        //Query operations on the returned map "read through" to the specified map, and attempts to modify the returned map, whether direct or via its collection views, result in an UnsupportedOperationException
+        Map<Integer, Integer> unmodifiableMap = Collections.unmodifiableMap(emptyMap);
+
+        //Returns a synchronized (thread-safe) map backed by the specified map. In order to guarantee serial access, it is critical that all access to the backing map is accomplished through the returned map.
+        //It is imperative that the user manually synchronize on the returned map when iterating over any of its collection views:
+        Map<Integer, Integer> synchronizedMap = Collections.synchronizedMap(emptyMap);
+
+
+
+        System.out.println("---------------------------------------");
+
+### ConcurrentModificationException
+* modCount holds the number of times this list has been structurally modified. This field is incremented in operations such as add(), remove() and all other methods call to which structurally modifies the list.    
+
+        protected transient int modCount = 0;
+
+* expectedModCount hold the modCount value, at the time iterator is instantiated and calls checkForComodification() to check it in all iterator operations.     
+
+        int expectedModCount = modCount;
+        
+        final void checkForComodification() {
+            if (modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+        }
+     
+     
+### Collections 
+* **TransferQueue:**    
+
+
      
 ### Java-8
 * **Functional Interface:** Must contain exactly one abstract method declaration(abstract method which override Object class's public method does not count).   

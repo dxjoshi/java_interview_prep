@@ -15,13 +15,6 @@ public class ExecutorsFactoryMethods {
         completionService();
 
         //Advanced Futures - CompletableFuture, CountedCompleter, ForkJoinTask, FutureTask
-        //ConcurrentMap - ConcurrentHashMap, ConcurrentSkipListMap,
-
-        //Map - HashMap, TreeMap, SortedMap, Hashtable
-        //Set - HashSet, SortedSet, TreeSet, ConcurrentSkipListSet
-        //List, ArrayList, LinkedList,
-        //Queue, PriorityQueue, LinkedList
-        //Stack(lifo), Deque(should be preferred over Stack) - ArrayList, LinkedList
 
     }
 
