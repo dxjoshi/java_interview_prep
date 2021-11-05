@@ -23,6 +23,42 @@ public class CollectionsTutorial {
     }
 
     private static void objectsClass() {
+        //equals() - Returns true if the arguments are equal to each other and false otherwise.
+        boolean equals = Objects.equals(new Integer(1), new Integer(1));
+        System.out.println("equals: " + equals);
+
+        //deepEquals() - Returns true if the arguments are deeply equal to each other and false otherwise.
+        boolean deepEquals = Objects.deepEquals(new Integer(1), new Integer(1));
+        System.out.println("deepEquals: " +deepEquals);
+
+        //hashCode() - Returns the hash code of a non-null argument and 0 for a null argument.
+        System.out.println("hash: " + Objects.hashCode(new Integer(1)));
+
+        //hash() - Generates a hash code for a sequence of input values.
+        System.out.println("Hash: " + Objects.hash(new Integer(1), new Integer(4), new Integer(7)));
+
+        //toString() - Returns the result of calling {@code toString} for a non-null argument and null for a null argument.
+        System.out.println("ToString: " + Objects.toString(new Integer(1)));
+
+        //toString() - Returns the result of calling toString() on the first argument if the first argument is not null and returns the second argument otherwise.
+        System.out.println("ToString: " + Objects.toString(new Integer(1), "1"));
+
+        //compare() - Returns 0 if the arguments are identical and c.compare(a, b) otherwise. If both arguments are null 0 is returned.
+        Objects.compare(new Integer(1), new Integer(2), (o1, o2) -> o1.compareTo(o2));
+
+        //requireNonNull() - Checks that the specified object reference is not null.
+        Integer val = new Integer(1);
+        Objects.requireNonNull(val);
+
+        //requireNonNull() - Checks that the specified object reference is not null and throws a customized NullPointerException if it is.
+        Integer valTwo = new Integer(1);
+        Objects.requireNonNull(valTwo, "Val must not be null");
+
+        //isNull() - Returns true if the provided reference is null otherwise returns false.
+        boolean isNull = Objects.isNull(val);
+
+        //nonNull() - Returns true if the provided reference is non-null otherwise returns false.
+        boolean isNotNull = Objects.nonNull(val);
 
     }
 
@@ -331,103 +367,6 @@ public class CollectionsTutorial {
         //public class TreeSet<E> extends AbstractSet<E> implements NavigableSet<E>, Cloneable, java.io.Serializable
         Set<String> treeSet = new TreeSet<>();
 
-        Set<String> sortedSet = new SortedSet<String>() {
-            @Override
-            public Comparator<? super String> comparator() {
-                return null;
-            }
-
-            @Override
-            public SortedSet<String> subSet(String fromElement, String toElement) {
-                return null;
-            }
-
-            @Override
-            public SortedSet<String> headSet(String toElement) {
-                return null;
-            }
-
-            @Override
-            public SortedSet<String> tailSet(String fromElement) {
-                return null;
-            }
-
-            @Override
-            public String first() {
-                return null;
-            }
-
-            @Override
-            public String last() {
-                return null;
-            }
-
-            @Override
-            public int size() {
-                return 0;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
-
-            @Override
-            public boolean contains(Object o) {
-                return false;
-            }
-
-            @Override
-            public Iterator<String> iterator() {
-                return null;
-            }
-
-            @Override
-            public Object[] toArray() {
-                return new Object[0];
-            }
-
-            @Override
-            public <T> T[] toArray(T[] a) {
-                return null;
-            }
-
-            @Override
-            public boolean add(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean remove(Object o) {
-                return false;
-            }
-
-            @Override
-            public boolean containsAll(Collection<?> c) {
-                return false;
-            }
-
-            @Override
-            public boolean addAll(Collection<? extends String> c) {
-                return false;
-            }
-
-            @Override
-            public boolean retainAll(Collection<?> c) {
-                return false;
-            }
-
-            @Override
-            public boolean removeAll(Collection<?> c) {
-                return false;
-            }
-
-            @Override
-            public void clear() {
-
-            }
-        };
-
         //public abstract class EnumSet<E extends Enum<E>> extends AbstractSet<E> implements Cloneable, java.io.Serializable
         EnumSet<Color> enumSet = EnumSet.of(Color.BLUE, Color.GREEN, Color.RED);
 
@@ -468,9 +407,6 @@ public class CollectionsTutorial {
 
         //public class ConcurrentSkipListMap<K,V> extends AbstractMap<K,V> implements ConcurrentNavigableMap<K,V>, Cloneable, Serializable
         Map<String, String> concurrentSkipListMap = new ConcurrentSkipListMap<>();
-
-
-
     }
 
     enum Color { RED, GREEN, BLUE};

@@ -9,6 +9,7 @@
 * [Concurrency Questions](#concurrency-questions)
 * [Iterators](#iterators)
 * [Collections](#collections)
+*
 * [Arrays Class](#arrays-class)
 * [Collections Class](#collections-class)
 * [ConcurrentModificationException](#concurrentmodificationexception)
@@ -786,6 +787,46 @@ By default, even core threads are initially created and started only when new ta
         //It increases by one the value that would be returned by nextIndex() previousIndex()
         ListIterator<Integer> listIterator = list.listIterator();
 
+
+### Objects Class
+* This class consists of static utility methods for operating on objects.          
+
+        //equals() - Returns true if the arguments are equal to each other and false otherwise.
+        boolean equals = Objects.equals(new Integer(1), new Integer(1));
+        System.out.println("equals: " + equals);
+        
+        //deepEquals() - Returns true if the arguments are deeply equal to each other and false otherwise.
+        boolean deepEquals = Objects.deepEquals(new Integer(1), new Integer(1));
+        System.out.println("deepEquals: " +deepEquals);
+        
+        //hashCode() - Returns the hash code of a non-null argument and 0 for a null argument.
+        System.out.println("hash: " + Objects.hashCode(new Integer(1)));
+        
+        //hash() - Generates a hash code for a sequence of input values.
+        System.out.println("Hash: " + Objects.hash(new Integer(1), new Integer(4), new Integer(7)));
+        
+        //toString() - Returns the result of calling {@code toString} for a non-null argument and null for a null argument.
+        System.out.println("ToString: " + Objects.toString(new Integer(1)));
+
+        //toString() - Returns the result of calling toString() on the first argument if the first argument is not null and returns the second argument otherwise.
+        System.out.println("ToString: " + Objects.toString(new Integer(1), "1"));
+
+        //compare() - Returns 0 if the arguments are identical and c.compare(a, b) otherwise. If both arguments are null 0 is returned.
+        Objects.compare(new Integer(1), new Integer(2), (o1, o2) -> o1.compareTo(o2));
+
+        //requireNonNull() - Checks that the specified object reference is not null.
+        Integer val = new Integer(1);
+        Objects.requireNonNull(val);
+
+        //requireNonNull() - Checks that the specified object reference is not null and throws a customized NullPointerException if it is.
+        Integer valTwo = new Integer(1);
+        Objects.requireNonNull(valTwo, "Val must not be null");
+        
+        //isNull() - Returns true if the provided reference is null otherwise returns false.
+        boolean isNull = Objects.isNull(val);
+
+        //nonNull() - Returns true if the provided reference is non-null otherwise returns false.
+        boolean isNotNull = Objects.nonNull(val);
 
 ### Arrays Class
 
