@@ -12,6 +12,7 @@
 * [Arrays Class](#arrays-class)
 * [Collections Class](#collections-class)
 * [ConcurrentModificationException](#concurrentmodificationexception)
+* [Comparator and Comparable Interface](#comparator-and-comparable-interface)
 * [Java 8](#java-8)
 
 Generics
@@ -929,10 +930,91 @@ By default, even core threads are initially created and started only when new ta
                 throw new ConcurrentModificationException();
         }
      
+### Comparator and Comparable Interface
+* **Comparator:**       
+A comparison function, which imposes a total ordering on some collection of objects. Compares its two arguments for order. It returns:           
+negative integer - First argument is less than second          
+zero - Both are equal       
+positive integer - First argument greater than the second       
+     
+        //int compare(T o1, T o2);
+        
+        List<Employee> employees = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            int age = ageGenerator.nextInt(100);
+            employees.add(new Employee( i+"", age));
+        }
+        ageGenerator.nextInt();
+
+        System.out.println("Before Sorting: " + employees);
+
+        Collections.sort(employees);
+        System.out.println("Sorted by name order using comparable: " + employees);
+
+        // ALTERNATIVELY (employeeOne, employeeTwo) -> Integer.compare(employeeOne.getAge(), employeeTwo.getAge()) OR (employeeOne, employeeTwo) -> employeeOne.getAge() - employeeTwo.getAge();
+        Comparator<Employee> customEmployeeComparator = Comparator.comparingInt(Employee::getAge);
+
+        Collections.sort(employees, customEmployeeComparator);
+        System.out.println("Sorted using custom comparator: " + employees);
+
+        
+* **Comparable:**   
+It imposes a total ordering on the objects of each class that implements it, it is referred to as the class's natural ordering. It compares this object with the specified object for order and returns:        
+negative integer - **this** is less than specified object             
+zero - Both are equal           
+positive integer - **this** is greater than specified object        
+
+        //public int compareTo(T o);
+        
+        public class Employee implements Comparable<Employee> {
+            String name;
+            String department;
+            String post;
+            Integer age;
+        
+            //comparing in natural ordering of employee name
+            @Override
+            public int compareTo(Employee o) {
+                return this.name.compareTo(o.name);
+            }
+
      
 ### Collections 
-* **TransferQueue:**    
+* **List:**    
+        
+        //public interface List<E> extends Collection<E>
 
+        //If multiple threads access an list(linked or array) instance concurrently, and at least one of the threads modifies the list structurally(adds or deletes one or more elements,
+        // or explicitly resizes the backing array), it must be synchronized externally.
+
+
+        //public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>, Deque<E>, Cloneable, java.io.Serializable
+        //Doubly-linked list implementation, Non-synchronized
+        //The iterators returned by this class's iterator and listIterator methods are fail-fast: They use the modCount field to check for concurrent modifications
+        //If the list is structurally modified at any time after the iterator is created, in any way except through the Iterator's own remove() or add(), the iterator will throw a ConcurrentModificationException.
+        //
+        //Fail-fast iterators throw ConcurrentModificationException on a best-effort basis.Therefore, it would be wrong to write a program that depended on this exception for its correctness.
+        List<Integer> linkedList = new LinkedList<>();
+
+
+        //public class ArrayList<E> extends AbstractList<E> implements List<E>, RandomAccess, Cloneable, java.io.Serializable
+        //Constructs an empty list with an initial capacity of ten, and uses **Object[]** to sktore the elements
+        // add() ensureCapacity and grows size by 50% for new array and copies over original array's contents, if necessary
+        List<Integer> arrayList = new ArrayList<>();
+
+
+        //public class Stack<E> extends Vector<E>
+        //A last-in-first-out(LIFO) stack of objects.
+        //push() and pop() are provided to add/remove items in stack
+        //peek() - Looks at top item of this stack without removing it
+        //empty() - checks if stack is empty
+        //search() - Search the stack for an item and discover how far it is from the top(returns a 1-based answer).
+        Stack<Integer> stack = new Stack<>();   // Deque should be preferred over Stack
+
+
+* **Set:**    
+* **Queue:**    
+* **Map:**    
 
      
 ### Java-8

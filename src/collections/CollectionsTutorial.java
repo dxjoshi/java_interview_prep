@@ -1,5 +1,8 @@
 package collections;
 
+import common.Employee;
+import common.Student;
+
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -11,11 +14,37 @@ public class CollectionsTutorial {
         iterators();
         collectionsClass();
         arraysClass();
-
+        objectsClass();
+        comparableAndComparator();
         maps();
         sets();
         lists();
         queues();
+    }
+
+    private static void objectsClass() {
+
+    }
+
+    private static void comparableAndComparator() {
+        Random ageGenerator = new Random();
+        List<Employee> employees = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            int age = ageGenerator.nextInt(100);
+            employees.add(new Employee( i+"", age));
+        }
+        ageGenerator.nextInt();
+
+        System.out.println("Before Sorting: " + employees);
+
+        Collections.sort(employees);
+        System.out.println("Sorted by name order using comparable: " + employees);
+
+        // ALTERNATIVELY (employeeOne, employeeTwo) -> Integer.compare(employeeOne.getAge(), employeeTwo.getAge()) OR (employeeOne, employeeTwo) -> employeeOne.getAge() - employeeTwo.getAge();
+        Comparator<Employee> customEmployeeComparator = Comparator.comparingInt(Employee::getAge);
+
+        Collections.sort(employees, customEmployeeComparator);
+        System.out.println("Sorted using custom comparator: " + employees);
     }
 
     private static void iterators() {
@@ -400,7 +429,7 @@ public class CollectionsTutorial {
         };
 
         //public abstract class EnumSet<E extends Enum<E>> extends AbstractSet<E> implements Cloneable, java.io.Serializable
-        //Set<String> enumSet = new EnumSet<>();
+        EnumSet<Color> enumSet = EnumSet.of(Color.BLUE, Color.GREEN, Color.RED);
 
         //public class LinkedHashSet<E> extends HashSet<E> implements Set<E>, Cloneable, java.io.Serializable
         Set<String> linkedHashSet = new LinkedHashSet<>();
@@ -422,11 +451,15 @@ public class CollectionsTutorial {
         //public interface ConcurrentNavigableMap<K,V> extends ConcurrentMap<K,V>, NavigableMap<K,V> {
 
 
-        new HashMap<>();
-        new LinkedHashMap<>();
-        //new EnumMap<>();
-        new IdentityHashMap<>();
-        new TreeMap<>();
+
+/*
+        Constructs an empty HashMap with the default initial capacity (16) and the default load factor (0.75).
+*/
+        Map<String, String> hashMap = new HashMap<>();
+        Map<String, String> linkedHashMap = new LinkedHashMap<>();
+        Map<Color, String> enumMap = new EnumMap<>(Color.class);
+        Map<String, String> identityHashMap = new IdentityHashMap<>();
+        Map<String, String> treeMap = new TreeMap<>();
 
 
 
@@ -440,5 +473,5 @@ public class CollectionsTutorial {
 
     }
 
-
+    enum Color { RED, GREEN, BLUE};
 }
