@@ -350,9 +350,9 @@ public class CollectionsTutorial implements Serializable {
         public interface TransferQueue<E> extends BlockingQueue<E> {
         public interface BlockingDeque<E> extends BlockingQueue<E>, Deque<E> {
 */
-/*
-        An unbounded TransferQueue based on linked nodes.
-        This queue orders elements FIFO (first-in-first-out) with respect to any given producer.
+
+        /*
+        An unbounded TransferQueue based on linked nodes. This queue orders elements FIFO (first-in-first-out) with respect to any given producer.
         The head is that element that has been on the queue the longest time for some producer, and tail that has been on the queue the shortest time for some producer.
 
         size() is not a constant-time operation, as due to asynchronous nature of these queues, determining the current number of elements requires a traversal of the elements, and so may report inaccurate results if this collection is modified during traversal.
@@ -360,9 +360,15 @@ public class CollectionsTutorial implements Serializable {
         For ex., an iterator operating concurrently with addAll() might view only some of the added elements.
 
         Memory consistency effects: Actions in a thread prior to placing an object into a LinkedTransferQueue happen-before actions subsequent to the access or removal of that element from the LinkedTransferQueue in another thread.
-*/
 
-        //public class LinkedTransferQueue<E> extends AbstractQueue<E> implements TransferQueue<E>, java.io.Serializable {
+        transfer() - It transfers the specified element immediately if there exists a consumer already waiting to receive it in take() or poll(long,TimeUnit),
+        else inserts the specified element at the tail of this queue and waits until the element is received by a consumer.
+
+        tryTransfer() - It transfers the specified element immediately if there exists a consumer already waiting to receive it in take() or poll(long,TimeUnit),
+        else returning false without enqueuing the element.
+
+        public class LinkedTransferQueue<E> extends AbstractQueue<E> implements TransferQueue<E>, java.io.Serializable {
+        */
         TransferQueue<Integer> linkedTransferQueue = new LinkedTransferQueue<>();
 
         //public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQueue<E>, java.io.Serializable {

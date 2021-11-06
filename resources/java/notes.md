@@ -747,6 +747,8 @@ By default, even core threads are initially created and started only when new ta
 * [Concurrency vs. Parallelism](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism)
 * [Atomic vs. Volatile vs. Synchronized](https://stackoverflow.com/questions/9749746/what-is-the-difference-between-atomic-volatile-synchronized)   
 
+### Java Basics Questions   
+* [Is java pass-by-value?](https://stackoverflow.com/questions/7893492/is-java-really-passing-objects-by-value)       
     
 ### Iterators
 
@@ -1206,4 +1208,205 @@ positive integer - **this** is greater than specified object
         IntUnaryOperator addTen = value -> value + 10;
   
          
-      
+### Java Basics 
+
+* **Variables:**    
+    **Instance Variables (Non-Static Fields)** - Their values are unique to each instance(object) of a class.    
+    **Class Variables (Static Fields)**  - Any field declared with the static modifier; this tells the compiler that there is exactly one copy of this variable in existence, regardless of how many times the class has been instantiated.  
+    **Local Variables** - A method will often store its temporary state in local variables. and they are only visible to the methods in which they are declared.    
+    **Parameters** - The args variable is the parameter to main(). The important thing to remember is that parameters are always classified as "variables" not "fields". refers to the list of variables in a method declaration. Arguments are the actual values that are passed in when the method is invoked.       
+
+* **Variables Naming:**
+1. Names can only begin with letter, dollar-sign and underscore. Subsequently characters can also include digits. Name cannot be a keyword or reserved-word.
+2. Use camel case for variable names. Constants can be named in all letters capital.    
+
+* **Members:**      
+    A type's fields, methods, and nested types are collectively called its members.      
+
+* **Primitive Data Types:**  
+byte(8 bit) - 0    
+char(16 bit) - '\u0000'      
+short(16 bit) - 0   
+int(32 bit) - 0     
+long(64 bit) - 0L    
+float(32 bit) - 0.0f      
+double(64 bit) - 0.0d  
+boolean - false 
+
+* **Order of expression evaluation:**   
+1. If you don't explicitly indicate the order for the operations to be performed, the order is determined by the precedence assigned to the operators in use within the expression. Operators that have a higher precedence get evaluated first.    
+2. The subexpressions are evaluated left to right.  
+
+* **Branching statements:**   
+1. An unlabeled break statement terminates the innermost switch, for, while, or do-while statement, but a labeled break terminates an outer statement.      
+2. The continue statement skips the current iteration of a for, while , or do-while loop. [A labeled continue statement skips the current iteration of an outer loop marked with the given label.](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/branch.html)   
+
+* **Class Declaration:**    
+ 
+1. Modifiers such as public, private. (The private modifier can only be applied to Nested Classes.)          
+2. The class name begins with capital letter. And the class's parent (superclass), if any, preceded by the keyword extends. A class can only extend one parent.           
+3. A comma-separated list of interfaces implemented by the class, if any, preceded by the keyword implements. A class can implement more than one interface.      
+ 
+        class MyClass extends MySuperClass implements YourInterface {
+            // field, constructor, and
+            // method declarations
+        }
+       
+* **Controlling Access to Members of a Class:**
+     
+**public** — the class(top level) and all its members are accessible from all classes.  
+**protected** — the class(top level) and all its members are accessible within its own package and, in addition, by a subclass of its class in another package.  
+**package-private(no explicait keyword)** — the class(top level) and all its members are visible only within its own package.  
+**private** — the class(top level) and all its members are accessible only within its own class.    
+
+* **Nested Class:**     
+A nested class is a member of its enclosing class. It can be declared private, public, protected, or package private. Nested classes are divided into two categories: non-static and static.               
+1. Non-static nested classes are called **inner classes**. They have access to other members(methods and fields) of the enclosing class, even if they are declared private. 
+As an inner class is associated with an instance, it cannot define any static members itself. There are two special kinds of inner classes: **local classes and anonymous classes**.         
+An instance of InnerClass can exist only within an instance of OuterClass and has direct access to the methods and fields of its enclosing instance.        
+       
+        class OuterClass {
+            ...
+            class InnerClass {
+                ...
+            }
+        }
+        OuterClass outerObject = new OuterClass();
+        OuterClass.InnerClass innerObject = outerObject.new InnerClass();      
+
+2. Nested classes that are declared static are called **static nested classes**. They do not have access to other members of the enclosing class.      . 
+A static nested class is associated with its outer class, and cannot refer directly to instance variables or methods defined in its enclosing class: it can use them only through an object reference.      
+A static nested class interacts with the instance members of its outer class (and other classes) just like any other top-level class. In effect, a static nested class is behaviorally a top-level class that has been nested in another top-level class for packaging convenience.         
+
+        class OuterClass {
+            ...
+            static class StaticNestedClass {
+                ...
+            }
+        }
+        StaticNestedClass staticNestedObject = new StaticNestedClass();
+
+* **Shadowing:**    
+If a declaration of a type(member variable or a parameter name) in a particular scope(inner class or a method definition) 
+has the same name as another declaration in the enclosing scope, then the declaration shadows the declaration of the enclosing scope.      
+        
+        
+        public class ShadowTest {
+        
+            public int x = 0;
+        
+            class FirstLevel {
+        
+                public int x = 1;
+        
+                void methodInFirstLevel(int x) {
+                    System.out.println("x = " + x);
+                    System.out.println("this.x = " + this.x);
+                    System.out.println("ShadowTest.this.x = " + ShadowTest.this.x);
+                }
+            }
+        
+            public static void main(String... args) {
+                ShadowTest st = new ShadowTest();
+                ShadowTest.FirstLevel fl = st.new FirstLevel();
+                fl.methodInFirstLevel(23);
+            }
+        }
+        The following is the output of this example:
+        
+        x = 23
+        this.x = 1
+        ShadowTest.this.x = 0
+        
+* **Methods:**     
+1. The method signature consist of the method's name and the parameter types.   
+
+        public double calculateAnswer(double wingSpan, int numberOfEngines, double length, double grossTons) throws Exception {
+            //do the calculation here
+        }        
+        
+        calculateAnswer(double, int, double, double)    // method's signature
+
+2. **Overloaded methods** are methods within a class having same name but different parameter lists. They are differentiated by the number and the type of the arguments passed into the method(method's signature).    
+
+3. **Constructors** are called to create objects of a class. They use the name of the class and have no return type.            
+    All classes have at least one constructor. If a class does not explicitly declare any, the Java compiler automatically provides a no-argument constructor, called the **default constructor**.       
+             
+
+        public void main(String... args) {      // varargs to pass an arbitrary number(zero or more) of String values to a method.
+        
+4. A parameter can have the same name as one of the class's fields. If this is the case, the parameter is said to shadow the field.     
+
+
+        public class Circle {
+            private int x, y, radius;
+            public void setOrigin(int x, int y) {       //x or y within the body of the method refers to the parameter, not to the field. To access the field, you must use this.x, this.y.     
+                ...
+            }
+        }        
+5. **Covariant return type**: Means that the return type of a method is allowed to vary in the same direction as the subclass. It could either return a subclass(if Return Type is a class) or an implementation(if return type is an interface).             
+
+6. Within an instance method or a constructor, this is a reference to the current object — the object whose method or constructor is being called.      
+   From within a constructor, you can also use the this keyword to call another constructor in the same class. Doing so is called an **explicit constructor invocation**.      
+
+
+    public class Test {
+        int a, b, c;
+        public Test() {
+            this(0, 0, 0);                  // calls the below constructor using this
+        }
+        
+        public Test(int a, int b, int c)  { // referencing instance variablesto overcome fields shadowing due to same parameters list
+            this.a = a;
+            this.b = b;
+            this.c = c;
+        }
+        
+    }
+    
+7. Instance methods can access instance an class variables and instance and class methods directly.
+   Class methods can access class variables and class methods directly.
+   Class methods cannot access instance variables or instance methods directly—they must use an object reference. Also, class methods cannot use the this keyword as there is no instance for this to refer to.     
+
+8. The static modifier, in combination with the final modifier, is also used to define constants. The **final** modifier indicates that the value of this field cannot change.      
+   
+        private static final int CONST_PI = 3.14;  
+   
+9. A **static initialization block** is a normal block of code enclosed in braces, { }, and preceded by the static keyword, used for initializing class variables. 
+A class can have multiple such blocks and the runtime system guarantees that static initialization blocks are called in the order that they appear in the source code.        
+     
+     
+         static {
+            // initialize static variables
+         }
+
+The **private static methods** are also an alternative to static blocks as they can be reused later if you need to reinitialize the class variable.     
+
+        private static varType initializeClassVariable() {
+            // initialization code goes here
+        }
+
+10. There are two alternatives to using a constructor to initialize instance variables: **initializer blocks and final methods**.       
+The Java compiler copies initializer blocks into every constructor. Therefore, this approach can be used to share a block of code between multiple constructors.                    
+
+
+        {
+            // whatever code is needed for initialization goes here
+        }
+        
+A final method cannot be overridden in a subclass. This is especially useful if subclasses might want to reuse the initialization method. The method is final because calling non-final methods during instance initialization can cause problems.      
+    
+        class Whatever {
+            private varType myVar = initializeInstanceVariable();
+                
+            protected final varType initializeInstanceVariable() {
+        
+                // initialization code goes here
+            }
+        }
+    
+    
+### Garbage Collection      
+The Java runtime environment has a garbage collector that periodically frees the memory used by objects that are no longer referenced.
+
+ 

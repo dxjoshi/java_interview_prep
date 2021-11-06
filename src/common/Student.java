@@ -8,7 +8,7 @@ public class Student {
     private String name;
 /*    @FieldName(key = "Age")*/
     private int age;
-
+    private static int val=0;
     public Student(String name, int age) {
         this.name = name;
         this.age = age;
