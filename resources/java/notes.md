@@ -16,6 +16,8 @@
 * [ConcurrentModificationException](#concurrentmodificationexception)       
 * [Comparator and Comparable Interface](#comparator-and-comparable-interface)       
 * [Java Basics](#java-basics)   
+* [Interfaces](#interfaces)
+* [Inheritance](#inheritance)
 * [Exception Handling](#exception-handling)  
 * [Java Memory Model](#java-memory-model)         
 * [Java 8](#java-8)
@@ -1056,7 +1058,7 @@ By default, even core threads are initially created and started only when new ta
         }
      
 ### Comparator and Comparable Interface
-* **Comparator:**       
+* **Comparator:** [Multi-Level Comparator ex.](https://docs.oracle.com/javase/tutorial/java/IandI/defaultmethods.html)       
 A comparison function, which imposes a total ordering on some collection of objects. Compares its two arguments for order. It returns:           
 negative integer - First argument is less than second          
 zero - Both are equal       
@@ -1691,7 +1693,173 @@ A final method cannot be overridden in a subclass. This is especially useful if 
             }
         }
     
+
+### Interfaces  
+An interface is a reference type, similar to a class, that can contain only constants, method signatures, default methods, static methods, and nested types(all are implicitly public).             
+Method bodies exist only for default methods and static methods. Interfaces cannot be instantiated—they can only be implemented by classes or extended by other interfaces.         
+
+        public interface GroupedInterface extends Interface1, Interface2, Interface3 {
+        
+            // constant declarations
+            public static final int CONST = 1;
+            
+            // base of natural logarithms
+            double E = 2.718282;
+         
+            // method signatures
+            void doSomething (int i, double x);         //abstract method
+            int doSomethingElse(String s);
+            default boolean checkEven(int i) { return i%2 == 0;}             //default method
+        }    
+
+**Default methods** enable you to add new functionality to the interfaces of your libraries and ensure binary compatibility with code written for older versions of those interfaces.   
+When you extend an interface that contains a default method, you can do the following:      
+    1. Not mention the default method at all, which lets your extended interface inherit the default method.        
+    2. Redeclare the default method, which makes it abstract.       
+    3. Redefine the default method, which overrides it.         
+
+
+            default boolean checkEven(int i) { return i%2 == 0;}             //default method
     
+**Static method** is a method that is associated with the class in which it is defined rather than with any object. Every instance of the class shares its static methods.      
+This makes it easier for you to organize helper methods in your libraries; you can keep static methods specific to an interface in the same interface rather than in a separate class.      
+
+
+            static boolean multiplyBy2(int i) { return i*2;}             //static method
+
+
+### Inheritance     
+1. A class that is derived from another class is called a subclass/derived/child class. The class from which the subclass is derived is called a superclass/base/parent class.      
+2. Excepting Object, which has no superclass, every class has one and only one direct superclass. In no explicit superclass, every class is implicitly a subclass of Object class.        
+3. A subclass inherits all the members (fields, methods, and nested classes) from its superclass. 
+4. Constructors are not members, so they are not inherited by subclasses, but the constructor of the superclass can be invoked from the subclass.           
+5. A subclass inherits all public and protected members of its parent(but not private members), no matter what package the subclass is in. If the subclass is in the same package as its parent, it also inherits the package-private members of the parent.      
+    The inherited fields and methods can be used directly.      
+    You can declare a field in the subclass with the same name as the one in the superclass, thus hiding it (not recommended).      
+    You can declare new fields and methods in the subclass that are not in the superclass.      
+    You can write a new instance method in the subclass that has the same signature as the one in the superclass, thus overriding it.       
+    You can write a new static method in the subclass that has the same signature as the one in the superclass, thus hiding it.     
+    You can write a subclass constructor that invokes the constructor of the superclass, either implicitly or by using the keyword super.       
+6. **Casting** shows the use of an object of one type in place of another type, among the objects permitted by inheritance and implementations. For example:        
+   **Implicit Casting:**     Object obj = new MountainBike(); //obj is both an Object and a MountainBike. 
+   **Explicit Casting:**    Tells the compiler that we promise to assign a MountainBike to obj:    MountainBike myBike = (MountainBike)obj;        
+   **instanceof operator** verifies that obj refers to a MountainBike so that we can make the cast with knowledge that there will be no runtime exception thrown.       
+            
+        
+            if (obj instanceof MountainBike) {
+                MountainBike myBike = (MountainBike)obj;
+            }
+7. **Method Overriding:** An method in a subclass with the same signature(name, plus the number and the type of its parameters) and return type(covariant return type) as an superclass method.            
+   **Method Hiding** If a subclass defines a static method with the same signature as a static method in the superclass, then the method in the subclass hides the one in the superclass.  
+   The distinction between hiding a static method and overriding an instance method has important implications:
+        The version of the overridden instance method that gets invoked is the one in the subclass.      
+        The version of the hidden static method that gets invoked depends on whether it is invoked from the superclass or the subclass.     
+8. **Interface Methods**                      
+    When the supertypes of a class or interface provide multiple default methods with the same signature, the Java compiler follows inheritance rules to resolve the name conflict: 
+    1. Instance methods are preferred over interface default methods.
+    
+            public class Horse {
+                public String identifyMyself() { return "I am a horse."; }
+            }
+            public interface Flyer {
+                default public String identifyMyself() { return "I am able to fly."; }
+            }
+            public interface Mythical {
+                default public String identifyMyself() { return "I am a mythical creature."; }
+            }
+            public class Pegasus extends Horse implements Flyer, Mythical {
+                public static void main(String... args) {
+                    Pegasus myApp = new Pegasus();
+                    System.out.println(myApp.identifyMyself());
+                }
+            }
+            The method Pegasus.identifyMyself returns the string I am a horse.
+           
+    2. Methods that are already overridden by other candidates are ignored. This circumstance can arise when supertypes share a common ancestor.        
+   
+            public interface Animal {
+                default public String identifyMyself() { return "I am an animal."; }
+            }
+            public interface EggLayer extends Animal {
+                default public String identifyMyself() { return "I am able to lay eggs."; }
+            }
+            public interface FireBreather extends Animal { }
+            public class Dragon implements EggLayer, FireBreather {
+                public static void main (String... args) {
+                    Dragon myApp = new Dragon();
+                    System.out.println(myApp.identifyMyself());
+                }
+            }
+            The method Dragon.identifyMyself returns the string I am able to lay eggs.  
+
+9. If two or more independently defined default methods conflict, or a default method conflicts with an abstract method, then the Java compiler produces a compiler error. 
+You must explicitly override the supertype methods.     
+
+
+            public interface OperateCar { default public int startEngine(EncryptedKey key) { } }
+            public interface FlyCar { default public int startEngine(EncryptedKey key) { } }
+            public class FlyingCar implements OperateCar, FlyCar {
+                public int startEngine(EncryptedKey key) {
+                    FlyCar.super.startEngine(key);      //**super** for conflict resolution
+                    OperateCar.super.startEngine(key);  //**super** for conflict resolution
+                }
+            }
+            
+10. Static methods in interfaces are never inherited.   
+11. You will get a compile-time error if you attempt to change an instance method in the superclass to a static method in the subclass, and vice versa.          
+12. **Rules of Method Overriding**            
+- The argument list must exactly match that of the overridden method.               
+- The return type must be the same as, or a subtype of, the return type declared in the original overridden method in the superclass.       
+- The access level can’t be more restrictive(CAN be less restrictive though) than that of the overridden method.        
+- Instance methods can be overridden only if they are inherited by the subtype.     
+- The overriding method CAN throw any unchecked (runtime) exception, regardless of whether the overridden method declares the exception.        
+- The overriding method must NOT throw checked exceptions that are new or broader than those declared by the overridden method.         
+- The overriding method can throw narrower or fewer exceptions(even no exceptions).      
+- You cannot override constructors and methods marked final/static/private.     
+- If a method can’t be inherited, you cannot override it.       
+- Use the super keyword to invoke the overridden method from a subclass.            
+- The strictfp/synchronized modifier has no effect on the rules of overriding.              
+
+13. **Hiding Fields** 
+Within a class, a field that has the same name as a field in the superclass hides the superclass's field, even if their types are different. Within the subclass, the field in the superclass cannot be referenced by its simple name. Instead, the field must be accessed through **super**.
+
+14. **super keyword**   
+To invoke the overridden superclass method/superclass's constructor/hidden fields.
+
+
+        public class Superclass { public void printMethod() { System.out.println("Printed in Superclass."); } }
+        
+        public class Subclass extends Superclass {
+            public void printMethod() { super.printMethod();        //calls overridden superclass method
+            System.out.println("Printed in Subclass"); } }      
+        
+        public MountainBike(int startHeight, int startCadence, int startSpeed, int startGear) { 
+            super(startCadence, startSpeed, startGear);             //calls superclass's constructor
+            seatHeight = startHeight;
+        }        
+
+15. **final keyword**   
+Final methods cannot be overridden by subclasses. 
+Final class can not be subclassed.   
+
+16. **abstract keyword**    
+1. Abstract class may or may not include abstract methods. It cannot be instantiated, but can be subclassed. If subclassed, the subclass usually provides implementations for all superclass abstract methods, else subclass must be declared abstract.       
+2. An abstract method is declared without an implementation. Interface methods that are not default or static are implicitly abstract.        
+
+
+        public abstract class GraphicObject {
+           // declare fields
+           // declare nonabstract methods
+           abstract void draw();
+        }
+
+3. Abstract classes can have non-static, non-final fields, and public, protected and private concrete methods. With interfaces, all fields are automatically public, static, final, and all methods that you declare or define (as default methods) are public. 
+   We can extend only one class, whether or not it is abstract, whereas you can implement any number of interfaces.
+   
+            
+###Polymorphism     
+* Subclasses of a class can define their own unique behaviors and yet share some of the same functionality of the parent class.
+        
 ### Exception Handling  
         //public class Throwable implements Serializable {
         //public class Error extends Throwable {
