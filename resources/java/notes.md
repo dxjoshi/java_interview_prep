@@ -12,9 +12,12 @@
 * [Object class](#object-class)
 * [Objects Utility Class](#objects-utility-class)
 * [Arrays Class](#arrays-class)
-* [Collections Class](#collections-class)
-* [ConcurrentModificationException](#concurrentmodificationexception)
-* [Comparator and Comparable Interface](#comparator-and-comparable-interface)
+* [Collections Class](#collections-class)       
+* [ConcurrentModificationException](#concurrentmodificationexception)       
+* [Comparator and Comparable Interface](#comparator-and-comparable-interface)       
+* [Java Basics](#java-basics)   
+* [Exception Handling](#exception-handling)  
+* [Java Memory Model](#java-memory-model)         
 * [Java 8](#java-8)
 
 Generics
@@ -1242,7 +1245,6 @@ boolean - false
 2. The continue statement skips the current iteration of a for, while , or do-while loop. [A labeled continue statement skips the current iteration of an outer loop marked with the given label.](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/branch.html)   
 
 * **Class Declaration:**    
- 
 1. Modifiers such as public, private. (The private modifier can only be applied to Nested Classes.)          
 2. The class name begins with capital letter. And the class's parent (superclass), if any, preceded by the keyword extends. A class can only extend one parent.           
 3. A comma-separated list of interfaces implemented by the class, if any, preceded by the keyword implements. A class can implement more than one interface.      
@@ -1253,7 +1255,6 @@ boolean - false
         }
        
 * **Controlling Access to Members of a Class:**
-     
 **public** — the class(top level) and all its members are accessible from all classes.  
 **protected** — the class(top level) and all its members are accessible within its own package and, in addition, by a subclass of its class in another package.  
 **package-private(no explicait keyword)** — the class(top level) and all its members are visible only within its own package.  
@@ -1274,13 +1275,12 @@ An instance of InnerClass can exist only within an instance of OuterClass and ha
         OuterClass outerObject = new OuterClass();
         OuterClass.InnerClass innerObject = outerObject.new InnerClass();    
         
-
 * **Local Class**  
+**Effectively final:** A variable or parameter whose value is never changed after it is initialized.     
 Local classes are classes that are defined in a block or method. 
 1. A local class has access to the members of its enclosing class. the PhoneNumber constructor accesses the member LocalClassExample.regularExpression.    
 2. A local class can only access local variables that are declared final(or effectively final from java 8). When a local class accesses a local variable or parameter of the enclosing block, it **captures** that variable or parameter.        
 For example, the PhoneNumber constructor can access the local variable numberLength because it is declared final; numberLength is a **captured variable**.    
-**Effectively final:** A variable or parameter whose value is never changed after it is initialized.     
 3. Local classes are non-static because they have access to instance members of the enclosing block, but cannot define/declare any static members(except static final constants).            
 4. Local classes in static methods can only refer to static members of the enclosing class.             
 5. You cannot declare an interface inside a block, interfaces are inherently static. Also cannot declare static initializers or member interfaces in a local class.     
@@ -1692,7 +1692,80 @@ A final method cannot be overridden in a subclass. This is especially useful if 
         }
     
     
-### Garbage Collection      
-The Java runtime environment has a garbage collector that periodically frees the memory used by objects that are no longer referenced.
+### Exception Handling  
+        //public class Throwable implements Serializable {
+        //public class Error extends Throwable {
+        //public class Exception extends Throwable {
+        //public class RuntimeException extends Exception {
 
+1. An **exception** is an event, which occurs during the execution of a program, that disrupts the normal flow of the program's instructions.   
+2. **Catch or Specify Requirement:**  A code that might throw certain exceptions must be enclosed by either: **try statement** that catches the exception OR a method that specifies that it can throw the exception(**throws clause**).        
+3. **The Three Kinds of Exceptions:**          
+        1. **Checked exception:** - These are exceptional conditions that a well-written application should anticipate and recover from. They are subject to the Catch or Specify Requirement. All exceptions are checked exceptions, except for those indicated by Error, RuntimeException, and their subclasses.   
+        java.io.FileNotFoundException     
+        2. **Error:** - Errors are those exceptions indicated by Error and its subclasses. These are external to application, and application usually cannot anticipate or recover from.
+        java.io.IOError   
+        3. **Runtime Exception** - Runtime exceptions are those indicated by RuntimeException and its subclasses. These are internal to application, and application usually cannot anticipate or recover from.         
+        Errors and runtime exceptions are collectively known as **unchecked exceptions**. They are not subject to the Catch or Specify Requirement.
+        NullPointerException    
+4. **The three exception handler components — the try, catch, and finally block**   
+        
+        try {
+            throw new IOException();
+        } catch (IndexOutOfBoundsException e) {
+            System.err.println("IndexOutOfBoundsException: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Caught IOException: " + e.getMessage());
+        }
+In Java SE 7 and later, a single catch block can handle more than one type of exception, also the catch parameter is implicitly final(the catch parameter ex is final).         
+
+        catch (IOException|SQLException ex) {
+            throw ex;
+        }
+The finally block always executes when the try block exits. Finally also allows the programmer to avoid having cleanup code accidentally bypassed by a return, continue, or break.  
+If the JVM exits while the try or catch code is being executed OR if the thread executing it is interrupted or killed, the finally block may not execute.   
+
+        finally {
+            if (out != null) { 
+                System.out.println("Closing PrintWriter");
+                out.close(); 
+            } else { 
+                System.out.println("PrintWriter not open");
+            } 
+        }  
+
+5. **The try-with-resources Statement**             
+It is a try statement that declares one or more resources and ensures that each resource is closed at the end of the statement. 
+A resource is an object that must be closed after the program is finished with it(Should implements java.lang.AutoCloseable, which includes all objects which implement java.io.Closeable). 
+In a try-with-resources statement, any catch or finally block is run after the resources declared have been closed. 
+If exception is thrown from try block and one or more exceptions are thrown from the try-with-resources statement, then those exceptions thrown from the try-with-resources statement are **suppressed**, and the exception thrown by the block is the one that is thrown ahead. The suppressed exceptions can be fetched by calling the **Throwable.getSuppressed** method from the exception thrown by the try block.     
+
+
+        try (   java.util.zip.ZipFile zf = new java.util.zip.ZipFile(zipFileName);
+                java.io.BufferedWriter writer = java.nio.file.Files.newBufferedWriter(outputFilePath, charset)) {
+        }
+The try-with-resources statement contains two declarations that are separated by a semicolon: ZipFile and BufferedWriter. When the block of code that directly follows it terminates, either normally or because of an exception, the close methods of the BufferedWriter and ZipFile objects are automatically called in this order. Note that the close methods of resources are called in the opposite order of their creation.
  
+6. The **throws clause** is used to specify that it can throw these exceptions and comprises the throws keyword followed by a comma-separated list of all the exceptions thrown by that method.     
+        
+        
+        public void writeList() throws IOException, IndexOutOfBoundsException {               
+
+7. The throw clause is used to throw an exception: a throwable object. **Throwable objects** are instances of any subclass of the Throwable class.      
+        
+        
+        throw new EmptyStackException();          
+        
+8. **Chained Exceptions** makes an application respond to an exception by throwing another exception. In effect, the first exception causes the second exception.         
+
+
+        try {
+        
+        } catch (IOException e) {
+            throw new SampleException("Other IOException", e);
+        }
+
+
+### Java Memory Model         
+The Java runtime environment has a **garbage collector** that periodically frees the memory used by objects that are no longer referenced.
+
