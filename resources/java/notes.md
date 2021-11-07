@@ -1479,7 +1479,42 @@ The constructor for an enum type must be package-private or private access. It a
 8. The full path to the classes directory is called the **class path**, and is set with the CLASSPATH system variable. Both the compiler and the JVM construct the path to your .class files by adding the package name to the class path. For example, if
    IF class path -- **<path_two>\classes**, package name -- **com.example.graphics** THEN the compiler and JVM look for .class files in **<path_two>\classes\com\example\graphics**     
    
-       
+   
+* **Wrapper Classes**   
+1. Wrapper classes for each of the primitive data types "wrap" the primitive in an object. Often, the wrapping is done by the compiler:        
+2. If you use a primitive where an object is expected, the compiler boxes the primitive in its wrapper class for you.      
+3. Similarly, if you use a number object when a primitive is expected, the compiler unboxes the object for you.       
+
+**Autoboxing:** is the automatic conversion that the Java compiler makes between the primitive types and their corresponding object wrapper classes. Java compiler applies autoboxing when a primitive value is:    
+1. Passed as a parameter to a method that expects an object of the corresponding wrapper class.
+2. Assigned to a variable of the corresponding wrapper class.
+
+
+        /*Autoboxing*/
+        Boolean autoboxedBoolean = unboxedBoolean;    //Boolean.valueOf(unboxedBoolean);
+        Byte autoboxedByte = unboxedByte; //Byte.valueOf(unboxedByte);
+        Character autoboxedCharacter = unboxedCharacter;   //Character.valueOf(unboxedCharacter);
+        Float autoboxedFloat = unboxedFloat;    //Float.valueOf(unboxedFloat);
+        Integer autoboxedInteger = unboxedInteger;   //Integer.valueOf(unboxedInteger);
+        Long autoboxedLong = unboxedLong;    //Long.valueOf(unboxedLong);
+        Short autoboxedShort = unboxedShort;   //Short.valueOf(unboxedShort);
+        Double autoboxedDouble = unboxedDouble;  //Double.valueOf(unboxedDouble);
+
+**Unboxing:** is automatic conversion of an object of a wrapper type (Integer) to its corresponding primitive (int) value is called unboxing. The Java compiler applies unboxing when an object of a wrapper class is:      
+1. Passed as a parameter to a method that expects a value of the corresponding primitive type.      
+2. Assigned to a variable of the corresponding primitive type.      
+
+
+        /* Unboxing*/
+        boolean unboxedBoolean = booleanWrapper; //compiler calls booleanWrapper.booleanValue();
+        byte unboxedByte = byteWrapper;         //compiler calls byteWrapper.byteValue();
+        char unboxedCharacter = characterWrapper;      //compiler calls characterWrapper.charValue();
+        float unboxedFloat = floatWrapper;        //compiler calls floatWrapper.floatValue();
+        int unboxedInteger = integerWrapper; //compiler calls integerWrapper.intValue();
+        long unboxedLong = longWrapper; //compiler calls longWrapper.longValue();
+        short unboxedShort = shortWrapper;         //compiler calls shortWrapper.shortValue();
+        double unboxedDouble = doubleWrapper;     //compiler calls doubleWrapper.doubleValue();
+
 * **Shadowing:**    
 If a declaration of a type(member variable or a parameter name) in a particular scope(inner class or a method definition) 
 has the same name as another declaration in the enclosing scope, then the declaration shadows the declaration of the enclosing scope.      
