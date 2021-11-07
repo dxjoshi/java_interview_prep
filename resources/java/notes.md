@@ -1263,7 +1263,7 @@ boolean - false
 A nested class is a member of its enclosing class. It can be declared private, public, protected, or package private. Nested classes are divided into two categories: non-static and static.               
 1. Non-static nested classes are called **inner classes**. They have access to other members(methods and fields) of the enclosing class, even if they are declared private. 
 As an inner class is associated with an instance, it cannot define any static members itself. There are two special kinds of inner classes: **local classes and anonymous classes**.         
-An instance of InnerClass can exist only within an instance of OuterClass and has direct access to the methods and fields of its enclosing instance.        
+An instance of InnerClass can exist only within an instance of OuterClass and has direct access to the methods and fields of its enclosing instance. [Inner Class Example](https://docs.oracle.com/javase/tutorial/java/javaOO/innerclasses.html)       
        
         class OuterClass {
             ...
@@ -1272,7 +1272,96 @@ An instance of InnerClass can exist only within an instance of OuterClass and ha
             }
         }
         OuterClass outerObject = new OuterClass();
-        OuterClass.InnerClass innerObject = outerObject.new InnerClass();      
+        OuterClass.InnerClass innerObject = outerObject.new InnerClass();    
+        
+
+* **Local Class**  
+Local classes are classes that are defined in a block or method. 
+1. A local class has access to the members of its enclosing class. the PhoneNumber constructor accesses the member LocalClassExample.regularExpression.    
+2. A local class can only access local variables that are declared final(or effectively final from java 8). When a local class accesses a local variable or parameter of the enclosing block, it **captures** that variable or parameter.        
+For example, the PhoneNumber constructor can access the local variable numberLength because it is declared final; numberLength is a **captured variable**.    
+**Effectively final:** A variable or parameter whose value is never changed after it is initialized.     
+3. Local classes are non-static because they have access to instance members of the enclosing block, but cannot define/declare any static members(except static final constants).            
+4. Local classes in static methods can only refer to static members of the enclosing class.             
+5. You cannot declare an interface inside a block, interfaces are inherently static. Also cannot declare static initializers or member interfaces in a local class.     
+        
+
+    public class LocalClassExample {
+        static String regularExpression = "[^0-9]";
+    
+        public static void validatePhoneNumber(String phoneNumber1, String phoneNumber2) {
+            final int numberLength = 10;    // Valid in JDK 8 and later: int numberLength = 10;
+    
+            class PhoneNumber {
+                String formattedPhoneNumber = null;
+                static final int CONST = 1;
+                
+                PhoneNumber(String phoneNumber){
+                    String currentNumber = phoneNumber.replaceAll(regularExpression, "");
+                    if (currentNumber.length() == numberLength) formattedPhoneNumber = currentNumber;
+                    else formattedPhoneNumber = null;
+                }
+    
+                public String getNumber() { return formattedPhoneNumber; }
+    
+                //As local class PhoneNumber is declared in a method, it can access the method's parameters phoneNumber1 and phoneNumber2
+                public void printOriginalNumbers() { System.out.println("Original numbers are " + phoneNumber1 + " and " + phoneNumber2); }
+            }
+    
+            PhoneNumber myNumber1 = new PhoneNumber(phoneNumber1);
+            PhoneNumber myNumber2 = new PhoneNumber(phoneNumber2);
+            myNumber1.printOriginalNumbers();
+    
+            if (myNumber1.getNumber() == null) System.out.println("First number is invalid");
+            else System.out.println("First number is " + myNumber1.getNumber());
+    
+            if (myNumber2.getNumber() == null) System.out.println("Second number is invalid");
+            else System.out.println("Second number is " + myNumber2.getNumber());
+        }
+          
+* **Anonymous Classes**  
+1. An anonymous class is an expression, like the invocation of a constructor, alongwith a class definition contained in a block of code.    
+2. They are like local classes except that they do not have a name and enable you to declare and instantiate a class at the same time.      
+3. Anonymous classes can capture variables; they have the same access to local variables of the enclosing scope:        
+4. An anonymous class has access to the members of its enclosing class.        
+5. An anonymous class cannot access local variables in its enclosing scope that are not declared as final or effectively final.        
+6. A declaration of a type/variable in an anonymous class shadows any other declarations in the enclosing scope with same name.        
+7. Anonymous classes also have the same restrictions as local classes with respect to their members:
+8. You cannot declare static initializers/member interfaces/constructors in an anonymous class. But anonymous class can declare static final constant variables, Fields, Extra methods (even if they do not implement any methods of the supertype), Instance initializers, Local classes.      
+
+
+    public class HelloWorldAnonymousClasses {
+        interface HelloWorld {
+            void greet();
+            void greetSomeone(String someone);
+        }
+    
+        public void sayHello() {
+            // local class
+            class EnglishGreeting implements HelloWorld {
+                String name = "world";
+                public void greet() { greetSomeone("world"); }
+                public void greetSomeone(String someone) { name = someone;System.out.println("Hello " + name); }
+            }
+            HelloWorld englishGreeting = new EnglishGreeting();
+            //anonymous class
+            HelloWorld frenchGreeting = new HelloWorld() {
+                String name = "tout le monde";
+                public void greet() { greetSomeone("tout le monde"); }
+                public void greetSomeone(String someone) { name = someone;System.out.println("Salut " + name); }
+            };
+    
+            //anonymous class
+            HelloWorld spanishGreeting = new HelloWorld() {
+                String name = "mundo";
+                public void greet() { greetSomeone("mundo"); }
+                public void greetSomeone(String someone) { name = someone;System.out.println("Hola, " + name); }
+            };
+    
+            englishGreeting.greet();
+            frenchGreeting.greetSomeone("Fred");
+            spanishGreeting.greet();
+   
 
 2. Nested classes that are declared static are called **static nested classes**. They do not have access to other members of the enclosing class.      . 
 A static nested class is associated with its outer class, and cannot refer directly to instance variables or methods defined in its enclosing class: it can use them only through an object reference.      
@@ -1286,6 +1375,66 @@ A static nested class interacts with the instance members of its outer class (an
         }
         StaticNestedClass staticNestedObject = new StaticNestedClass();
 
+
+* **Lambda expressions:**   
+1. Lambda expressions enable you to encapsulate a single unit of behavior that you want to pass as a method argument to other code(code as data).                 
+2. You can consider lambda expressions as anonymous methods—methods without a name.       
+3. **Target Typing** To determine the type of a lambda expression, the Java compiler uses the target type of the context or situation in which the lambda expression was found. The data type that these methods expect is called the **target type**.         
+
+
+        void invoke(Runnable r) {       // compiler expects Runnable target type
+            r.run();
+        }
+        
+        <T> T invoke(Callable<T> c) {       // compiler expects Callable target type
+            return c.call();
+        }
+ 
+ 
+* **Method reference:**     
+There are four kinds of method references:      
+1. Reference to a static method(ContainingClass::staticMethodName). Ex.	Person::compareByAge, MethodReferencesExamples::appendStrings       
+2. Reference to an instance method of a particular object(containingObject::instanceMethodName). Ex. myComparisonProvider::compareByName, myApp::appendStrings2     
+3. Reference to an instance method of an arbitrary object of a particular type(ContainingType::methodName). Ex. String::compareToIgnoreCase, String::concat     
+4. Reference to a constructor(ClassName::new). Ex. HashSet::new     
+
+
+* **Enum Types**        
+A special data type that enables for a variable to be a set of predefined constants. All enums implicitly extend **java.lang.Enum** and thus can't extend any other class.       
+Java requires that the constants be defined first, prior to fields or methods, if any. Also, when there are fields and methods, the list of enum constants must end with a semicolon.   
+The compiler automatically adds some special methods(values()) when it creates an enum.         
+The constructor for an enum type must be package-private or private access. It automatically creates the constants that are defined at the beginning of the enum body. You cannot invoke an enum constructor yourself.      
+
+
+        public enum Day {
+            SUNDAY("Weekend", 0),
+            MONDAY("Weekday", 1),
+            TUESDAY("Weekday", 2),
+            WEDNESDAY("Weekday", 3),
+            THURSDAY("Weekday", 4),
+            FRIDAY("Weekend", 5),
+            SATURDAY("Weekend", 6);     
+        
+            Integer dayOfWeek;
+            String alias;
+        
+            Day(String alias, Integer dayOfWeek) {
+                this.alias = alias;
+                this.dayOfWeek = dayOfWeek;
+            }
+        
+            @Override
+            public String toString() {
+                final StringBuilder sb = new StringBuilder("Day{");
+                sb.append("dayOfWeek=").append(dayOfWeek);
+                sb.append(", alias='").append(alias).append('\'');
+                sb.append('}');
+                return sb.toString();
+            }
+        }
+
+
+    
 * **Shadowing:**    
 If a declaration of a type(member variable or a parameter name) in a particular scope(inner class or a method definition) 
 has the same name as another declaration in the enclosing scope, then the declaration shadows the declaration of the enclosing scope.      
