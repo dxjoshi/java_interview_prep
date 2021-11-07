@@ -22,13 +22,6 @@
 * [Java Memory Model](#java-memory-model)         
 * [Java 8](#java-8)
 
-Generics
-Exception
-Collections
-Overloading and Overriding
-Serialization
-
-
 
 ### Thread Basics        
 * Threads are managed by a thread-scheduler of JVM(Java Virtual Machine). [These threads are not directly mapped to a native OS thread](https://baptiste-wicht.com/posts/2010/05/java-concurrency-part-1-threads.html). 
@@ -1855,11 +1848,7 @@ Final class can not be subclassed.
 
 3. Abstract classes can have non-static, non-final fields, and public, protected and private concrete methods. With interfaces, all fields are automatically public, static, final, and all methods that you declare or define (as default methods) are public. 
    We can extend only one class, whether or not it is abstract, whereas you can implement any number of interfaces.
-   
-            
-###Polymorphism     
-* Subclasses of a class can define their own unique behaviors and yet share some of the same functionality of the parent class.
-        
+
 ### Exception Handling  
         //public class Throwable implements Serializable {
         //public class Error extends Throwable {
@@ -1934,6 +1923,13 @@ The try-with-resources statement contains two declarations that are separated by
         }
 
 
+###Polymorphism     
+* Subclasses of a class can define their own unique behaviors and yet share some of the same functionality of the parent class.
+        
 ### Java Memory Model         
 The Java runtime environment has a **garbage collector** that periodically frees the memory used by objects that are no longer referenced.
+
+###Serialization        
+
+###Generics                 
 
