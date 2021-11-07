@@ -1456,7 +1456,30 @@ The constructor for an enum type must be package-private or private access. It a
     - implements clause:                  class UnmodifiableList<T> implements @Readonly List<@Readonly T> { ... }
     - Thrown exception declaration:       void monitorTemperature() throws @Critical TemperatureException { ... }    
     
-    
+* **Package**   
+1. A package is a grouping of related types providing access protection and name space management. Note that types refers to classes, interfaces, enumerations, and annotation types.      
+2. The names of your types won't conflict with the type names in other packages because the package creates a new namespace.   
+3. The package statement(ex. package java.graphics;) must be the first line in the source file. There can be only one package statement in each source file. If you do not use a package statement, your type ends up in an unnamed package.       
+4. To use a public package member from outside its package, you must either 
+
+
+        refer member by its fully qualified name -  graphics.Rectangle myRect = new graphics.Rectangle();   
+        import package member       - import graphics.Rectangle;       
+        import member's entire package.     - import graphics.*;           
+5. Java compiler automatically imports two entire packages for each source file: (1) the java.lang package and (2) the current package (the package for the current file).      
+6. If a member in one package shares its name with a member in another package and both packages are imported, you must refer to each member by its qualified name.          
+7. **Static import statement** allows to import the constants and static methods that you want to use so that you do not need to prefix the name of their class.        
+
+
+            import static java.lang.Math.*;
+            
+            double r = Math.cos(Math.PI * theta); // without static import
+            double r = cos(PI * theta); //with static import
+
+8. The full path to the classes directory is called the **class path**, and is set with the CLASSPATH system variable. Both the compiler and the JVM construct the path to your .class files by adding the package name to the class path. For example, if
+   IF class path -- **<path_two>\classes**, package name -- **com.example.graphics** THEN the compiler and JVM look for .class files in **<path_two>\classes\com\example\graphics**     
+   
+       
 * **Shadowing:**    
 If a declaration of a type(member variable or a parameter name) in a particular scope(inner class or a method definition) 
 has the same name as another declaration in the enclosing scope, then the declaration shadows the declaration of the enclosing scope.      
