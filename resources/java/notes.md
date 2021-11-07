@@ -1433,7 +1433,29 @@ The constructor for an enum type must be package-private or private access. It a
             }
         }
 
+* **Annotations**       
+1. They are a form of metadata, provide data about a program that is not part of the program itself.   
+2. The **annotation type** definition looks similar to an interface definition where the keyword interface is preceded by the at sign (@). They are a form of interface.    
+3. The **annotation type element** declarations look a lot like methods. Note that they can define optional default values.    
+        
+        
+        @interface ClassPreamble {      //annotation type
+           String author();             //element
+           String date();
+           int currentRevision() default 1;         //element with default value
+           String lastModified() default "N/A";
+           String lastModifiedBy() default "N/A";
+           // Note use of array
+           String[] reviewers();
+        }
 
+4. The predefined annotation types defined in java.lang are @Deprecated, @Override, and @SuppressWarnings. [Detailed Explaination](https://docs.oracle.com/javase/tutorial/java/annotations/predefined.html)    
+5. Type Annotations: Annotations that can be used anywhere you use a type(like  class instance creation expressions (new), casts, implements clauses, and throws clauses).    
+    - Instance creation expression:       new @Interned MyObject();
+    - Type cast:                          myString = (@NonNull String) str;
+    - implements clause:                  class UnmodifiableList<T> implements @Readonly List<@Readonly T> { ... }
+    - Thrown exception declaration:       void monitorTemperature() throws @Critical TemperatureException { ... }    
+    
     
 * **Shadowing:**    
 If a declaration of a type(member variable or a parameter name) in a particular scope(inner class or a method definition) 
