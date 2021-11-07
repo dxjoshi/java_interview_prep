@@ -1515,6 +1515,63 @@ The constructor for an enum type must be package-private or private access. It a
         short unboxedShort = shortWrapper;         //compiler calls shortWrapper.shortValue();
         double unboxedDouble = doubleWrapper;     //compiler calls doubleWrapper.doubleValue();
 
+
+* **Character class(Immutable)**        
+1. Important methods:       
+
+        boolean isLetter(char ch),boolean isDigit(char ch)	        Determines whether the specified char value is a letter or a digit, respectively.
+        boolean isWhitespace(char ch)	                            Determines whether the specified char value is white space.
+        boolean isUpperCase(char ch), boolean isLowerCase(char ch)	Determines whether the specified char value is uppercase or lowercase, respectively.
+        char toUpperCase(char ch), char toLowerCase(char ch)	    Returns the uppercase or lowercase form of the specified char value.
+        toString(char ch)	                                        Returns a String object representing the specified character value — that is, a one-character string.
+        
+2. A character preceded by a backslash (\) is an **escape sequence** and has special meaning to the compiler.       
+
+        \t	Insert a tab in the text at this point.
+        \b	Insert a backspace in the text at this point.
+        \n	Insert a newline in the text at this point.
+        \r	Insert a carriage return in the text at this point.
+        \f	Insert a form feed in the text at this point.
+        \'	Insert a single quote character in the text at this point.
+        \"	Insert a double quote character in the text at this point.
+        \\	Insert a backslash character in the text at this point.
+
+* **Formatting Numeric Print Output:**                      
+1. Format specifiers begin with a percent sign (%) and end with a converter(f). In between we can have optional flags and specifiers.        
+2. There are many converters, flags, and specifiers, which are documented in java.util.Formatter. [Commonly used converters](https://docs.oracle.com/javase/tutorial/java/data/numberformat.html)         
+ 
+        long n = 461012;
+        System.out.format("%d%n", n);      //  -->  "461012"
+        System.out.format("%08d%n", n);    //  -->  "00461012"
+        System.out.format("%+8d%n", n);    //  -->  " +461012"
+        System.out.format("%,8d%n", n);    // -->  " 461,012"
+        System.out.format("%+,8d%n%n", n); //  -->  "+461,012"
+
+        double pi = Math.PI;
+        System.out.format("%f%n", pi);       // -->  "3.141593"
+        System.out.format("%.3f%n", pi);     // -->  "3.142"
+        System.out.format("%10.3f%n", pi);   // -->  "     3.142"
+        System.out.format("%-10.3f%n", pi);  // -->  "3.142"
+        System.out.format(Locale.FRANCE, "%-10.4f%n%n", pi); // -->  "3,1416"
+
+        Calendar c = Calendar.getInstance();
+        System.out.format("%tB %te, %tY%n", c, c, c); // -->  "May 29, 2006"
+        System.out.format("%tl:%tM %tp%n", c, c, c);  // -->  "2:34 am"
+        System.out.format("%tD%n", c);    // -->  "05/29/06"
+        
+
+3. **The DecimalFormat Class**      
+
+        customFormat("###,###.###", 123456.789);    //123456.789  ###,###.###  123,456.789
+        customFormat("###.##", 123456.789); //123456.789  ###.##  123456.79
+        customFormat("000000.000", 123.78); //123.78  000000.000  000123.780
+        customFormat("$###,###.###", 12345.67); //12345.67  $###,###.###  $12,345.67
+
+* **String class(Immutable):**               
+[String Manipulation Methods](https://docs.oracle.com/javase/tutorial/java/data/manipstrings.html)            
+**StringBuilder** objects are like String objects, except that they can be modified. Internally, these objects are treated like variable-length arrays that contain a sequence of characters. At any point, the length and content of the sequence can be changed through method invocations.              
+**StringBuffer** class is exactly the same as the StringBuilder class, except that it is thread-safe by virtue of having its methods synchronized.              
+ 
 * **Shadowing:**    
 If a declaration of a type(member variable or a parameter name) in a particular scope(inner class or a method definition) 
 has the same name as another declaration in the enclosing scope, then the declaration shadows the declaration of the enclosing scope.      
