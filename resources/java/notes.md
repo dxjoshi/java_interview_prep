@@ -1932,4 +1932,48 @@ The Java runtime environment has a **garbage collector** that periodically frees
 ###Serialization        
 
 ###Generics                 
+1. Generics enable types (classes and interfaces) to be parameters when defining classes, interfaces and methods.  
+2. Stronger type checks at compile time, elimination of casts(ex. List<String>), and allows to implement generic algorithms.   
+3. The type parameter section, delimited by angle brackets (<>), follows the class name. It specifies the type parameters(or type variables) T1, T2, ..., and Tn. A type variable can be any non-primitive type(class/interface/array/another type).  
+4. Syntax:    class name<T1, T2, ..., Tn> { /* ... */ }        // type variables are T1, T2, ..., and Tn.      
 
+
+        public class Box<T> {
+            // T stands for "Type"
+            private T t;
+        
+            public void set(T t) { this.t = t; }
+            public T get() { return t; }
+        }    
+5. An invocation of a generic type is generally known as a **parameterized type**. For ex. Box<Integer> below     
+        
+        
+        Box<Integer> integerBox = new Box<Integer>();   //pair of angle brackets on RHS, <>, is called the diamond. 
+
+6. A **raw type** is the name of a generic class or interface without any type arguments. For ex. Box is raw type of generic type Box<T>        
+   Assigning a raw type to a parameterized type or using a raw type to invoke generic methods, gives warning that raw types bypass generic type checks, deferring the catch of unsafe code to runtime.      
+
+   
+        Box<String> stringBox = new Box<>();
+        Box rawBox = stringBox;               // OK
+        rawBox.set(8);                        // warning: unchecked invocation to set(T)      
+        
+        Box rawBox = new Box();           // rawBox is a raw type of Box<T>
+        Box<Integer> intBox = rawBox;     // warning: unchecked conversion
+
+* **Generic methods:**          
+Methods that introduce their own type parameters, but its scope is limited to the method where it is declared. Static, non-static generic methods and generic class constructors are allowed.        
+
+
+        public class Util {
+            public static <K, V> boolean compare(Pair<K, V> p1, Pair<K, V> p2) {
+                return p1.getKey().equals(p2.getKey()) && p1.getValue().equals(p2.getValue()); 
+                }
+        }
+        Pair<Integer, String> p1 = new Pair<>(1, "apple");
+        Pair<Integer, String> p2 = new Pair<>(2, "pear");
+        boolean same = Util.<Integer, String>compare(p1, p2);   //type has been explicitly provided 
+        boolean same = Util.compare(p1, p2);                    //type inference by compiler    
+
+
+In general, if Foo is a subtype (subclass or subinterface) of Bar, and G is some generic type declaration, it is not the case that G<Foo> is a subtype of G<Bar>. 
