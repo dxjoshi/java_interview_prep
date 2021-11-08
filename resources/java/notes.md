@@ -1975,5 +1975,245 @@ Methods that introduce their own type parameters, but its scope is limited to th
         boolean same = Util.<Integer, String>compare(p1, p2);   //type has been explicitly provided 
         boolean same = Util.compare(p1, p2);                    //type inference by compiler    
 
+* **Bounded Type Parameters:**  
+Allows to restrict the types that can be used as type arguments in a parameterized type. We list the type parameter's name, followed by the **extends** keyword, followed by its upper bound(can be class or interface)     
 
-In general, if Foo is a subtype (subclass or subinterface) of Bar, and G is some generic type declaration, it is not the case that G<Foo> is a subtype of G<Bar>. 
+           
+        public <U extends Number> void inspect(U u){
+            System.out.println("T: " + t.getClass().getName());
+            System.out.println("U: " + u.getClass().getName());
+        }          
+
+* **Multiple Bounds**   
+A type variable with multiple bounds is a subtype of all the types listed in the bound. If one of the bounds is a class, it must be specified first.    
+
+
+        Class A { /* ... */ }
+        interface B { /* ... */ }
+        interface C { /* ... */ }
+        
+        class D <T extends A & B & C> { /* ... */ }
+
+The implementation of the method is straightforward, but it does not compile because the greater than operator (>) applies only to primitive types but NOT objects.     
+
+
+        public static <T> int countGreaterThan(T[] anArray, T elem) {
+            int count = 0;
+            for (T e : anArray)
+                if (e > elem)  // compiler error
+                    ++count;
+            return count;
+        }
+To fix the problem, **use a type parameter bounded by the Comparable<T> interface**. The resulting code will be:
+
+     
+        public interface Comparable<T> {
+            public int compareTo(T o);
+        }
+        
+        public static <T extends Comparable<T>> int countGreaterThan(T[] anArray, T elem) {
+            int count = 0;
+            for (T e : anArray)
+                if (e.compareTo(elem) > 0)
+                    ++count;
+            return count;
+        }
+
+
+7. In general, if Foo is a subtype of Bar, and G is some generic type declaration, it is **NOT** the case that G<Foo> is a subtype of G<Bar>.   
+
+* **Generic Classes and Subtyping:**       
+ArrayList<String> is subtype of List<String>, which is subtype of Collection<String> - **ArrayList<E> implements List<E>, and List<E> extends Collection<E>**   
+PayloadList<String,String>, PayloadList<String,Integer>, PayloadList<String,Exception> are subtypes of List<String> - **interface PayloadList<E,P> extends List<E>**
+
+**Type inference** is compiler's ability to look at each method invocation and corresponding declaration to determine the type argument(or arguments). The inference algorithm tries to find the most specific type that works with all of the arguments.       
+
+        public class BoxDemo {
+          public static <U> void addBox(U u, java.util.List<Box<U>> boxes) {
+            Box<U> box = new Box<>(); box.set(u); boxes.add(box);
+          }  
+
+        BoxDemo.addBox(Integer.valueOf(20), listOfIntegerBoxes);
+        BoxDemo.<Integer>addBox(Integer.valueOf(10), listOfIntegerBoxes);       //specify the type parameter with a type witness 
+        
+Using the diamond you can take advantage of type inference during generic class instantiation:      
+        
+        Map<String, List<String>> myMap = new HashMap<>();       
+
+Constructors can be generic (ie, declare their own formal type parameters) in both generic and non-generic classes.     
+        
+        class MyClass<X> {
+          <T> MyClass(T t) { }
+        }
+        
+        MyClass<Integer> myObject = new MyClass<>("");
+        
+**Target type** of an expression is the data type that the Java compiler expects depending on where the expression appears.     
+
+
+        List<String> listOne = Collections.emptyList();     // target typing in assignment
+        processStringList(Collections.emptyList());         // target typing in method invocation
+
+
+**Wildcards**       
+**?** - the wildcard and represents an unknown type. 
+1. **Upper Bounded Wildcards:** restricts the unknown type to be a specific type or a subtype of that type and is represented using the extends keyword.         
+
+
+        List<? extends Number> (Works on List of Number and its subtypes Integer, Double, and Float)   
+
+        public static double sumOfList(List<? extends Number> list) {
+            double s = 0.0;
+            for (Number n : list)   { s += n.doubleValue(); }
+            return s;
+        }
+        List<Integer> li = Arrays.asList(1, 2, 3);
+        System.out.println("sum = " + sumOfList(li));       // sum = 6.0
+        List<Double> ld = Arrays.asList(1.2, 2.3, 3.5);
+        System.out.println("sum = " + sumOfList(ld));       // sum = 7.0
+
+2. **Unbounded Wildcards:** is specified using the wildcard character (?), like **List<?>**. This is called a list of unknown type. There are two scenarios where an unbounded wildcard is a useful approach:       
+- If you are writing a method that can be implemented using functionality provided in the Object class.          
+- When the code is using methods in the generic class that don't depend on the type parameter. For example, List.size or List.clear. In fact, Class<?> is so often used because most of the methods in Class<T> do not depend on T.                      
+
+
+        public static void printList(List<Object> list) {       //Not generic - it prints only a list of Object instances; it cannot print List<Integer>, List<String>, List<Double> etc., because they are not subtypes of List<Object>.       
+            for (Object elem : list) System.out.println(elem + " ");
+            System.out.println();
+        }
+        
+        public static void printList(List<?> list) {            //Because for any concrete type A, List<A> is a subtype of List<?>, you can use printList to print a list of any type:
+            for (Object elem: list) System.out.print(elem + " "); 
+            System.out.println();
+        }
+
+
+3. **Lower Bounded Wildcards**  restricts the unknown type to be a specific type or a super type of that type.    
+        
+        
+        public static void addNumbers(List<? super Integer> list) {     //works on lists of Integer and the supertypes of Integer, such as Integer, Number, and Object  
+            for (int i = 1; i <= 10; i++) { list.add(i); } }
+            
+4. **Wildcards and Subtyping**      
+
+ 
+        class A { /* ... */ }
+        class B extends A { /* ... */ }
+        
+        List<B> lb = new ArrayList<>();
+        List<A> la = lb;   // compile-time error
+
+To create a relationship between these classes so that the code can access Number's methods through List<Integer>'s elements, use an upper bounded wildcard:
+
+        List<? extends Integer> intList = new ArrayList<>();
+        List<? extends Number>  numList = intList;          // OK. List<? extends Integer> is a subtype of List<? extends Number>            
+        
+5. **Wildcard capture:** The compiler infers the type of a wildcard. For example, a list may be defined as List<?> but, when evaluating an expression, the compiler infers a particular type from the code.        
+ 
+6. **Wildcard Guidelines:**     
+    - An "in" variable is defined with an upper bounded wildcard, using the extends keyword.(An "in" variable serves up data to the code)       
+    - An "out" variable is defined with a lower bounded wildcard, using the super keyword.(An "out" variable holds data for use elsewhere)      
+    - In the case where the "in" variable can be accessed using methods defined in the Object class, use an unbounded wildcard.     
+    - In the case where the code needs to access the variable as both an "in" and an "out" variable, do not use a wildcard.     
+    
+**Type Erasure:** Java compiler erases all type parameters and replaces each with its first bound if the type parameter is bounded, or Object if the type parameter is unbounded. It ensures that no new classes are created for parameterized types; consequently, generics incur no runtime overhead. To implement generics, the Java compiler applies type erasure to:                    
+1. Replace all type parameters in generic types with their bounds or Object if the type parameters are unbounded. The produced bytecode, therefore, contains only ordinary classes, interfaces, and methods.            
+2. Insert type casts if necessary to preserve type safety.          
+3. Generate bridge methods to preserve polymorphism in extended generic types.      
+
+
+        public class Node<T> {
+            private T data;
+            private Node<T> next;
+            public Node(T data, Node<T> next) { this.data = data; this.next = next; }
+            public T getData() { return data; }
+        }
+        
+        public class Node {
+            private Object data;    //Because the type parameter T is unbounded, the Java compiler replaces it with Object                                              
+            private Node next;
+            public Node(Object data, Node next) { this.data = data; this.next = next; }
+            public Object getData() { return data; }
+        }    
+        
+
+        public static <T extends Shape> void draw(T shape) 
+        public static void draw(Shape shape)    // compiler replaces T with Shape
+        
+* **Bridge method:**                
+1. Compiler sometimes creates a synthetic method, which is called **a bridge method**, as part of the type erasure process. Given the following two classes:       
+
+
+        public class Node<T> {
+            public T data;
+            public Node(T data) { this.data = data; }
+            public void setData(T data) { System.out.println("Node.setData"); this.data = data; }
+        }
+        
+        public class MyNode extends Node<Integer> {
+            public MyNode(Integer data) { super(data); }
+            public void setData(Integer data) { System.out.println("MyNode.setData"); super.setData(data); }
+        }              
+2. After type erasure, method signatures don't match; the Node.setData(T) becomes Node.setData(Object). As a result, the MyNode.setData(Integer) does not override the Node.setData(Object):       
+
+
+        public class Node {
+            public Object data;
+            public Node(Object data) { this.data = data; }
+            public void setData(Object data) { System.out.println("Node.setData"); this.data = data; }
+        }
+        
+        public class MyNode extends Node {
+            public MyNode(Integer data) { super(data); }
+            public void setData(Integer data) { System.out.println("MyNode.setData"); super.setData(data); }
+        }
+3. To solve this problem and preserve the polymorphism of generic types after type erasure, the Java compiler generates a bridge method to ensure that subtyping works as expected.        
+        
+        
+        class MyNode extends Node {
+            // Bridge method generated by the compiler
+            public void setData(Object data) { setData((Integer) data); }
+            public void setData(Integer data) { System.out.println("MyNode.setData"); super.setData(data); }
+        }
+        
+* [**Restrictions on Generics:**](https://docs.oracle.com/javase/tutorial/java/generics/restrictions.html)        
+1. Cannot Instantiate Generic Types with Primitive Types: 
+        
+        List<int> list = new ArrayList<>();              
+2. Cannot Create Instances of Type Parameters:        
+        
+        E elem = new E();  // compile-time error
+3. Cannot Declare Static Fields Whose Types are Type Parameters:    
+        
+        private static T obj;    
+4. Cannot Use Casts or instanceof With Parameterized Types:      
+
+        if (list instanceof ArrayList<Integer>)  
+                OR 
+        List<Integer> li = new ArrayList<>();
+        List<Number>  ln = (List<Number>) li; 
+5. Cannot Create Arrays of Parameterized Types:      
+        
+        List<Integer>[] arrayOfLists = new List<Integer>[2]; 
+6. Cannot Create, Catch, or Throw Objects of Parameterized Types:
+
+        class MathException<T> extends Exception { /* ... */ }    // compile-time error
+        class QueueFullException<T> extends Throwable { /* ... */ // compile-time error
+        
+        public static <T extends Exception, J> void execute(List<J> jobs) {
+            try {
+                for (J job : jobs)
+                    // ...
+            } catch (T e) {   // compile-time error
+                // ...
+            }
+        }        
+
+7. Cannot Overload a Method Where the Formal Parameter Types of Each Overload Erase to the Same Raw Type:            
+        
+        public class Example {
+            public void print(Set<String> strSet) { }
+            public void print(Set<Integer> intSet) { }
+        }
+        
+        
