@@ -1929,8 +1929,6 @@ The try-with-resources statement contains two declarations that are separated by
 ### Java Memory Model         
 The Java runtime environment has a **garbage collector** that periodically frees the memory used by objects that are no longer referenced.
 
-###Serialization        
-
 ###Generics                 
 1. Generics enable types (classes and interfaces) to be parameters when defining classes, interfaces and methods.  
 2. Stronger type checks at compile time, elimination of casts(ex. List<String>), and allows to implement generic algorithms.   
@@ -2216,4 +2214,70 @@ To create a relationship between these classes so that the code can access Numbe
             public void print(Set<Integer> intSet) { }
         }
         
+
+###Serialization  
+To **serialize** an object means to convert its state to a byte stream so that the byte stream can be reverted back into a copy of the object. A Java object is serializable if its class or any of its superclasses implements either the java.io.Serializable interface or its subinterface, java.io.Externalizable.       
+**Deserialization** is the process of converting the serialized form of an object back into a copy of the object.        
+
+
+###Regular Expression         
+1. The java.util.regex package primarily consists of three classes: Pattern, Matcher, and PatternSyntaxException:       
+    - A [**Pattern**](https://docs.oracle.com/javase/tutorial/essential/regex/pattern.html) object is a compiled representation of a regular expression. The Pattern class provides no public constructors. To create a pattern, you must first invoke one of its public static compile methods, which will then return a Pattern object. These methods accept a regular expression as the first argument; the first few lessons of this trail will teach you the required syntax.
+    - A [**Matcher**](https://docs.oracle.com/javase/tutorial/essential/regex/matcher.html) object is the engine that interprets the pattern and performs match operations against an input string. Like the Pattern class, Matcher defines no public constructors. You obtain a Matcher object by invoking the matcher method on a Pattern object.
+    - A **PatternSyntaxException** object is an unchecked exception that indicates a syntax error in a regular expression pattern.
+     
+2.  **Metacharacter** is a character with special meaning interpreted by the matcher. The metacharacters supported by this API are <([{\^-=$!|]})?*+.>. 
+To force a metacharacter to be treated as an ordinary character, precede the metacharacter with a backslash, or enclose it within \Q (which starts the quote) and \E (which ends it).   
+
+3. In the context of regular expressions, a **character class** is a set of characters enclosed within square brackets. It specifies the characters that will successfully match a single character from a given input string.      
+
+
+    [abc]	        a, b, or c (simple class)
+    [^abc]	        Any character except a, b, or c (negation)
+    [a-zA-Z]	a through z, or A through Z, inclusive (range)
+    [a-d[m-p]]	a through d, or m through p: [a-dm-p] (union)
+    [a-z&&[def]]	d, e, or f (intersection)
+    [a-z&&[^bc]]	a through z, except for b and c: [ad-z] (subtraction)
+    [a-z&&[^m-p]]	a through z, and not m through p: [a-lq-z] (subtraction) 
+4. The Pattern API contains a number of useful **predefined character classes**, which offer convenient shorthands for commonly used regular expressions:       
+
+
+        .	Any character (may or may not match line terminators)
+        \d	A digit: [0-9]
+        \D	A non-digit: [^0-9]
+        \s	A whitespace character: [ \t\n\x0B\f\r]
+        \S	A non-whitespace character: [^\s]
+        \w	A word character: [a-zA-Z_0-9]
+        \W	A non-word character: [^\w]              
         
+5. **Constructs** beginning with a backslash are called **escaped constructs**. If you are using an escaped construct within a string literal, you must precede the backslash with another backslash for the string to compile.     
+        
+        
+        private final String REGEX = "\\d"; // a single digit        
+6. **Quantifiers** allow you to specify the number of occurrences to match against. For convenience, the three sections of the Pattern API specification describing greedy, reluctant, and possessive quantifiers are presented below.         
+
+
+        Greedy	Reluctant	Possessive	Meaning
+        X?	        X??	        X?+	        X, once or not at all
+        X*	        X*?	        X*+	        X, zero or more times
+        X+	        X+?	        X++	        X, one or more times
+        X{n}	X{n}?	        X{n}+	        X, exactly n times
+        X{n,}	X{n,}?	        X{n,}+	        X, at least n times
+        X{n,m}	X{n,m}?	        X{n,m}+	        X, at least n but not more than m times
+
+7. **Capturing groups** are a way to treat multiple characters as a single unit. They are created by placing the characters to be grouped inside a set of parentheses.  
+The section of the input string matching the capturing group(s) is saved in memory for later recall via backreference. A **backreference** is specified in the regular expression as a backslash (\) followed by a digit indicating the number of the group to be recalled. 
+
+8. You can make your pattern matches more precise by specifying where pattern matching takes place with **boundary matchers**.      
+
+
+        Boundary Construct	Description
+        ^	                The beginning of a line
+        $	                The end of a line
+        \b	                A word boundary
+        \B	                A non-word boundary
+        \A	                The beginning of the input
+        \G	                The end of the previous match
+        \Z	                The end of the input but for the final terminator, if any
+        \z	                The end of the input
+9.           
