@@ -2388,11 +2388,17 @@ If an object survives for X rounds of garbage collection (X depends on the JVM i
         java.lang.OutOfMemoryError: Unable to create new native thread — indicates that JVM native code can no longer create a new native thread from the underlying operating system because so many threads have been already created and they consume all the available memory for the JVM
         java.lang.OutOfMemoryError: request size bytes for reason — indicates that swap memory space is fully consumed by application
         java.lang.OutOfMemoryError: Requested array size exceeds VM limit– indicates that our application uses an array size more than the allowed size for the underlying platform
+6. **PermGen (Permanent Generation)** is a special heap space separated from the main memory heap. It contains data about bytecode(class and method objects), names, and JIT information.      
+With its limited memory size, PermGen is generates OutOfMemoryError. Simply put, the class loaders weren't garbage collected properly and, as a result, generated a memory leak.              
 
-Starting with Java 8, the Metaspace replaces the PermGen.   
-PermGen (Permanent Generation) is a special heap space separated from the main memory heap. It contains data about bytecode(class and method objects), names, and JIT information. With its limited memory size, PermGen is involved in generating the famous OutOfMemoryError. Simply put, the class loaders weren't garbage collected properly and, as a result, generated a memory leak.      
--XX:PermSize=[size] is the initial or minimum size of the PermGen space         
--XX:MaxPermSize=[size] is the maximum size          
+        -XX:PermSize=[size] is the initial or minimum size of the PermGen space         
+        -XX:MaxPermSize=[size] is the maximum size          
+7. **Metaspace** is used to store the metadata about your loaded classes in the JVM. It is a native memory region(NOT part of heap) that grows automatically by default, and JVM reduces the chance to get the OutOfMemory error. We also have new flags to tune the memory:           
+
+        - MetaspaceSize and MaxMetaspaceSize – we can set the Metaspace upper bounds.       
+        - MinMetaspaceFreeRatio – is the minimum percentage of class metadata capacity free after garbage collection        
+        - MaxMetaspaceFreeRatio – is the maximum percentage of class metadata capacity free after a garbage collection to avoid a reduction in the amount of space      
+8. Starting with Java 8, the **Metaspace replaces the PermGen**.   
 
 **JVM has five types of GC implementations:**   
 1. **Serial Garbage Collector:**  This is the simplest GC implementation, as it basically works with a single thread. 
@@ -2420,16 +2426,38 @@ Furthermore, pause times do not increase with the heap, live-set, or root-set si
         java -XX:+UnlockExperimentalVMOptions -XX:+UseZGC Application.java      //before version 15
         java -XX:+UseZGC Application.java       //From version 15 we don't need experimental mode on
 
-**Metaspace** is used to store the metadata about your loaded classes in the JVM. It is a native memory region(NOT part of heap) that grows automatically by default, and JVM reduces the chance to get the OutOfMemory error. We also have new flags to tune the memory:           
-    - MetaspaceSize and MaxMetaspaceSize – we can set the Metaspace upper bounds.       
-    - MinMetaspaceFreeRatio – is the minimum percentage of class metadata capacity free after garbage collection        
-    - MaxMetaspaceFreeRatio – is the maximum percentage of class metadata capacity free after a garbage collection to avoid a reduction in the amount of space      
-
 
 ### Serialization  
 **Serialization** of an object means to convert its state to a byte stream so that the byte stream can be reverted back into a copy of the object. A Java object is serializable if its class or any of its superclasses implements either the java.io.Serializable interface or its subinterface, java.io.Externalizable.       
 **Deserialization** is the process of converting the serialized form of an object back into a copy of the object.   
+1. When a class implements the Serializable interface, all its sub-classes are serializable as well. But when an object has a reference to another object, these objects must implement the Serializable interface separately. 
+If our class is having even a single reference to a non Serializable class then JVM will throw NotSerializableException.     
+2. Serialization does not care about access modifiers of the field such as private. All non transient and non static fields are considered part of an object's persistent state and are eligible for serialisation.     
+3. We can assign values to final fields in conscrutors only and serialization process do not invoke any constructor but still it can assign values to final fields.     
+4. by default, the JVM associates a version number(in **serialVersionUID**) to each serializable class to control the class versioning. It is used to verify that the serialized and deserialized objects have the same attributes and thus are compatible with deserialization.         
+If a serializable class doesn't declare a serialVersionUID, the JVM will generate one automatically at run-time.        
+5. We can override this default serialization inside our Java class by **overriding writeObject() and readObject() and declaring both methods as private** inside the class that we want to serialize.       
 
+
+        private void writeObject(ObjectOutputStream oos) throws IOException {
+         oos.defaultWriteObject(); // Calling the default serialization logic
+          // Any Custom logic
+        }
+        
+        // Custom deserialization logic will allow us to have additional deserialization logic on top of the default one e.g. decrypting object after deserialization
+        private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+         ois.defaultReadObject(); // Calling the default deserialization logic
+          // Any Custom logic
+        }
+6. The call to ObjectOutputStream.writeObject() or ObjectInputStream.readObject() kicks off the serialization protocol. First, the object is checked to ensure it implements Serializable, and then, checked whether either of those private methods is provided. If they are provided, the stream class is passed as the parameter to these methods, giving the code control over its usage.
+7. We can call ObjectOutputStream.defaultWriteObject() and ObjectInputStream.defaultReadObject() from these methods to gain default serialization logic.        
+8. To stop the serialization for our class(which extends from another class that implements Serializable), we can, once again, use the above private methods to just throw the NotSerializableException.    
+9. We can write your own serialization logic by implementing the Externalizable interface and overriding it's methods writeExternal() and readExternal(). In such case preference is given to these methods over the default JVM serialization. 
+These methods supersede customized implementations of writeObject and readObject methods. So even if we provide writeObject() and readObject(), then they will be ignored.          
+10. When an Externizable object is reconstructed, an object is created using public no-arg constructor before the readExternal() is called. If a public no-arg constructor is not present, then a InvalidClassException is thrown at runtime.   
+11. Using Externalizable, we can even serialize/deserialize transient and static variables.     
+
+ 
 ### Marker Interface    
 1. It is an empty interface (no field or methods). ex. Serializable, Cloneable and Remote interface. 
 2. It provides run-time type information about objects, so the compiler and JVM have additional information about the object.       
@@ -2439,3 +2467,53 @@ Furthermore, pause times do not increase with the heap, live-set, or root-set si
 They let you achieve the same purpose of conveying metadata about the class to its consumers without creating a separate type for it. Annotations are more powerful, too, letting programmers pass more sophisticated information to classes that "consume" it.     
        
 
+### Shallow and Deep Cloning  
+[Article](https://dzone.com/articles/shallow-and-deep-java-cloning)  
+1. Class should implement **Cloneable interface**. Otherwise, the JVM will throw CloneNotSupportedException if we will call clone() on our object.      
+2. Class should have a clone method, which should handle CloneNotSupportedException. We can name the clone method as we like, e.g. createCopy(). Actually we are not overriding the Object.clone() method here, so we don’t have to follow any specification.
+3. Need to call the clone() of the superclass, which will call it's super’s clone(). This chain will continue until it reaches the clone() method of the Object class. The Object.clone() method is the actual worker that creates the clone of your object, createCopy() method just delegates the call to its parent’s clone().   
+4. The Object.clone() method copies the content of the object to another object bit-by-bit, meaning the values of all instance variables from one object will get copied to instance variables of other objects.    
+5. Reference variables hold the address of the object instead of object itself, which can also be referred from other reference variables. And if we change one, the other will reflect that change.    
+
+
+        class Person implements Cloneable {
+            private String name; 
+            private int income; 
+            private City city; 
+        
+            public Person(String firstName, int income, City city) { super(); this.name = firstName; this.income = income; this.city = city; }
+        
+            @Override
+            public Person clone() throws CloneNotSupportedException {
+                return (Person) super.clone();
+            }
+            //...
+        
+        class City implements Cloneable {
+            private String name;
+        
+            public City(String name) { super(); this.name = name; }
+        
+            public City clone() throws CloneNotSupportedException {
+                return (City) super.clone();
+            }
+            //...
+6. **Shallow Cloning:**  person2 is a shallow copy as both objects share came city object.          
+
+
+        Person person2 = person1.clone();           
+        if (person1 == person2) // false    
+        if (person1.getCity() == person2.getCity()) // true     
+7. **Deep Cloning:**   person2 is a deep copy as both objects have separate city objects now.            
+
+
+        public Person clone() throws CloneNotSupportedException {
+            Person clonedObj = (Person) super.clone();
+            clonedObj.city = this.city.clone();
+            return clonedObj;
+        }
+        
+        Person person2 = person1.clone();           
+        if (person1 == person2) // false    
+        if (person1.getCity() == person2.getCity()) // false
+        
