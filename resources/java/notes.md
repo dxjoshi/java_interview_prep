@@ -30,7 +30,7 @@
 * [Regular Expression](#regular-expression)           
 * [Java 8](#java-8)     
 * [Marker Interface](#marker-interface)     
-
+* [Copy Constructor](#copy-constructor)     
 * [Date-Time API Java Docs](https://docs.oracle.com/javase/tutorial/datetime/TOC.html)      
 
 
@@ -759,6 +759,7 @@ By default, even core threads are initially created and started only when new ta
 ### Java Basics Questions   
 * [Is java pass-by-value?](https://stackoverflow.com/questions/7893492/is-java-really-passing-objects-by-value)       
 * [jdk vs. jre vs. jvm](https://www.geeksforgeeks.org/differences-jdk-jre-jvm/)
+* [5 ways to create objects in Java](https://www.programmingmitra.com/2016/05/different-ways-to-create-objects-in-java-with-example.html)
     
 ### Iterators
 
@@ -2428,14 +2429,17 @@ Furthermore, pause times do not increase with the heap, live-set, or root-set si
 
 
 ### Serialization  
+[Serialization](https://dzone.com/articles/what-is-serialization-everything-about-java-serial)      
+[Externalization](https://dzone.com/articles/how-to-customize-serialization-in-java-using-the-e)        
 **Serialization** of an object means to convert its state to a byte stream so that the byte stream can be reverted back into a copy of the object. A Java object is serializable if its class or any of its superclasses implements either the java.io.Serializable interface or its subinterface, java.io.Externalizable.       
 **Deserialization** is the process of converting the serialized form of an object back into a copy of the object.   
 1. When a class implements the Serializable interface, all its sub-classes are serializable as well. But when an object has a reference to another object, these objects must implement the Serializable interface separately. 
-If our class is having even a single reference to a non Serializable class then JVM will throw NotSerializableException.     
-2. Serialization does not care about access modifiers of the field such as private. All non transient and non static fields are considered part of an object's persistent state and are eligible for serialisation.     
+If our class is having even a single reference to a non Serializable class then JVM will throw **NotSerializableException**.     
+2. Serialization does not care about access modifiers of the field such as private. **All non transient and non static fields** are considered part of an object's persistent state and are eligible for serialisation.     
 3. We can assign values to final fields in conscrutors only and serialization process do not invoke any constructor but still it can assign values to final fields.     
-4. by default, the JVM associates a version number(in **serialVersionUID**) to each serializable class to control the class versioning. It is used to verify that the serialized and deserialized objects have the same attributes and thus are compatible with deserialization.         
-If a serializable class doesn't declare a serialVersionUID, the JVM will generate one automatically at run-time.        
+4. by default, the JVM associates a version number(in **serialVersionUID**) to each serializable class to control the class versioning. It is used to verify that the serialized and deserialized objects have the same attributes and thus are compatible with deserialization. 
+Deserialization throws **java.io.InvalidClassException** if a class which doesn't declare serialVersionUID class which has been modified after Serialization.               
+If a serializable class doesn't declare a serialVersionUID, the JVM will generate one automatically at run-time.         
 5. We can override this default serialization inside our Java class by **overriding writeObject() and readObject() and declaring both methods as private** inside the class that we want to serialize.       
 
 
@@ -2451,13 +2455,27 @@ If a serializable class doesn't declare a serialVersionUID, the JVM will generat
         }
 6. The call to ObjectOutputStream.writeObject() or ObjectInputStream.readObject() kicks off the serialization protocol. First, the object is checked to ensure it implements Serializable, and then, checked whether either of those private methods is provided. If they are provided, the stream class is passed as the parameter to these methods, giving the code control over its usage.
 7. We can call ObjectOutputStream.defaultWriteObject() and ObjectInputStream.defaultReadObject() from these methods to gain default serialization logic.        
-8. To stop the serialization for our class(which extends from another class that implements Serializable), we can, once again, use the above private methods to just throw the NotSerializableException.    
-9. We can write your own serialization logic by implementing the Externalizable interface and overriding it's methods writeExternal() and readExternal(). In such case preference is given to these methods over the default JVM serialization. 
+8. To stop the serialization for our class(which extends from another class that implements Serializable), we can, once again, **use the above private methods to just throw the NotSerializableException**.    
+9. We can write your own serialization logic by **implementing the Externalizable interface and overriding it's methods writeExternal() and readExternal()**. In such case preference is given to these methods over the default JVM serialization. 
 These methods supersede customized implementations of writeObject and readObject methods. So even if we provide writeObject() and readObject(), then they will be ignored.          
-10. When an Externizable object is reconstructed, an object is created using public no-arg constructor before the readExternal() is called. If a public no-arg constructor is not present, then a InvalidClassException is thrown at runtime.   
-11. Using Externalizable, we can even serialize/deserialize transient and static variables.     
+10. When an Externalizable object is reconstructed, an object is created using public no-arg constructor before the readExternal() is called. If a public no-arg constructor is not present, then a InvalidClassException is thrown at runtime.   
+11. Using Externalizable, we **can even serialize/deserialize transient and static variables**.     
+12. Is constructor of super class called during DeSerialization process of sub class in java?       
+If superclass has implemented Serializable - constructor is not called during DeSerialization process. If superclass has not implemented Serializable - constructor is called during DeSerialization process.      
+13. **readResolve()** is used for replacing the object read from the stream, and used for enforcing singletons(when an object is read, replace it with the singleton instance). This ensures that nobody can create another instance by serializing and deserializing the singleton.        
 
- 
+
+        private Object readResolve() throws ObjectStreamException {
+            return INSTANCE;
+        }
+14.  Deserialization always creates a deep copy of the original object.     
+15. Variables may be marked **transient** to indicate that they are not part of the persistent state of an object.      
+16. **Compatible Changes:** Changes which does not affect deserialization process even if class was updated after being serialized (provided serialVersionUID has been declared):
+     Adding new fields, adding or removing writeObject()/readObject(), changing access modifier of a field, changing a static/transient field to non-static/non-transient(its like addition of new fields)
+17. **InCompatible Changes:** Changes which affect deserialization process if class was updated after being serialized (provided serialVersionUID has been declared):
+     Deletion of fields, changing a non-static/non-transient field to static/transient(it’s equal to deletion of fields), modifying the writeObject()/readObject()      
+
+
 ### Marker Interface    
 1. It is an empty interface (no field or methods). ex. Serializable, Cloneable and Remote interface. 
 2. It provides run-time type information about objects, so the compiler and JVM have additional information about the object.       
@@ -2468,7 +2486,7 @@ They let you achieve the same purpose of conveying metadata about the class to i
        
 
 ### Shallow and Deep Cloning  
-[Article](https://dzone.com/articles/shallow-and-deep-java-cloning)  
+[Ref](https://dzone.com/articles/shallow-and-deep-java-cloning)  
 1. Class should implement **Cloneable interface**. Otherwise, the JVM will throw CloneNotSupportedException if we will call clone() on our object.      
 2. Class should have a clone method, which should handle CloneNotSupportedException. We can name the clone method as we like, e.g. createCopy(). Actually we are not overriding the Object.clone() method here, so we don’t have to follow any specification.
 3. Need to call the clone() of the superclass, which will call it's super’s clone(). This chain will continue until it reaches the clone() method of the Object class. The Object.clone() method is the actual worker that creates the clone of your object, createCopy() method just delegates the call to its parent’s clone().   
@@ -2517,3 +2535,29 @@ They let you achieve the same purpose of conveying metadata about the class to i
         if (person1 == person2) // false    
         if (person1.getCity() == person2.getCity()) // false
         
+
+### Copy Constructor        
+[Ref](https://www.baeldung.com/java-copy-constructor)
+* A **copy constructor** is a constructor that creates an object using another object of the same Java class.   
+1. There are 2 good reasons for using a copy constructor instead of the constructor passing all parameters:    
+    1. When you have a complex object with many attributes it is much simpler to use the copy constructor.      
+    2. If you add an attribute to your class, you just change the copy constructor to take this new attribute into account instead of changing every occurence of the other constructor.    
+2. Copy constructor has some advantages over the clone method:
+    1. The copy constructor is much easier to implement. We do not need to implement the Cloneable interface and handle CloneNotSupportedException.
+    2. The clone method returns a general Object reference. Therefore, we need to typecast it to the appropriate type.
+    3. We can not assign a value to a final field in the clone method. However, we can do so in the copy constructor.            
+3.  **Inheritance Issues:** Copy constructors in Java are not inheritable by subclasses. Therefore, if we try to initialize a child object from a parent class reference, we will face a casting issue when cloning it with the copy constructor.      
+    
+    
+        public class Employee {
+            private int id;
+            private String name;
+            private Date startDate;
+        
+            public Employee(Employee employee) {
+                this.id = employee.id;
+                this.name = employee.name;
+                this.startDate = new Date(employee.startDate.getTime());
+            }
+        }
+       
