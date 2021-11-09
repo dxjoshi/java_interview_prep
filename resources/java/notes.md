@@ -23,6 +23,8 @@
 * [Polymorphism](#polymorphism)     
 * [JVM Architecture](#jvm-architecture)   
 * [Garbage Collection](#garbage-collection)
+* [Reference Types](#reference-types)       
+* [String Pool](#string-pool)       
 * [Generics](#generics)     
 * [Serialization](#serialization)       
 * [Regular Expression](#regular-expression)           
@@ -1931,7 +1933,10 @@ The try-with-resources statement contains two declarations that are separated by
 
 
 ### Polymorphism     
-* Subclasses of a class can define their own unique behaviors and yet share some of the same functionality of the parent class.
+* Subclasses of a class can define their own unique behaviors and yet share some of the same functionality of the parent class.         
+* Polymorphic method invocations apply only to instance methods. Not static methods. Not variables. Only overridden instance methods are dynamically invoked based on the real object’s type.   
+* You can always refer to an object with a more general reference variable type (a superclass or interface), but at runtime, the ONLY things that are dynamically selected based on the actual object (rather than the reference type) are instance methods.     
+
         
 ### Generics                 
 1. Generics enable types (classes and interfaces) to be parameters when defining classes, interfaces and methods.  
@@ -2282,8 +2287,9 @@ The section of the input string matching the capturing group(s) is saved in memo
 
 
 ### JVM Architecture                      
-* JRE is the implementation of Java Virtual Machine (JVM). The compiler compiles the Java file into a Java .class file, then that .class file is input into the JVM, which loads and executes the class file. JVM is divided into three main subsystems:        
-[JVM Architecture](https://dzone.com/articles/jvm-architecture-explained)              
+* JRE is the implementation of JVM. The compiler compiles the Java file into a Java .class file, then that .class file is input into the JVM, which loads and executes the class file. JVM is divided into three main subsystems:        
+* [Java Memory Model](http://tutorials.jenkov.com/java-concurrency/java-memory-model.html)      
+* [JVM Architecture](https://dzone.com/articles/jvm-architecture-explained) 
 1. **ClassLoader Subsystem:**  It loads, links. and initializes the class file when it refers to a class for the first time at runtime, not compile time.      
     1. **Loading** - Classes will be loaded by this component. BootStrap ClassLoader, Extension ClassLoader, and Application ClassLoader are the three ClassLoaders that will help in achieving it.
         - **BootStrap ClassLoader** – Responsible for loading classes from the bootstrap classpath, nothing but rt.jar. Highest priority will be given to this loader.
@@ -2317,16 +2323,101 @@ The section of the input string matching the capturing group(s) is saved in memo
     3. **Garbage Collector:** Collects and removes unreferenced objects. Garbage Collection can be triggered by calling System.gc(), but the execution is not guaranteed. Garbage collection of the JVM collects the objects that are created.
 
 **Java Native Interface (JNI):** JNI will be interacting with the Native Method Libraries and provides the Native Libraries required for the Execution Engine.
-**Native Method Libraries:** This is a collection of the Native Libraries, which is required for the Execution Engine.
-     
-### Garbage Collection     
-The Java runtime environment has a **garbage collector** that periodically frees the memory used by objects that are no longer referenced.      
+**Native Method Libraries:** This is a collection of the Native Libraries, which is required for the Execution Engine.  
+
+### Reference Types
+1. **Strong Reference:**
+The object on the heap it is not garbage collected while there is a strong reference pointing to it, or if it is strongly reachable through a chain of strong references.   
+        
+        
+        StringBuilder builder = new StringBuilder();
+              
+
+2. **Weak Reference:**
+In simple terms, a weak reference to an object from the heap is most likely to not survive after the next garbage collection process. A nice use case for weak references are caching scenarios. 
+
+
+        WeakReference<StringBuilder> reference = new WeakReference<>(new StringBuilder());
+A nice implementation for caching scenarios is the collection WeakHashMap<K,V>, its entries actually extend the WeakReference class and uses its ref field as the map’s key:        
+
+        private static class Entry<K,V> extends WeakReference<Object> implements Map.Entry<K,V> {
+            V value;
+Once a key from the WeakHashMap is garbage collected, the entire entry is removed from the map.
+
+3. **Soft Reference:**      
+These types of references are used for more memory-sensitive scenarios, since those are going to be garbage collected only when your application is running low on memory. Therefore, as long as there is no critical need to free up some space, the garbage collector will not touch softly reachable objects. The Javadocs state, “all soft references to softly-reachable objects are guaranteed to have been cleared before the virtual machine throws an OutOfMemoryError.”        
+
+
+        SoftReference<StringBuilder> reference = new SoftReference<>(new StringBuilder());
+
+
+4. **Phantom Reference:**       
+Used to schedule post-mortem cleanup actions, since we know for sure that objects are no longer alive. Used only with a reference queue, since the .get() method of such references will always return null. These types of references are considered preferable to finalizers.     
+    
+### String Pool         
+For strings, Java manages a string pool in memory. This means that Java stores and reuse strings whenever possible. This is mostly true for string literals.        
+
+
+        String localPrefix = "297"; //1
+        String prefix = "297";      //2    
+        String localPrefix = new Integer(297).toString();   //3  created in heap  
+        prefix == localPrefix       //1 and 2 are equal, but 1 and 3 are different     
+        String localPrefix = new Integer(297).toString().intern(); // we can force the JVM to add it to the string pool by adding the .intern()
+        
+### Garbage Collection      
+1. The Java runtime environment has a **garbage collector** that periodically frees the memory used by objects that are no longer referenced.         
+2. System.gc() is a request to Java to run the garbage collector, but it’s, again, up to it whether or not to do that.           
+3. GC works in two simple steps known as **Mark and Sweep**:            
+    **Mark** – It is where the garbage collector identifies which pieces of memory are in use and which are not.        
+    **Sweep** – This step removes objects identified during the “mark” phase.              
+4. When an object is created, it is allocated on the Eden space. Because the Eden space is not that big, it gets full quite fast. The garbage collector runs on the Eden space and marks objects as alive.
+Once an object survives a garbage collecting process, it gets moved into a survivor space S0. The 2nd time the garbage collector runs on the Eden space, it moves all surviving objects into the S1 space. Also, everything that is currently on S0 is moved into the S1 space.     
+If an object survives for X rounds of garbage collection (X depends on the JVM implementation, in my case it’s 8), it is most likely that it will survive forever, and it gets moved into the Old space.        
+
+5. Memory related errors:       
+    
+
+        java.lang.StackOverFlowError — indicates that Stack Memory is full
+        java.lang.OutOfMemoryError: Java heap space — indicates that Heap Memory is full
+        java.lang.OutOfMemoryError: GC Overhead limit exceeded — indicates that GC has reached its overhead limit
+        java.lang.OutOfMemoryError: Permgen space — indicates that Permanent Generation space is full
+        java.lang.OutOfMemoryError: Metaspace — indicates that Metaspace is full (since Java 8)
+        java.lang.OutOfMemoryError: Unable to create new native thread — indicates that JVM native code can no longer create a new native thread from the underlying operating system because so many threads have been already created and they consume all the available memory for the JVM
+        java.lang.OutOfMemoryError: request size bytes for reason — indicates that swap memory space is fully consumed by application
+        java.lang.OutOfMemoryError: Requested array size exceeds VM limit– indicates that our application uses an array size more than the allowed size for the underlying platform
+
 Starting with Java 8, the Metaspace replaces the PermGen.   
 PermGen (Permanent Generation) is a special heap space separated from the main memory heap. It contains data about bytecode(class and method objects), names, and JIT information. With its limited memory size, PermGen is involved in generating the famous OutOfMemoryError. Simply put, the class loaders weren't garbage collected properly and, as a result, generated a memory leak.      
 -XX:PermSize=[size] is the initial or minimum size of the PermGen space         
 -XX:MaxPermSize=[size] is the maximum size          
 
-Metaspace is a native memory region(NOT part of heap) that grows automatically by default, and JVM reduces the chance to get the OutOfMemory error. We also have new flags to tune the memory:           
+**JVM has five types of GC implementations:**   
+1. **Serial Garbage Collector:**  This is the simplest GC implementation, as it basically works with a single thread. 
+As a result, this GC implementation freezes all application threads when it runs. Hence, it is not a good idea to use it in multi-threaded applications like server environments.
+        
+        java -XX:+UseSerialGC -jar Application.java
+2. **Parallel Garbage Collector:** This uses multiple threads for managing heap space. But it also freezes other application threads while performing GC.   
+        
+        java -XX:+UseParallelGC -jar Application.java
+3. **CMS Garbage Collector:**   The Concurrent Mark Sweep (CMS) implementation uses multiple garbage collector threads for garbage collection. 
+It's designed for applications that prefer shorter garbage collection pauses, and that can afford to share processor resources with the garbage collector while the application is running.           
+  
+        java -XX:+UseParNewGC -jar Application.java 
+4. **G1 Garbage Collector:** G1 (Garbage First) Garbage Collector is designed for applications running on multi-processor machines with large memory space.     
+G1 collector partitions the heap into a set of equal-sized heap regions, each a contiguous range of virtual memory. When performing garbage collections, G1 shows a concurrent global marking phase (i.e. phase 1 known as Marking) to determine the liveness of objects throughout the heap.   
+After the mark phase is completed, G1 knows which regions are mostly empty. It collects in these areas first, which usually yields a significant amount of free space (i.e. phase 2 known as Sweeping). It is why this method of garbage collection is called Garbage-First.        
+
+        java -XX:+UseG1GC -jar Application.java
+5. **Z Garbage Collector:**  ZGC (Z Garbage Collector) is a scalable low-latency garbage collector which debuted in Java 11 as an experimental option for Linux. JDK 14 introduced  ZGC under the Windows and macOS operating systems. ZGC has obtained the production status from Java 15 onwards.
+ZGC performs all expensive work concurrently, without stopping the execution of application threads for more than 10 ms, which makes it suitable for applications that require low latency. 
+It uses load barriers with colored pointers to perform concurrent operations when the threads are running and they are used to keep track of heap usage.          
+Reference coloring (colored pointers) is the core concept of ZGC. It means that ZGC uses some bits (metadata bits) of reference to mark the state of the object. It also handles heaps ranging from 8MB to 16TB in size. 
+Furthermore, pause times do not increase with the heap, live-set, or root-set size. Similar to G1, Z Garbage Collector partitions the heap, except that heap regions can have different sizes.  
+
+        java -XX:+UnlockExperimentalVMOptions -XX:+UseZGC Application.java      //before version 15
+        java -XX:+UseZGC Application.java       //From version 15 we don't need experimental mode on
+
+**Metaspace** is used to store the metadata about your loaded classes in the JVM. It is a native memory region(NOT part of heap) that grows automatically by default, and JVM reduces the chance to get the OutOfMemory error. We also have new flags to tune the memory:           
     - MetaspaceSize and MaxMetaspaceSize – we can set the Metaspace upper bounds.       
     - MinMetaspaceFreeRatio – is the minimum percentage of class metadata capacity free after garbage collection        
     - MaxMetaspaceFreeRatio – is the maximum percentage of class metadata capacity free after a garbage collection to avoid a reduction in the amount of space      
@@ -2335,3 +2426,4 @@ Metaspace is a native memory region(NOT part of heap) that grows automatically b
 ### Serialization  
 To **serialize** an object means to convert its state to a byte stream so that the byte stream can be reverted back into a copy of the object. A Java object is serializable if its class or any of its superclasses implements either the java.io.Serializable interface or its subinterface, java.io.Externalizable.       
 **Deserialization** is the process of converting the serialized form of an object back into a copy of the object.        
+
