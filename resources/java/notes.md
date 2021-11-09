@@ -29,6 +29,9 @@
 * [Serialization](#serialization)       
 * [Regular Expression](#regular-expression)           
 * [Java 8](#java-8)     
+* [Marker Interface](#marker-interface)     
+
+* [Date-Time API Java Docs](https://docs.oracle.com/javase/tutorial/datetime/TOC.html)      
 
 
 ### Thread Basics        
@@ -2424,6 +2427,15 @@ Furthermore, pause times do not increase with the heap, live-set, or root-set si
 
 
 ### Serialization  
-To **serialize** an object means to convert its state to a byte stream so that the byte stream can be reverted back into a copy of the object. A Java object is serializable if its class or any of its superclasses implements either the java.io.Serializable interface or its subinterface, java.io.Externalizable.       
-**Deserialization** is the process of converting the serialized form of an object back into a copy of the object.        
+**Serialization** of an object means to convert its state to a byte stream so that the byte stream can be reverted back into a copy of the object. A Java object is serializable if its class or any of its superclasses implements either the java.io.Serializable interface or its subinterface, java.io.Externalizable.       
+**Deserialization** is the process of converting the serialized form of an object back into a copy of the object.   
+
+### Marker Interface    
+1. It is an empty interface (no field or methods). ex. Serializable, Cloneable and Remote interface. 
+2. It provides run-time type information about objects, so the compiler and JVM have additional information about the object.       
+3. If we try to clone an object that doesn't implement **Cloneable** interface, JVM throws a CloneNotSupportedException. Hence, the Cloneable marker interface is an indicator to the JVM that we can call the Object.clone() method.            
+4. When calling the ObjectOutputStream.writeObject(), JVM checks if the object implements **Serializable** interface. When it's not the case, a NotSerializableException is thrown. Therefore, the object isn't serialized to the output stream.      
+5. How Annotations are better than Marker Interfaces?      
+They let you achieve the same purpose of conveying metadata about the class to its consumers without creating a separate type for it. Annotations are more powerful, too, letting programmers pass more sophisticated information to classes that "consume" it.     
+       
 
