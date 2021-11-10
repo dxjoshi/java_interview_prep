@@ -31,6 +31,8 @@
 * [Java 8](#java-8)     
 * [Marker Interface](#marker-interface)     
 * [Copy Constructor](#copy-constructor)     
+* [AtomicInteger](#atomicinteger)
+
 * [Date-Time API Java Docs](https://docs.oracle.com/javase/tutorial/datetime/TOC.html)      
 
 
@@ -2561,3 +2563,8 @@ They let you achieve the same purpose of conveying metadata about the class to i
             }
         }
        
+### AtomicInteger
+1. Internally, the atomic classes make heavy use of compare-and-swap (CAS), an atomic instruction directly supported by most modern CPUs. Those instructions usually are much faster than synchronizing via locks.     
+2. These are non-blocking as they use CAS operations.    
+   
+ 

@@ -2,7 +2,7 @@ package common;
 
 import java.util.Objects;
 
-public class Employee implements Comparable<Employee> {
+public class Employee implements Comparable<Employee>, Cloneable  {
     String name;
     String department;
     String post;

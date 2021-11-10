@@ -11,11 +11,11 @@ import static java.util.Collections.*;
 
 public class CollectionsTutorial implements Serializable {
     public static void main(String[] args) throws Throwable {
-        iterators();
-        collectionsClass();
-        arraysClass();
-        objectsUtilityClass();
-        objectClass();
+//        iterators();
+//        collectionsClass();
+//        arraysClass();
+//        objectsUtilityClass();
+//        objectClass();
         comparableAndComparator();
         maps();
         sets();
@@ -476,6 +476,28 @@ public class CollectionsTutorial implements Serializable {
         Constructs an empty HashMap with the default initial capacity (16) and the default load factor (0.75).
 */
         Map<String, String> hashMap = new HashMap<>();
+        hashMap.put("K1", "V1");
+        //putIfAbsent() puts a new value into the map only if no value exists for the given key.
+        //if value exists it reurns associated with key, if present, else null.
+        //A null return can also indicate that the map previously associated null with the key.
+        String entry = hashMap.putIfAbsent("K2", "V2");
+        //Returns the value to which the specified key is mapped, or defaultValue if this map contains no mapping for the key.
+        hashMap.getOrDefault("K3", "V3");
+
+        System.out.println(hashMap);
+
+        //replaceAll() accepts a BiFunction with the key and the value of each map entry and returns a new value to be assigned for the current key:
+        hashMap.replaceAll((k,v) -> v+"_3");
+
+        //Compute a mapping for the specified key and its current mapped value or null if there is no current mapping
+        // computeIfAbsent() and computeIfPresent(). The functional parameters of these methods only get called if the key is absent or present respectively.
+        hashMap.compute("K2", (k,v)-> v+"_4");
+
+        //If the specified key is not already associated with a value or is associated with null, associates it with the given non-null value.
+        //Otherwise, replaces the associated value with the results of the given remapping function, or removes if the result is null.
+        hashMap.merge("K2", "NV1", (oldVal, newVal) -> oldVal + newVal);
+
+        System.out.println(hashMap);
         Map<String, String> linkedHashMap = new LinkedHashMap<>();
         Map<Color, String> enumMap = new EnumMap<>(Color.class);
         Map<String, String> identityHashMap = new IdentityHashMap<>();
@@ -484,7 +506,16 @@ public class CollectionsTutorial implements Serializable {
 
 
         //public class ConcurrentHashMap<K,V> extends AbstractMap<K,V> implements ConcurrentMap<K,V>, Serializable
-        Map<String, String> concurrentHashMap = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String, String> concurrentHashMap = new ConcurrentHashMap<>();
+        concurrentHashMap.putAll(hashMap);
+        concurrentHashMap.putIfAbsent("CK1", "CV1");
+
+        //Returns a non-null result from applying the given search function on each (key, value), or null if none.
+        String searchResult = concurrentHashMap.search(2, (k, v) -> k.contains("C")? v : "C"+ v);
+
+        //Returns the result of accumulating the given transformation of all (key, value) pairs
+        //using the given reducer to combine values, or null if none.
+        String result = concurrentHashMap.reduce(2, (k,v) -> k+"="+v, (v1,v2) ->v1+", "+v2);
 
         //public class ConcurrentSkipListMap<K,V> extends AbstractMap<K,V> implements ConcurrentNavigableMap<K,V>, Cloneable, Serializable
         Map<String, String> concurrentSkipListMap = new ConcurrentSkipListMap<>();
