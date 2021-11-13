@@ -3,32 +3,37 @@
 ## Topics:      
 * [HTTP Response Codes](#http-response-codes)               
 * [Concurrency Questions](#concurrency-questions)               
-        
+
+## Articles:
+* [Vinay Sahni's blog on Restful API](https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api#restful)       
+* [restcookbook.com](https://restcookbook.com/Basics/loggingin/) 
+
 ### HTTP Status Codes           
 1xx — It is used to communicate the transfer protocol-level information.        
 2xx — It is used to indicate the request was accepted successfully. Some codes are,     
 200 (OK) — It indicates the request is successfully carried out.        
-201 (Created) — It is returned when a resource is created inside the collection.        
+201 - CREATED, when a resource is successful created using POST or PUT request. Return link to newly created resource using location header.        
 202 (Accepted) — It indicates the request has been accepted for processing.     
 204 (No Content) — It indicates when a request is declined.     
 3xx — It indicates the client must take additional action to complete the request.      
-4xx — It is the client error status code.       
-5xx — It is the server error status code.           
-200 - OK, shows success.        
-201 - CREATED, when a resource is successful created using POST or PUT request. Return link to newly created resource using location header.        
+302 - redirect       
 304 - NOT MODIFIED, used to reduce network bandwidth usage in case of conditional GET requests. Response body should be empty. Headers should have date, location etc.      
+4xx — It is the client error status code.       
 400 - BAD REQUEST, states that invalid input is provided e.g. validation error, missing data.       
 401 - FORBIDDEN, states that user is not having access to method being used for example, delete access without admin rights.        
 404 - NOT FOUND, states that method is not available.       
+405 - Method_not_allowed      
 409 - CONFLICT, states conflict situation while executing the method for example, adding duplicate entry.       
+5xx — It is the server error status code.           
 500 - INTERNAL SERVER ERROR, states that server has thrown some exception while executing the method.       
+503 - Unavailable       
         
 ### HTTP methods        
 GET: It requests a resource at the request URL. It should not contain a request body as it will be discarded. Maybe it can be cached locally or on the server.      
 POST: It submits information to the service for processing; it should typically return the modified or new resource     
 PUT: At the request URL it update the resource      
 DELETE: At the request URL it removes the resource      
-OPTIONS: It indicates which techniques are supported        
+OPTIONS: It indicates which HTTP methods are supported by a resource.          
 HEAD: About the request URL it returns meta information             
         
 ### Headers             
@@ -45,6 +50,7 @@ The client determines without initiating a resource request.
    The REST OPTIONS method is also used for the CORS (Cross-Origin Resource Sharing) request.       
 3. URI (Uniform Resource Identifiers) is used to identify each resource in the REST. An HTTP operation is called by the client application to access the resource.      
 4. XML and JSON are the most popular representations of resources in REST.          
+5. **HATEOAS** stands for Hypertext As The Engine Of Application State. It means that hypertext should be used to find your way through the API.        
         
         
 ### Explain the caching mechanism       
@@ -57,6 +63,8 @@ PUT puts a file or resource at a particular URI and exactly at that URI. If ther
 POST sends data to a particular URI and expects the resource at that URI to deal with the request. The web server at this point can decide what to do with the data in the context of specified resource.       
 PUT is idempotent meaning, invoking it any number of times will not have an impact on resources.        
 However, POST is not idempotent, meaning if you invoke POST multiple times it keeps creating more resources.        
+            PUT /article/1234   {"name":"book1"}       
+            POST /articles      {"name":"book1"}    
             
 ### HTTP request components             
 1. The Verb which indicates HTTP methods such as GET, PUT, POST, DELETE.        
@@ -189,4 +197,19 @@ Avoid combining user credentials with origin validation.
 21. Enforce HTTPS (TLS-encrypted) across all endpoints, resources, services, callback URLs, push notification endpoints, and webhooks.              
 22. Do return 4xx HTTP error codes when rejecting a client request due to one or more Service Errors.       
 Consider processing all attributes and then returning multiple validation problems in a single response.            
-        
+
+### Safe Methods    
+Safe methods are HTTP methods that do not modify resourcesand can be cached, prefetched without any repercussions to the resource. For instance, using GET or HEAD on a resource URL, should NEVER change the resource.         
+However, this is not completely true. It means: it won't change the resource representation. It is still possible, that safe methods do change things on a server or resource, but this should not reflect in a different representation.       
+    This means the following is incorrect, if this would actually delete the blogpost:  GET /blog/1234/delete HTTP/1.1      
+    
+
+### Idempotent methods  
+An idempotent HTTP method is one that can be called many times without different outcomes, whether its called only once, or ten times over result should be the same. Again, this only applies to the result, not the resource itself.      
+         
+         a = 4;     // idempotent
+         a++;       // not idempotent   
+
+         
+         
+                
