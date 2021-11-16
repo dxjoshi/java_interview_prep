@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Collections.*;
 
@@ -21,6 +22,18 @@ public class CollectionsTutorial implements Serializable {
         sets();
         lists();
         queues();
+        stream();
+    }
+
+    private static void stream() {
+        List<Integer> list = new ArrayList<>();
+        List<String> result = list
+                .stream()
+                .filter(p -> (p%2 == 0))
+                .map(p -> String.valueOf(p))
+                .collect(Collectors.toList());
+
+
     }
 
     private static void objectClass() throws InterruptedException, CloneNotSupportedException, Throwable {
@@ -519,6 +532,8 @@ public class CollectionsTutorial implements Serializable {
 
         //public class ConcurrentSkipListMap<K,V> extends AbstractMap<K,V> implements ConcurrentNavigableMap<K,V>, Cloneable, Serializable
         Map<String, String> concurrentSkipListMap = new ConcurrentSkipListMap<>();
+
+
     }
 
     enum Color { RED, GREEN, BLUE};

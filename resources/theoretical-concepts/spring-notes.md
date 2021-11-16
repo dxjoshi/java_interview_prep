@@ -1,13 +1,13 @@
 ## Articles
-- [Annotations](https://springframework.guru/spring-framework-annotations/)     
+- [Annotations Spring Framework Article](https://springframework.guru/spring-framework-annotations/)     
 - [Dzone Article by Yevgen Pikus](https://dzone.com/articles/frequently-used-annotations-in-spring-boot-applica)          
 
-## Frequent Questions   
-- [Dependency Injection and IOC](https://stackoverflow.com/questions/9403155/what-is-dependency-injection-and-inversion-of-control-in-spring-framework)
-- [IOC and DI - Baeldung](https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring)
+## Frequent Questions       
+- [Dependency Injection and IOC](https://stackoverflow.com/questions/9403155/what-is-dependency-injection-and-inversion-of-control-in-spring-framework)         
+- [IOC and DI - Baeldung](https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring)        
 
-### Spring Core Technologies    
-1. **IOC** is also known as dependency injection (DI). It is a process whereby objects define their dependencies, that is, the other objects they work with, only through constructor arguments, arguments to a factory method, or properties that are set on the object instance after it is constructed or returned from a factory method.        
+### Spring Core Technologies        
+1. **IOC** is also known as dependency injection (DI). It is a process whereby objects define their dependencies, that is, the other objects they work with, only through constructor arguments, arguments to a factory method, or properties that are set on the object instance after it is constructed or returned from a factory method.                
 The container then injects those dependencies when it creates the bean.         
 This process is fundamentally the inverse, hence the name Inversion of Control (IoC), of the bean itself controlling the instantiation or location of its dependencies by using direct construction of classes, or a mechanism such as the Service Locator pattern.       
 2. **Bean**  In Spring, the objects that form the backbone of your application and that are managed by the Spring IoC container are called beans. A bean is an object that is instantiated, assembled, and otherwise managed by a Spring IoC container.       
@@ -49,12 +49,6 @@ Setter-based DI is accomplished by the container calling setter methods on your 
 6. **AOP(Aspect-Oriented Programming)**        
 It complements Object-Oriented Programming (OOP) by providing another way of thinking about program structure. The key unit of modularity in OOP is the class, whereas in AOP the unit of modularity is the aspect.         
 Aspects enable the modularization of concerns such as transaction management that cut across multiple types and objects. (Such concerns are often termed crosscutting concerns in AOP literature.)          
-
-
-               
-
-
-
 
 
 ## Spring Annotations

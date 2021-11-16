@@ -1,11 +1,25 @@
 package concurrency;
 
+import static java.lang.Thread.*;
+
 public class ThreadTutorial {
-    public static void main(String[] args) {
-        threadClass();
+    public static void main(String[] args) throws Exception {
+        ThreadTutorial threadTutorial = new ThreadTutorial();
+        //threadTutorial.threadClass();
     }
 
-    private static void threadClass() {
+    public void threadClass() throws Exception {
+        //Interrupts this thread.
+        Thread.currentThread().interrupt();
+
+        //Tests whether the current thread has been interrupted.  The
+        //**interrupted status** of the thread is cleared by this method.
+        interrupted();
+
+        //Tests whether this thread has been interrupted.  The **interrupted
+        //status** of the thread is unaffected by this method.
+        Thread.currentThread().isInterrupted();
+
 
 /*
 Thread.currentThread();
@@ -16,9 +30,6 @@ Thread.start();
 Thread.run();
 Thread.stop();
 Thread.stop();
-Thread.interrupt();
-Thread.interrupted();
-Thread.isInterrupted();
 Thread.destroy();
 Thread.isAlive();
 Thread.suspend();

@@ -6,6 +6,8 @@
 * [ForkJoinPool](#forkjoinpool)
 * [CompletionService](#completionservice)
 * [Executor Factory Methods](#executor-factory-methods)
+* [Concurrency](#concurrency)       
+* [Collections](#collections)       
 * [Concurrency Questions](#concurrency-questions)
 * [Java Basics Questions](#java-basics-questions)
 * [Iterators](#iterators)
@@ -28,7 +30,8 @@
 * [Generics](#generics)     
 * [Serialization](#serialization)       
 * [Regular Expression](#regular-expression)           
-* [Java 8](#java-8)     
+* [Java 8](#java-8)    
+* [Pipelines and Streams](#pipelines-and-streams) 
 * [Marker Interface](#marker-interface)     
 * [Copy Constructor](#copy-constructor)     
 * [AtomicInteger](#atomicinteger)
@@ -1112,44 +1115,6 @@ positive integer - **this** is greater than specified object
             public int compareTo(Employee o) {
                 return this.name.compareTo(o.name);
             }
-
-     
-### Collections 
-* **List:**    
-        
-        //public interface List<E> extends Collection<E>
-
-        //If multiple threads access an list(linked or array) instance concurrently, and at least one of the threads modifies the list structurally(adds or deletes one or more elements,
-        // or explicitly resizes the backing array), it must be synchronized externally.
-
-
-        //public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>, Deque<E>, Cloneable, java.io.Serializable
-        //Doubly-linked list implementation, Non-synchronized
-        //The iterators returned by this class's iterator and listIterator methods are fail-fast: They use the modCount field to check for concurrent modifications
-        //If the list is structurally modified at any time after the iterator is created, in any way except through the Iterator's own remove() or add(), the iterator will throw a ConcurrentModificationException.
-        //
-        //Fail-fast iterators throw ConcurrentModificationException on a best-effort basis.Therefore, it would be wrong to write a program that depended on this exception for its correctness.
-        List<Integer> linkedList = new LinkedList<>();
-
-
-        //public class ArrayList<E> extends AbstractList<E> implements List<E>, RandomAccess, Cloneable, java.io.Serializable
-        //Constructs an empty list with an initial capacity of ten, and uses **Object[]** to sktore the elements
-        // add() ensureCapacity and grows size by 50% for new array and copies over original array's contents, if necessary
-        List<Integer> arrayList = new ArrayList<>();
-
-
-        //public class Stack<E> extends Vector<E>
-        //A last-in-first-out(LIFO) stack of objects.
-        //push() and pop() are provided to add/remove items in stack
-        //peek() - Looks at top item of this stack without removing it
-        //empty() - checks if stack is empty
-        //search() - Search the stack for an item and discover how far it is from the top(returns a 1-based answer).
-        Stack<Integer> stack = new Stack<>();   // Deque should be preferred over Stack
-
-
-* **Set:**    
-* **Queue:**    
-* **Map:**    
 
      
 ### Java-8
@@ -2567,4 +2532,233 @@ They let you achieve the same purpose of conveying metadata about the class to i
 1. Internally, the atomic classes make heavy use of compare-and-swap (CAS), an atomic instruction directly supported by most modern CPUs. Those instructions usually are much faster than synchronizing via locks.     
 2. These are non-blocking as they use CAS operations.    
    
+### Concurrency     
+1. A **process** has a self-contained execution environment. A process generally has a complete, private set of basic run-time resources; in particular, each process has its own memory space.     
+2. **Threads** are sometimes called lightweight processes. Both processes and threads provide an execution environment, but creating a new thread requires fewer resources than creating a new process.
+Threads exist within a process — every process has at least one. Threads share the process's resources, including memory and open files. This makes for efficient, but potentially problematic, communication.      
+3. **Thread.sleep** causes the current thread to suspend execution for a specified period.  
+4. An **interrupt** is an indication to a thread that it should stop what it is doing and do something else.    
+5. The interrupt mechanism is implemented using an internal flag known as the **interrupt status**. Invoking Thread.interrupt sets this flag. 
+When a thread checks for an interrupt by invoking the static method Thread.interrupted, interrupt status is cleared.        
+The non-static isInterrupted method, which is used by one thread to query the interrupt status of another, does not change the interrupt status flag.       
+By convention, any method that exits by throwing an InterruptedException clears interrupt status when it does so. However, it's always possible that interrupt status will immediately be set again, by another thread invoking interrupt.      
+6. The **join** method allows one thread to wait for the completion of another. If t is a Thread object whose thread is currently executing,        
+   
+   
+        t.join();
+   causes the current thread to pause execution until t's thread terminates.         
+7. Threads communicate primarily by sharing access to fields and the objects reference fields refer to. This form of communication is extremely efficient, but makes two kinds of errors possible: thread interference and memory consistency errors.       
+8. **Thread Interference** happens when two operations, running in different threads, but acting on the same data, interleave.      
+9. **Memory consistency errors** occur when different threads have inconsistent views of what should be the same data.  The key to avoiding memory consistency errors is understanding the [**happens-before relationship**](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html#MemoryVisibility). 
+This relationship is simply a guarantee that memory writes by one specific statement are visible to another specific statement.    
+10. **Synchronization** is built around an internal entity known as the **intrinsic lock or monitor lock**. A thread is said to own the intrinsic lock between the time it has acquired the lock and released the lock. As long as a thread owns an intrinsic lock, no other thread can acquire the same lock.     
+When a **static synchronized method** is invoked, thread acquires the intrinsic lock for the Class object associated with the class. Thus access to class's static fields is controlled by a lock that's distinct from the lock for any instance of the class.         
+
  
+        public synchronized void increment() {           // synchronized method
+            c++;
+        }
+
+        public static synchronized void increment() {    // static synchronized method
+            c++;
+        }
+        
+        public void addName(String name) {
+            synchronized(this) { nameCount++; }         // synchronized block - this
+            nameList.add(name);
+        }
+
+        public class MsLunch {
+            private long c1 = 0;
+            private Object lock1 = new Object();        // synchronized block - on lock object
+            public void inc1() {
+                synchronized(lock1) { c1++; }
+            }
+
+11. **Liveness**        
+A concurrent application's ability to execute in a timely manner is known as its **liveness**. This section describes the most common kind of liveness problem, deadlock, and goes on to briefly describe two other liveness problems, **starvation and livelock**.         
+12. **Deadlock** describes a situation where two or more threads are blocked forever, waiting for each other. [Here's an example](https://docs.oracle.com/javase/tutorial/essential/concurrency/deadlock.html)      
+13. **Starvation** describes a situation where a thread is unable to gain regular access to shared resources and is unable to make progress. This happens when shared resources are made unavailable for long periods by "greedy" threads.      
+14. [**Livelock**](https://www.baeldung.com/java-deadlock-livelock) A thread often acts in response to the action of another thread. If the other thread's action is also a response to the action of another thread, then livelock may result. As with deadlock, livelocked threads are unable to make further progress. However, the threads are not blocked — they are simply too busy responding to each other to resume work. This is comparable to two people attempting to pass each other in a corridor: Alphonse moves to his left to let Gaston pass, while Gaston moves to his right to let Alphonse pass. Seeing that they are still blocking each other, Alphone moves to his right, while Gaston moves to his left. They're still blocking each other, so...      
+15. **Guarded Block** begins by polling a condition that must be true before the block can proceed.
+16. [**Immutable Objects**](https://docs.oracle.com/javase/tutorial/essential/concurrency/imstrat.html)         
+- Don't provide "setter" methods — methods that modify fields or objects referred to by fields.     
+- Make all fields final and private.        
+- Don't allow subclasses to override methods. The simplest way to do this is to declare the class as final. A more sophisticated approach is to make the constructor private and construct instances in factory methods.        
+- If the instance fields include references to mutable objects, don't allow those objects to be changed:        
+    - Don't provide methods that modify the mutable objects.        
+    - Don't share references to the mutable objects. Never store references to external, mutable objects passed to the constructor; if necessary, create copies, and store references to the copies. Similarly, create copies of your internal mutable objects when necessary to avoid returning the originals in your methods.               
+
+
+### Collections
+[Summary Javadoc](https://docs.oracle.com/javase/8/docs/technotes/guides/collections/overview.html)         
+[Collections Framework Outline](https://docs.oracle.com/javase/8/docs/technotes/guides/collections/reference.html)            
+
+                              get  add  contains next remove(0) iterator.remove
+        ArrayList             O(1) O(1) O(n)     O(1) O(n)      O(n)
+        LinkedList            O(n) O(1) O(n)     O(1) O(1)      O(1)
+        CopyOnWrite-ArrayList O(1) O(n) O(n)     O(1) O(n)      O(n)
+        Set implementations:
+        
+                              add      contains next     notes
+        HashSet               O(1)     O(1)     O(h/n)   h is the table capacity
+        LinkedHashSet         O(1)     O(1)     O(1) 
+        CopyOnWriteArraySet   O(n)     O(n)     O(1) 
+        EnumSet               O(1)     O(1)     O(1) 
+        TreeSet               O(log n) O(log n) O(log n)
+        ConcurrentSkipListSet O(log n) O(log n) O(1)
+        Map implementations:
+        
+                              get      containsKey next     Notes
+        HashMap               O(1)     O(1)        O(h/n)   h is the table capacity
+        LinkedHashMap         O(1)     O(1)        O(1) 
+        IdentityHashMap       O(1)     O(1)        O(h/n)   h is the table capacity 
+        EnumMap               O(1)     O(1)        O(1) 
+        TreeMap               O(log n) O(log n)    O(log n) 
+        ConcurrentHashMap     O(1)     O(1)        O(h/n)   h is the table capacity 
+        ConcurrentSkipListMap O(log n) O(log n)    O(1)
+        Queue implementations:
+        
+                              offer    peek poll     size
+        PriorityQueue         O(log n) O(1) O(log n) O(1)
+        ConcurrentLinkedQueue O(1)     O(1) O(1)     O(n)
+        ArrayBlockingQueue    O(1)     O(1) O(1)     O(1)
+        LinkedBlockingQueue   O(1)     O(1) O(1)     O(1)
+        PriorityBlockingQueue O(log n) O(1) O(log n) O(1)
+        DelayQueue            O(log n) O(1) O(log n) O(1)
+        LinkedList            O(1)     O(1) O(1)     O(1)
+        ArrayDeque            O(1)     O(1) O(1)     O(1)
+        LinkedBlockingDeque   O(1)     O(1) O(1)     O(1)
+        InterruptedException
+* **List:**    
+            
+            //public interface List<E> extends Collection<E>
+    
+            //If multiple threads access an list(linked or array) instance concurrently, and at least one of the threads modifies the list structurally(adds or deletes one or more elements,
+            // or explicitly resizes the backing array), it must be synchronized externally.
+    
+    
+            //public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>, Deque<E>, Cloneable, java.io.Serializable
+            //Doubly-linked list implementation, Non-synchronized
+            //The iterators returned by this class's iterator and listIterator methods are fail-fast: They use the modCount field to check for concurrent modifications
+            //If the list is structurally modified at any time after the iterator is created, in any way except through the Iterator's own remove() or add(), the iterator will throw a ConcurrentModificationException.
+            //
+            //Fail-fast iterators throw ConcurrentModificationException on a best-effort basis.Therefore, it would be wrong to write a program that depended on this exception for its correctness.
+            List<Integer> linkedList = new LinkedList<>();
+    
+    
+            //public class ArrayList<E> extends AbstractList<E> implements List<E>, RandomAccess, Cloneable, java.io.Serializable
+            //Constructs an empty list with an initial capacity of ten, and uses **Object[]** to sktore the elements
+            // add() ensureCapacity and grows size by 50% for new array and copies over original array's contents, if necessary
+            List<Integer> arrayList = new ArrayList<>();
+    
+    
+            //public class Stack<E> extends Vector<E>
+            //A last-in-first-out(LIFO) stack of objects.
+            //push() and pop() are provided to add/remove items in stack
+            //peek() - Looks at top item of this stack without removing it
+            //empty() - checks if stack is empty
+            //search() - Search the stack for an item and discover how far it is from the top(returns a 1-based answer).
+            Stack<Integer> stack = new Stack<>();   // Deque should be preferred over Stack
+    
+    
+* **Set:**    
+* **Queue:**    
+* **Map:**    
+         
+### Pipelines and Streams
+[Ref](https://docs.oracle.com/javase/tutorial/collections/streams/index.html)
+1. A **pipeline** is a sequence of aggregate operations. A pipeline contains the following components:
+    - A **source:** This could be a collection, an array, a generator function, or an I/O channel. 
+    - Zero or more intermediate operations. An **intermediate** operation, such as filter, produces a new stream.   
+    - A **stream** is a sequence of elements. Unlike a collection, it is not a data structure that stores elements. Instead, a stream carries values from a source through a pipeline. 
+    - A **terminal** operation. A terminal operation, such as forEach, produces a non-stream result, such as a primitive value (like a double value), a collection, or in the case of forEach, no value at all. 
+    
+    
+        double average = roster
+            .stream()
+            .filter(p -> p.getGender() == Person.Sex.MALE)  // intermediate op
+            .mapToInt(Person::getAge)                       // intermediate op
+            .average()                                      // intermediate op
+            .getAsDouble(); // terminal op
+2. **Reduction operations** are terminal operations (such as average, sum, min, max, and count) that return one value by combining the contents of a stream.    
+3. The Stream.reduce method is a general-purpose reduction operation that takes two arguments:  
+**identity:** The identity element is both the initial value of the reduction and the default result if there are no elements in the stream. 
+**accumulator:** The accumulator function takes two parameters: a partial result of the reduction (in this example, the sum of all processed integers so far) and the next element of the stream (in this example, an integer). It returns a new partial result.            
+    
+    
+        Integer totalAgeReduce = roster
+           .stream()
+           .map(Person::getAge)
+           .reduce( 0, (a, b) -> a + b);     
+3. The Stream.collect method modifies, or mutates, an existing value and takes three arguments:        
+**supplier:** The supplier is a factory function; it constructs new instances. For the collect operation, it creates instances of the result container. 
+**accumulator:** The accumulator function incorporates a stream element into a result container. In this example, it modifies the Averager result container by incrementing the count variable by one and adding to the total member variable the value of the stream element, which is an integer representing the age of a male member.       
+**combiner:** The combiner function takes two result containers and merges their contents. In this example, it modifies an Averager result container by incrementing the count variable by the count member variable of the other Averager instance and adding to the total member variable the value of the other Averager instance's total member variable.           
+
+
+        Averager averageCollect = roster.stream()
+            .filter(p -> p.getGender() == Person.Sex.MALE)
+            .map(Person::getAge)
+            .collect(Averager::new, Averager::accept, Averager::combine);
+
+        // Accumulate names into a List
+        List<String> list = people.stream().map(Person::getName).collect(Collectors.toList());
+        
+        // Accumulate names into a TreeSet
+        Set<String> set = people.stream().map(Person::getName).collect(Collectors.toCollection(TreeSet::new));
+        
+        // Convert elements to strings and concatenate them, separated by commas
+        String joined = things.stream()
+                              .map(Object::toString)
+                              .collect(Collectors.joining(", "));
+        
+        // Compute sum of salaries of employee
+        int total = employees.stream()
+                             .collect(Collectors.summingInt(Employee::getSalary)));
+        
+        // Group employees by department
+        Map<Department, List<Employee>> byDept
+            = employees.stream()
+                       .collect(Collectors.groupingBy(Employee::getDepartment));
+        
+        //Retrieve names of each member and group them by gender:
+        Map<Person.Sex, List<String>> namesByGender 
+            = roster.stream()
+                .collect( Collectors.groupingBy( Person::getGender,                      
+                        Collectors.mapping( Person::getName, Collectors.toList())));
+                                
+        // Compute sum of salaries by department
+        Map<Department, Integer> totalByDept
+            = employees.stream()
+                       .collect(Collectors.groupingBy(Employee::getDepartment,
+                                                      Collectors.summingInt(Employee::getSalary)));
+     
+        //Retrieve the total age of members of each gender:
+        Map<Person.Sex, Integer> totalAgeByGender 
+            = roster.stream()
+                .collect( Collectors.groupingBy(Person::getGender,                      
+                        Collectors.reducing(0, Person::getAge, Integer::sum)));                
+
+        // Partition students into passing and failing
+        Map<Boolean, List<Student>> passingFailing =
+            students.stream()
+                    .collect(Collectors.partitioningBy(s -> s.getGrade() >= PASS_THRESHOLD));          
+
+4. When a stream executes in parallel, the Java runtime partitions the stream into multiple substreams. Aggregate operations iterate over and process these substreams in parallel and then combine the results.        
+
+
+        double average = roster
+            .parallelStream()
+            .filter(p -> p.getGender() == Person.Sex.MALE) .mapToInt(Person::getAge) .average() .getAsDouble();
+5. The Java runtime performs a **concurrent reduction** if all of the following are true for a particular pipeline that contains the collect operation:     
+   - The stream is parallel.        
+   - The parameter of the collect operation, the collector, has the characteristic Collector.Characteristics.CONCURRENT.                
+   - Either the stream is unordered, or the collector has the characteristic Collector.Characteristics.UNORDERED.       
+
+
+        ConcurrentMap<Person.Sex, List<Person>> byGender =
+            roster.parallelStream()
+                .collect(
+                    Collectors.groupingByConcurrent(Person::getGender));
+   
