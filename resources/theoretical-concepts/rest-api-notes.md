@@ -1,13 +1,32 @@
 ## REST API concepts:  
 
 ## Topics:      
-* [HTTP Response Codes](#http-response-codes)               
-* [Concurrency Questions](#concurrency-questions)               
+* [Architectural Constraints](#architectural-constraints)               
+* [SOAP vs REST](#soap-vs-rest)               
 
 ## Articles:
 * [Vinay Sahni's blog on Restful API](https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api#restful)       
 * [restcookbook.com](https://restcookbook.com/Basics/loggingin/) 
 
+### Architectural Constraints   
+1. Uniform interface:   
+    - A resource should contain links (HATEOAS) pointing to relative URIs.
+    - The resource representations across the system should follow specific guidelines such as naming conventions, link formats, or data format (XML or/and JSON).
+2. Client–server:       
+    - Servers and clients may also be replaced and developed independently, as long as the interface between them is not altered.
+3. Stateless:   
+    - The server will not store anything about the latest HTTP request the client made. It will treat every request as new. No session, no history.
+    - No client context shall be stored on the server between requests. **The client is responsible for managing the state of the application**.
+4. Cacheable:  
+    - Caching shall be applied to resources when applicable, and then these resources MUST declare themselves cacheable. Caching can be implemented on the server or client-side.
+    - A well-managed caching partially or completely eliminates some client–server interactions, further improving availability and performance.
+5. Layered system:      
+    - REST allows you to use a layered system architecture where you deploy the APIs on server A, and store data on server B and authenticate requests in Server C, for example.
+    - A client cannot ordinarily tell whether it is connected directly to the end server or an intermediary along the way.
+6. Code on demand (optional):   
+    - Most of the time, you will be sending the static representations of resources in the form of XML or JSON. 
+    - But when you need to, you are free to return executable code to support a part of your application, e.g., clients may call your API to get a UI widget rendering code. It is permitted.
+ 
 ### HTTP Status Codes           
 1xx — It is used to communicate the transfer protocol-level information.        
 2xx — It is used to indicate the request was accepted successfully. Some codes are,     
@@ -205,10 +224,16 @@ However, this is not completely true. It means: it won't change the resource rep
     
 
 ### Idempotent methods  
+[Stripe Idempotency keys](https://stripe.com/blog/idempotency)
+[Idempotent POST requests](https://medium.com/@saurav200892/how-to-achieve-idempotency-in-post-method-d88d7b08fcdd)
 An idempotent HTTP method is one that can be called many times without different outcomes, whether its called only once, or ten times over result should be the same. Again, this only applies to the result, not the resource itself.      
          
          a = 4;     // idempotent
          a++;       // not idempotent   
+         
+### SOAP vs REST
+[SOAP Intro](https://www.geeksforgeeks.org/basics-of-soap-simple-object-access-protocol/?ref=lbp)         
+[Difference](https://www.geeksforgeeks.org/difference-between-rest-api-and-soap-api/?ref=lbp)
 
          
          

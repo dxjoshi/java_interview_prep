@@ -11,8 +11,6 @@ That’s probably suboptimal, but it is OK.  Just don’t give the employer the 
 “But Patrick,” you cry.  “I don’t want to be difficult.”  You’re not being difficult.  You’re not doing anything immoral.  You’re not being unprofessional.     
 
 
-
-
 1. Research the market and salary trends
 2. Consider giving a salary range, not a number
 From what I know about the position, I think somewhere in the area of $XX – $XX
@@ -69,13 +67,3 @@ That should enable you to move on to the actual job interviews.
 what is the compensation structure like? apart from basse salary
 What is the annual increments like?
 What is the salary structure like?
-
-mail memaang le detqils
-
-
-
-
-
-
-
-
