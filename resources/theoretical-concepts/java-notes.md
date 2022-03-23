@@ -470,28 +470,27 @@ By default, even core threads are initially created and started only when new ta
     1. **get()**, a blocking method, will return the task's result upon successful completion.   
     2. **isDone()** tells if the future has already finished execution.
 
-
-        public static <T> T getResult(Future<T> callableResult)  {
-            T result = null;
-            try {
-                // isDone() returns true if this task completed due to normal termination, an exception, or cancellation
-                System.out.println(callableResult.isDone());
-                // get() waits if necessary for the computation to complete, and then retrieves its result.
-                result = callableResult.get();
-    
-                // get(long timeout, TimeUnit unit) waits if necessary for at most the given time for the computation to complete, 
-                // and then retrieves its result, if available.
-                result = callableResult.get(1, TimeUnit.SECONDS);
-    
-            } catch (InterruptedException e) {  // if the current thread was interrupted while waiting
-                Thread.currentThread().interrupt();
-            } catch (ExecutionException e) {    // if the current thread was interrupted while waiting
-                Thread.currentThread().interrupt();
-            } catch (TimeoutException e) {
-                System.out.println("Due to callableResult.get(1, TimeUnit.SECONDS)");
+            public static <T> T getResult(Future<T> callableResult)  {
+                T result = null;
+                try {
+                    // isDone() returns true if this task completed due to normal termination, an exception, or cancellation
+                    System.out.println(callableResult.isDone());
+                    // get() waits if necessary for the computation to complete, and then retrieves its result.
+                    result = callableResult.get();
+        
+                    // get(long timeout, TimeUnit unit) waits if necessary for at most the given time for the computation to complete, 
+                    // and then retrieves its result, if available.
+                    result = callableResult.get(1, TimeUnit.SECONDS);
+        
+                } catch (InterruptedException e) {  // if the current thread was interrupted while waiting
+                    Thread.currentThread().interrupt();
+                } catch (ExecutionException e) {    // if the current thread was interrupted while waiting
+                    Thread.currentThread().interrupt();
+                } catch (TimeoutException e) {
+                    System.out.println("Due to callableResult.get(1, TimeUnit.SECONDS)");
+                }
+                return result;
             }
-            return result;
-        }
   
 * A ScheduledExecutorService is capable of scheduling tasks to run either periodically(scheduleAtFixedRate(), scheduleWithFixedDelay()) or once(schedule()) after a certain amount of time has elapsed. 
 * scheduleAtFixedRate() doesn't take into account the actual duration of the task. So if you specify a period of one second but the task needs 2 seconds to be executed then the thread pool will working to capacity very soon.
