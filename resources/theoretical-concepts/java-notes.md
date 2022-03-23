@@ -470,6 +470,7 @@ By default, even core threads are initially created and started only when new ta
     1. **get()**, a blocking method, will return the task's result upon successful completion.   
     2. **isDone()** tells if the future has already finished execution.
 
+
         public static <T> T getResult(Future<T> callableResult)  {
             T result = null;
             try {
