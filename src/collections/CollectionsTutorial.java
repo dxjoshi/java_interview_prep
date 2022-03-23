@@ -445,6 +445,14 @@ public class CollectionsTutorial implements Serializable {
         //empty() - checks if stack is empty
         //search() - Search the stack for an item and discover how far it is from the top(returns a 1-based answer).
         Stack<Integer> stack = new Stack<>();   // Deque should be preferred over Stack
+
+/*
+        The Vector implements a growable array of objects.
+        The iterators returned by this class's iterator() and listIterator(int) methods are fail-fast
+        if the vector is structurally modified at any time after the iterator is created, in any way except through the iterator's own remove() or add() methods,
+        the iterator will throw a ConcurrentModificationException.
+*/
+        Vector<Integer> vector = new Vector<>();
     }
 
     private static void sets() {
@@ -533,6 +541,15 @@ public class CollectionsTutorial implements Serializable {
         //public class ConcurrentSkipListMap<K,V> extends AbstractMap<K,V> implements ConcurrentNavigableMap<K,V>, Cloneable, Serializable
         Map<String, String> concurrentSkipListMap = new ConcurrentSkipListMap<>();
 
+//        This class implements a hash table, which maps keys to values. Any non-null object can be used as a key or as a value.
+//        To successfully store and retrieve objects from a hashtable, the objects used as keys must implement the hashCode method and the equals method.
+//
+//        An instance of Hashtable has two parameters that affect its performance: initial capacity and load factor.
+//        The capacity is the number of buckets in the hash table, and the initial capacity is simply the capacity at the time the hash table is created.
+//        **Note that the hash table is open: in the case of a "hash collision", a single bucket stores multiple entries, which must be searched sequentially.**
+//        The load factor is a measure of how full the hash table is allowed to get before its capacity is automatically increased.
+//        The initial capacity and load factor parameters are merely hints to the implementation.
+        Hashtable<String, String> hashtable = new Hashtable<>();
 
     }
 
