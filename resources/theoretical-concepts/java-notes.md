@@ -765,7 +765,8 @@ By default, even core threads are initially created and started only when new ta
 * [Is java pass-by-value?](https://stackoverflow.com/questions/7893492/is-java-really-passing-objects-by-value)       
 * [jdk vs. jre vs. jvm](https://www.geeksforgeeks.org/differences-jdk-jre-jvm/)
 * [5 ways to create objects in Java](https://www.programmingmitra.com/2016/05/different-ways-to-create-objects-in-java-with-example.html)
-    
+* [Method Hiding Concept](https://stackoverflow.com/questions/2475259/can-i-override-and-overload-static-methods-in-java)
+            
 ### Iterators
 
         //public interface Iterator<E>
@@ -1115,6 +1116,11 @@ positive integer - **this** is greater than specified object
             public int compareTo(Employee o) {
                 return this.name.compareTo(o.name);
             }
+            
+- Lists (and arrays) of objects that implement this interface can be sorted automatically by Collections.sort (and Arrays.sort). Objects that implement this interface can be used as keys in a sorted map or as elements in a sorted set, without the need to specify a comparator.
+- The natural ordering for a class C is said to be consistent with equals if and only if e1.compareTo(e2) == 0 has the same boolean value as e1.equals(e2) for every e1 and e2 of class C. Note that null is not an instance of any class, and e.compareTo(null) should throw a NullPointerException even though e.equals(null) returns false.      
+- It is strongly recommended (though not required) that natural orderings be consistent with equals. This is so because sorted sets (and sorted maps) without explicit comparators behave "strangely" when they are used with elements (or keys) whose natural ordering is inconsistent with equals. In particular, such a sorted set (or sorted map) violates the general contract for set (or map), which is defined in terms of the equals method.       
+For example, **if one adds two keys a and b such that (!a.equals(b) && a.compareTo(b) == 0) to a sorted set that does not use an explicit comparator, the second add operation returns false (and the size of the sorted set does not increase) because a and b are equivalent from the sorted set's perspective.**            
 
      
 ### Java-8

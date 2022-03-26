@@ -505,6 +505,7 @@ public class CollectionsTutorial implements Serializable {
         //Returns the value to which the specified key is mapped, or defaultValue if this map contains no mapping for the key.
         hashMap.getOrDefault("K3", "V3");
 
+        List<>
         System.out.println(hashMap);
 
         //replaceAll() accepts a BiFunction with the key and the value of each map entry and returns a new value to be assigned for the current key:
