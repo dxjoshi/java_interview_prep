@@ -36,7 +36,15 @@
     - [Network Protocols](https://www.geeksforgeeks.org/14-most-common-network-protocols-and-their-vulnerabilities/)        
     - [Video Streaming Protocols](https://www.dacast.com/blog/video-streaming-protocol/)            
     - [Messaging Protocols](https://www.cometchat.com/blog/popular-chat-and-instant-messaging-protocols)            
-        
+
+**Computer Networks**        
+    - [TLS vs SSL](https://www.geeksforgeeks.org/difference-between-secure-socket-layer-ssl-and-transport-layer-security-tls/)              
+    - [HTTP 1.1 vs 2.0](https://www.cloudflare.com/en-in/learning/performance/http2-vs-http1.1/#:~:text=Multiplexing%3A%20HTTP%2F1.1%20loads%20resources,resource%20blocks%20any%20other%20resource.)       
+    - [HTTP 1.1 vs 2.0 vs 3.0](https://www.youtube.com/watch?v=0OrmKCB0UrQ)      
+    - [HTTP 2.0 vs 3.0](https://www.youtube.com/watch?v=GriONb4EfPY)    
+    - [SSL vs TLS video](https://www.youtube.com/watch?v=k3rFFLmQCuY)          
+    - [SSL vs TLS Nasir video](https://www.youtube.com/watch?v=r1nJT63BFQ0)       
+                 
 **DBMS**        
     - [ACID Properties](https://www.geeksforgeeks.org/acid-properties-in-dbms/)         
                 
