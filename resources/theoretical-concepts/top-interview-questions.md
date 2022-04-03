@@ -19,7 +19,6 @@
     - [Observability](https://www.youtube.com/watch?v=CAQ_a2-9UOI)          
     - [Datadog Intro](https://www.youtube.com/watch?v=YmJcbAI_OCg)          
         
-        
 **Infrastructure Creation**                     
     - [Terraform vs Ansible](https://www.youtube.com/watch?v=rx4Uh3jv1cA)           
     - [Terraform explained](https://www.youtube.com/watch?v=HmxkYNv1ksg)            
@@ -63,5 +62,15 @@
     - [ClassNotFoundException vs NoClassDefFoundError](https://stackoverflow.com/questions/1457863/what-causes-and-what-are-the-differences-between-noclassdeffounderror-and-classn)        
         
 **Collections:**        
-    - 
+    - [Remove integer element from List](https://stackoverflow.com/questions/21795376/java-how-to-remove-an-integer-item-in-an-arraylist)   
+    - [CopyOnWriteArrayList](https://www.geeksforgeeks.org/copyonwritearraylist-in-java/)           
         
+**Design Patterns**     
+    - [Java examples of GOF design patterns](https://stackoverflow.com/questions/1673841/examples-of-gof-design-patterns-in-javas-core-libraries)               
+        
+**Misc**        
+    - [JVM internals](https://www.freecodecamp.org/news/jvm-tutorial-java-virtual-machine-architecture-explained-for-beginners/)            
+    
+**Serialization**       
+    - [Serializable vs Externalizable](https://www.javamadesoeasy.com/2015/07/difference-between-externalizable-and.html)           
+    - [Compatible Changes to Serailizable entity](https://www.javamadesoeasy.com/2015/06/compatible-and-incompatible-changes-in.html)           
