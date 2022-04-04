@@ -70,6 +70,7 @@
         
 **Misc**        
     - [JVM internals](https://www.freecodecamp.org/news/jvm-tutorial-java-virtual-machine-architecture-explained-for-beginners/)            
+    - [Java Memory Leaks](https://www.baeldung.com/java-memory-leaks)            
     
 **Serialization**       
     - [Serializable vs Externalizable](https://www.javamadesoeasy.com/2015/07/difference-between-externalizable-and.html)           
