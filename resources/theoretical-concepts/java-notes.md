@@ -2342,6 +2342,7 @@ For strings, Java manages a string pool in memory. This means that Java stores a
         String localPrefix = new Integer(297).toString().intern(); // we can force the JVM to add it to the string pool by adding the .intern()
         
 ### Garbage Collection      
+* [Default GC](https://stackoverflow.com/questions/33206313/default-garbage-collector-for-java-8)     
 1. The Java runtime environment has a **garbage collector** that periodically frees the memory used by objects that are no longer referenced.         
 2. System.gc() is a request to Java to run the garbage collector, but it’s, again, up to it whether or not to do that.           
 3. GC works in two simple steps known as **Mark and Sweep**:            

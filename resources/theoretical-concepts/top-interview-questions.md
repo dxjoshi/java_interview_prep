@@ -45,11 +45,23 @@
     - [SSL vs TLS Nasir video](https://www.youtube.com/watch?v=r1nJT63BFQ0)       
                  
 **DBMS**        
-    - [ACID Properties](https://www.geeksforgeeks.org/acid-properties-in-dbms/)         
+    - [ACID Properties](https://www.geeksforgeeks.org/acid-properties-in-dbms/)  
+    - [Clustered vs Non-Clustered Index - Video](https://www.youtube.com/watch?v=xAQga907NVU)       
+    - [Primary Index - Video](https://www.youtube.com/watch?v=4E-MGnjMhRw&list=PLxCzCOWd7aiFAN6I8CuViBuCdJgiOkT2Y&index=97)
+    - [Clustered Index - Video](https://www.youtube.com/watch?v=UpJ9ICmzaAM&list=PLxCzCOWd7aiFAN6I8CuViBuCdJgiOkT2Y&index=98)       
+    - [Secondary Index - Video](https://www.youtube.com/watch?v=Ua08uVgsk4k&list=PLxCzCOWd7aiFAN6I8CuViBuCdJgiOkT2Y&index=99)       
+    - [Clustered vs Non-Clustered Indexes - Video](https://www.youtube.com/watch?v=ITcOiLSfVJQ)             
+    - [SQL Constraints - Video](https://www.youtube.com/watch?v=PcMr6xoundk)                   
+    - [DBMS Keys - Video](https://www.youtube.com/watch?v=p3yJZH8_bsc)          
+    - [% ways to improve SQL queries - Video](https://www.youtube.com/watch?v=V-4_PAMBSjY)                         
+    - [DB Indexes](https://medium.com/@akshitbansall/indexing-whats-the-fuss-5ad90f0b9235)                           
+    - [Data concurrency vs consistency - Oracle Doc](https://docs.oracle.com/cd/B19306_01/server.102/b14220/consist.htm#:~:text=Row%2Dlevel%20locks%20are%20primarily,level%20to%20a%20coarser%20granularity.)      
+                    
                 
 **OOPS Principles:**        
     - [Aggregation vs Composition?](https://stackoverflow.com/questions/734891/aggregation-versus-composition/734997)       
-    - [Interface vs Abstract Class](https://stackoverflow.com/questions/19998454/when-to-use-java-8-interface-default-method-vs-abstract-method)            
+    - [Interface vs Abstract Class](https://stackoverflow.com/questions/19998454/when-to-use-java-8-interface-default-method-vs-abstract-method)   
+    - [Method Overriding Rules](https://www.geeksforgeeks.org/overriding-in-java/)                  
         
 **MultiThreading:**     
     - [InterruptedException Handling](https://stackoverflow.com/questions/3976344/handling-interruptedexception-in-java)        
@@ -70,8 +82,25 @@
         
 **Misc**        
     - [JVM internals](https://www.freecodecamp.org/news/jvm-tutorial-java-virtual-machine-architecture-explained-for-beginners/)            
-    - [Java Memory Leaks](https://www.baeldung.com/java-memory-leaks)            
+    - [Java Memory Leaks](https://www.baeldung.com/java-memory-leaks)      
+    - [JVM Performance Tuning](https://www.linkedin.com/pulse/java-jvm-performance-tuning-ph%25C3%25A1t-l%25C3%25A0u/?trackingId=iviPJ6LgRwS1WeiAPgGPqA%3D%3D)                
     
 **Serialization**       
     - [Serializable vs Externalizable](https://www.javamadesoeasy.com/2015/07/difference-between-externalizable-and.html)           
-    - [Compatible Changes to Serailizable entity](https://www.javamadesoeasy.com/2015/06/compatible-and-incompatible-changes-in.html)           
+    - [Compatible Changes to Serailizable entity](https://www.javamadesoeasy.com/2015/06/compatible-and-incompatible-changes-in.html)         
+    
+**System Design**       
+    - [Rate Limiting Algorithms](https://www.quinbay.com/blog/understanding-rate-limiting-algorithms)   
+    - [Gossip Protocol - Video](https://www.youtube.com/watch?v=1b1mrNB6zjQ)            
+    - [Optimistic vs Pessimistic Locking - Video](https://www.youtube.com/watch?v=3b9KGcHRjRU)          
+    - [Optimistic vs Pessimistic Concurrency Control -Video](https://www.youtube.com/watch?v=I8IlO0hCSgY)               
+    
+**REST APIs**       
+    - [PUT vs PATCH](https://stackoverflow.com/questions/28459418/use-of-put-vs-patch-methods-in-rest-api-real-life-scenarios/39338329#39338329)            
+    - [POST vs GET](https://stackoverflow.com/questions/19637459/rest-api-using-post-instead-of-get)            
+       
+**NoSQL**       
+    - [Is Cassandra wide-column?](https://stackoverflow.com/questions/13010225/why-many-refer-to-cassandra-as-a-column-oriented-database)       
+    - [What is a wide column store?](https://stackoverflow.com/questions/62010368/what-exactly-is-a-wide-column-store)          
+    - [Cassandra vs RDBMS](https://stackoverflow.com/questions/36210321/comparing-cassandra-structure-with-relational-databases)        
+                 
