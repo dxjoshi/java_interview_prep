@@ -52,8 +52,9 @@
     - [Secondary Index - Video](https://www.youtube.com/watch?v=Ua08uVgsk4k&list=PLxCzCOWd7aiFAN6I8CuViBuCdJgiOkT2Y&index=99)       
     - [Clustered vs Non-Clustered Indexes - Video](https://www.youtube.com/watch?v=ITcOiLSfVJQ)             
     - [SQL Constraints - Video](https://www.youtube.com/watch?v=PcMr6xoundk)                   
+    - [DB Indexing - Long Video](https://www.youtube.com/watch?v=HubezKbFL7E)           
     - [DBMS Keys - Video](https://www.youtube.com/watch?v=p3yJZH8_bsc)          
-    - [% ways to improve SQL queries - Video](https://www.youtube.com/watch?v=V-4_PAMBSjY)                         
+    - [5 ways to improve SQL queries - Video](https://www.youtube.com/watch?v=V-4_PAMBSjY)                         
     - [DB Indexes](https://medium.com/@akshitbansall/indexing-whats-the-fuss-5ad90f0b9235)                           
     - [Data concurrency vs consistency - Oracle Doc](https://docs.oracle.com/cd/B19306_01/server.102/b14220/consist.htm#:~:text=Row%2Dlevel%20locks%20are%20primarily,level%20to%20a%20coarser%20granularity.)      
                     

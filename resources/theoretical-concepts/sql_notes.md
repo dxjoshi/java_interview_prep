@@ -104,52 +104,75 @@
 - REVOKE privilege_name ON object_name FROM username;   
 
 ## Popular Queries: 
-- Find all the employees who earn more than the average salary in their department.
-  SELECT last_name, salary, department_id FROM employees outer 
-  WHERE salary > (SELECT AVG(salary) FROM employees WHERE department_id = outer.department_id);
-- Find 2nd highest salary:
-  select Max(salary) from Employee where salary < (select Max(salary) from Employee)
-  select Max(salary) from Employee where salary in (select salary from Employee order by salary desc Limit 2)
-  select Top 1 salary from (select Top 2 salary from Employee order by salary desc) as Emp1 order by salary asc
-- Find name of employee with 2nd highest salary:
-  select name from Employee 
-  where salary = (select Max(salary) from Employee 
-    where salary < (select Max(salary) from Employee))    
-- Find Nth highest salary:  
-    select name from Employee where salary = 
-        (select Min(salary) from Employee where salary in 
-            (select distinct TOP N salary from Employee order by salary desc))  
-- Find details of all employees whose salary is greater than average:  
-    select * from Employee where salary > 
-            (select AVG(salary) from Employee))  
-- Find details of all employees whose salary is greater than average salary of **all dept:**  
-    select * from Employee where salary > All (select AVG(salary) from Employee group by dept)) 
-- Find details of all employees whose salary is greater than average salary **in the dept:**  
+- Find all the employees who earn more than the average salary in their department.                 
+
+
+      SELECT last_name, salary, department_id FROM employees outer 
+      WHERE salary > (SELECT AVG(salary) FROM employees WHERE department_id = outer.department_id);
+- Find 2nd highest salary:                  
+
+
+      select Max(salary) from Employee where salary < (select Max(salary) from Employee)
+      select Max(salary) from Employee where salary in (select salary from Employee order by salary desc Limit 2)
+      select Top 1 salary from (select Top 2 salary from Employee order by salary desc) as Emp1 order by salary asc
+- Find name of employee with 2nd highest salary:            
+
+
+      select name from Employee 
+      where salary = (select Max(salary) from Employee 
+        where salary < (select Max(salary) from Employee))    
+- Find Nth highest salary:                  
+
+
+        select name from Employee where salary = 
+            (select Min(salary) from Employee where salary in 
+                (select distinct TOP N salary from Employee order by salary desc))  
+- Find details of all employees whose salary is greater than average:                       
+
+
+        select * from Employee where salary > 
+                (select AVG(salary) from Employee))  
+- Find details of all employees whose salary is greater than average salary of **all dept:**                
+
+
+        select * from Employee where salary > All (select AVG(salary) from Employee group by dept)) 
+- Find details of all employees whose salary is greater than average salary **in the dept:**                
+
+
     select * from Employee e1 where salary > (select AVG(salary) from Employee e2 where e1.dept_id=e2.dept_id))     
-- Find names of departments that don't have any employee    
+- Find names of departments that don't have any employee                    
+
+
     select name from Department d where dept_id not exists (select distinct e.dept_id from Employee e where e.dept_id=d.dept_id)
-- Find employee names, their salaries and average salaries of their departments
+- Find employee names, their salaries and average salaries of their departments                     
+
+
     select name, salary, (select avg(salary) from Empoloyee e2 where e2.dept_id=e1.dept_id) as average from Employee e1;
-- Print city names which don't start with M:
+- Print city names which don't start with M:                    
+
+
     select city from Cities where substr(city,1,1) not in ('a',eiou AEIOU);     
-- Find all duplicate emails in a table
+- Find all duplicate emails in a table:                   
+
+
     select distinct id from Emails group by id having count(id) > 1    
-- Find name in uppercase and use aliad
+- Find name in uppercase and use alias:                  
+
+
     select upper(name) as FIRST_NAME from Person
-- Fetch top N records
+- Fetch top N records:                  
+
+
     select top N * from Employee order by name desc;
-- Fetch 2 cloumns in a single column:
+- Fetch 2 cloumns in a single column:                   
+
+
     select concat(fname, ' ', lname) as FULL_NAME from Person
-- Fetch sum of salaries paid for each dept:
+- Fetch sum of salaries paid for each dept:                     
+
+
     select dept, sum(salary) from Employee group by dept
-- Fetch salaries between 10000 to 20000:
+- Fetch salaries between 10000 to 20000:                    
+
+
     select salary from Employee where salary between 10000 and 20000;
-        
-    
-            
-    
-    
-      
-    
-            
-	
