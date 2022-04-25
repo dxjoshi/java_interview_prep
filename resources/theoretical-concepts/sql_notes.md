@@ -113,13 +113,13 @@
 
 
       select Max(salary) from Employee where salary < (select Max(salary) from Employee)
-      select Max(salary) from Employee where salary in (select salary from Employee order by salary desc Limit 2)
+      select Min(salary) from Employee where salary in (select salary from Employee order by salary desc Limit 2)
       select Top 1 salary from (select Top 2 salary from Employee order by salary desc) as Emp1 order by salary asc
 - Find name of employee with 2nd highest salary:            
 
 
       select name from Employee 
-      where salary = (select Max(salary) from Employee 
+      where salary = (select Min(salary) from Employee 
         where salary < (select Max(salary) from Employee))    
 - Find Nth highest salary:                  
 
