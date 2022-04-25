@@ -139,40 +139,41 @@
 - Find details of all employees whose salary is greater than average salary **in the dept:**                
 
 
-    select * from Employee e1 where salary > (select AVG(salary) from Employee e2 where e1.dept_id=e2.dept_id))     
+        select * from Employee e1 where salary > (select AVG(salary) from Employee e2 where e1.dept_id=e2.dept_id))     
 - Find names of departments that don't have any employee                    
 
 
-    select name from Department d where dept_id not exists (select distinct e.dept_id from Employee e where e.dept_id=d.dept_id)
+        select name from Department d where dept_id not exists 
+        (select distinct e.dept_id from Employee e where e.dept_id=d.dept_id)
 - Find employee names, their salaries and average salaries of their departments                     
 
 
-    select name, salary, (select avg(salary) from Empoloyee e2 where e2.dept_id=e1.dept_id) as average from Employee e1;
+        select name, salary, (select avg(salary) from Empoloyee e2 where e2.dept_id=e1.dept_id) as average from Employee e1;
 - Print city names which don't start with M:                    
 
 
-    select city from Cities where substr(city,1,1) not in ('a',eiou AEIOU);     
+        select city from Cities where substr(city,1,1) not in ('a',eiou AEIOU);     
 - Find all duplicate emails in a table:                   
 
 
-    select distinct id from Emails group by id having count(id) > 1    
+        select distinct id from Emails group by id having count(id) > 1    
 - Find name in uppercase and use alias:                  
 
 
-    select upper(name) as FIRST_NAME from Person
+        select upper(name) as FIRST_NAME from Person
 - Fetch top N records:                  
 
 
-    select top N * from Employee order by name desc;
+        select top N * from Employee order by name desc;
 - Fetch 2 cloumns in a single column:                   
 
 
-    select concat(fname, ' ', lname) as FULL_NAME from Person
+        select concat(fname, ' ', lname) as FULL_NAME from Person
 - Fetch sum of salaries paid for each dept:                     
 
 
-    select dept, sum(salary) from Employee group by dept
+        select dept, sum(salary) from Employee group by dept
 - Fetch salaries between 10000 to 20000:                    
 
 
-    select salary from Employee where salary between 10000 and 20000;
+        select salary from Employee where salary between 10000 and 20000;
