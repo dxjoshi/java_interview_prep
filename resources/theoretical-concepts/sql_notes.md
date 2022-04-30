@@ -1,3 +1,12 @@
+### Useful Links:
+ - [Indexes - Oracle Docs](https://docs.oracle.com/cd/E11882_01/server.112/e40540/indexiot.htm#CNCPT1182)               
+ - [**Indexes in SQL**](https://www.complexsql.com/indexing-in-sql/)        
+ - [Oracle Indexes](https://tipsfororacle.blogspot.com/2016/09/oracle-indexes.html)             
+    
+### Index
+ - **Unique indexes** guarantee that no two rows of a table have duplicate values in the key column (or columns).       
+ - **Primary index** create index on the columns using "create index command" to retrieve the rows faster.          
+     
 - To create an empty table with same structure as original table:       
 		select * into Student_Copy from Student where 1=2;      
 - Diff between UNION(AUB), MINUS(A-B), INTERSECT(A^B):              

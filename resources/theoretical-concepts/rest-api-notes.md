@@ -8,6 +8,8 @@
 * [Vinay Sahni's blog on Restful API](https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api#restful)       
 * [restcookbook.com](https://restcookbook.com/Basics/loggingin/) 
 * [RESTful Web APIs Notes](https://github.com/dxjoshi/book-summaries/blob/fe9c49ca37140ba0c0a0ca99765c373a7f586f2b/Engineering/RestfulWebApis_LeonardRichardson.md)
+* [RestAPI useful tutorials](https://www.restapitutorial.com/)              
+* [Rest API examples](https://restfulapi.net/http-methods/)              
 
 ### Architectural Constraints   
 1. Uniform interface:   
