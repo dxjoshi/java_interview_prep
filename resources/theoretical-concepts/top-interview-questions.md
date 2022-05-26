@@ -24,10 +24,13 @@
     - [Terraform explained](https://www.youtube.com/watch?v=HmxkYNv1ksg)            
         
 **Containerization**        
-    - [Containers vs VMs](https://www.youtube.com/watch?v=cjXI-yxqGTI)          
-    - [Docker commands](https://www.youtube.com/watch?v=xGn7cFR3ARU)            
+    - [Containers vs VMs](https://www.youtube.com/watch?v=cjXI-yxqGTI)              
+    - [Docker commands](https://www.youtube.com/watch?v=xGn7cFR3ARU)                    
+    - [Docker vs Kubernetes - IBM](https://www.youtube.com/watch?v=2vMEQ5zs1ko)                 
+    - [Docker vs Kubernetes - Nana video](https://www.youtube.com/watch?v=9_s3h_GVzZc)                  
+    - [Kubernetes](youtube.com/watch?v=VnvRFRk_51k)                      
     - [Multitenancy]()          
-            
+                
 **Microservices**   
     - [REST API](https://www.youtube.com/watch?v=lsMQRaeKNDk)   
     - [API vs SDK](https://www.youtube.com/watch?v=kG-fLp9BTRo)         
@@ -57,7 +60,7 @@
     - [5 ways to improve SQL queries - Video](https://www.youtube.com/watch?v=V-4_PAMBSjY)                         
     - [DB Indexes](https://medium.com/@akshitbansall/indexing-whats-the-fuss-5ad90f0b9235)                           
     - [Data concurrency vs consistency - Oracle Doc](https://docs.oracle.com/cd/B19306_01/server.102/b14220/consist.htm#:~:text=Row%2Dlevel%20locks%20are%20primarily,level%20to%20a%20coarser%20granularity.)      
-                    
+    - [DB Normalization](https://www.youtube.com/watch?v=GFQaEYEc8_8)                           
                 
 **OOPS Principles:**        
     - [Aggregation vs Composition?](https://stackoverflow.com/questions/734891/aggregation-versus-composition/734997)       
