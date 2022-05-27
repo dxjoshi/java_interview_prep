@@ -1,19 +1,155 @@
 ## REST API concepts:  
 
 ## Topics:      
+* [Introduction](#introduction)       
+* [REST API Examples](#examples)      
 * [Architectural Constraints](#architectural-constraints)               
-* [SOAP vs REST](#soap-vs-rest)               
+* [HTTP Status Codes](#http-status-codes)            
+* [HTTP methods](#http-methods)           
+* [Headers](#headers)   
+* [Difference between PUT and POST](#difference-between-put-and-post)   
+* [HTTP request components](#http-request-components)
+* [HTTP response components](#http-response-components)
+* [Idempotency](#idempotency)
+* [Best practices for designing a secure RESTful web service](#best-practices-for-designing-a-secure-restful-web-service)
+* [Best practices to create a standard URI for a web service](#best-practices-to-create-a-standard-uri-for-a-web-service)
+* [RESTful API Best Practices](#best-practices)
+* [SOAP vs REST](#soap-vs-rest)    
+* [Pagination](#Pagination)         
 
 ## Articles:
 * [Vinay Sahni's blog on Restful API](https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api#restful)       
 * [restcookbook.com](https://restcookbook.com/Basics/loggingin/) 
 * [RESTful Web APIs Notes](https://github.com/dxjoshi/book-summaries/blob/fe9c49ca37140ba0c0a0ca99765c373a7f586f2b/Engineering/RestfulWebApis_LeonardRichardson.md)
 * [RestAPI useful tutorials](https://www.restapitutorial.com/)              
-* [Rest API examples](https://restfulapi.net/http-methods/)              
+* [Rest API examples](https://restfulapi.net/http-methods/)
+* [Put vs Patch](https://stackoverflow.com/questions/28459418/use-of-put-vs-patch-methods-in-rest-api-real-life-scenarios/39338329#39338329)                      
 
+### Introduction          
+1. REST (Representational State Transfer) is web standards based architectural style or approach for communications purpose that is often used in various web services development.     
+It uses HTTP Protocol for data communication and a relatively new aspect of writing web API.                
+2. The options allows the client of the REST API to determine what HTTP methods (GET, HEAD, POST, PUT, DELETE) can be used for the resource identified by the requested URI.        
+The client determines without initiating a resource request.        
+   The REST OPTIONS method is also used for the CORS (Cross-Origin Resource Sharing) request.       
+3. URI (Uniform Resource Identifiers) is used to identify each resource in the REST. An HTTP operation is called by the client application to access the resource.      
+4. XML and JSON are the most popular representations of resources in REST.          
+     
+### Examples
+- **Versioning:**   http://api.yourservice.com/v1/companies/34/employees
+- **Sorting:**      GET /companies?sort=rank_asc           
+- **Filtering:**    GET /companies?category=banking&location=india           
+- **Searching:**    GET /companies?search=Digital Mckinsey           
+- **Pagination:**   GET /companies?page=23           
+- **GET:**   GET /shops/2/products : Get the list of all products from shop 2.       
+- **GET:**   GET /shops/2/products/31: Get the details of product 31, which belongs to shop 2.       
+- **DELETE:**   DELETE /shops/2/products/31 , should delete product 31, which belongs to shop 2.        
+- **POST:**   POST /shops , should create a new shop and return the details of the new shop created. Use POST on collection-URLs.         
+- **PUT:**   PUT /shops/2/products/31 , should update the info of product 31, Use PUT on resource-URL only, not the collection.      
+- **PUT vs PATCH:**     
+    
+    
+        -- Initial resource     
+        POST /customers
+        {  
+           "id":1,
+           "firstName":"first",
+           "lastName":"last",
+           "email":"noreply@www.javadevjournal.com"
+        }
+        
+        PUT /customers/1
+        {
+          "id":1,
+          "firstName":"first",
+          "lastName":"last",
+          "email":"contactus@www.javadevjournal.com"   //new email ID
+        }
+        
+        -- Idempotent Patch
+        PATCH /customers/1  
+        {  
+           "email":"newmail@www.javadevjournal.com"
+        }
+        
+        GET /customers/1
+        {  
+           "id":1,
+           "firstName":"first",
+           "last Name":"last",
+           "email":"newmail@www.javadevjournal.com"
+        }
+        
+        -- Non-Idempotent Patch: Every time a new resource will get created because we are creating a Patch on /customers
+        PATCH /customers
+        {
+          "firstName":"first",
+          "lastName":"last",
+          "email":"contactus@www.javadevjournal.com" 
+        }
+        
+        GET /customers
+        [
+            {  
+               "id":1,
+               "firstName":"first",
+               "last Name":"last",
+               "email":"newmail@www.javadevjournal.com"
+            },
+            {  
+               "id":2,
+               "firstName":"first",
+               "last Name":"last",
+               "email":"contactus@www.javadevjournal.com"
+            }
+        ]
+
+### Pagination           
+- [Pagination Concepts](https://nordicapis.com/everything-you-need-to-know-about-api-pagination/)      
+- [FB Pagination](https://developers.facebook.com/docs/graph-api/results)              
+- [Atlassian Pagination](https://developer.atlassian.com/server/confluence/pagination-in-the-rest-api/)         
+- An API that uses the Link header can return a set of ready-made links so the API consumer doesn't have to construct links themselves. This is especially important when pagination is **cursor based**.           
+    Link: <https://api.github.com/user/repos?page=3&per_page=100>; rel="next", 
+          <https://api.github.com/user/repos?page=50&per_page=100>; rel="last"
+
+- **Offset Pagination:**           
+    - **Advantages:**
+        - Offset pagination requires almost no programming. It’s also stateless on the server side and works regardless of custom sort_by parameters.
+    - **Disadvantages:**        
+        - The downside of offset pagination is that it stumbles when dealing with large offset values. 
+        - The other downside of offset pagination is that adding new entries to the table can cause confusion, which is known as page drift.   
+    
+    
+        GET /items?limit=20&offset=100
+
+- **Keyset Pagination:** Keyset pagination uses the filter values of the previous page to determine the next set of items.           
+    - **Advantages:**
+        - it doesn’t require additional backend logic. It only requires one limit URL parameter. 
+        - It also features consistent ordering, even when new items are added to the database. It also works smoothly with large offset values.        
+
+    
+        Client requests most recent items: GET /items?limit=20          
+        Upon clicking the next page, the query finds the minimum created date of 2019–01–20T00:00:00. This is then used to create a query filter for the next page.          
+        GET /items?limit=20&created:lte:2019-01-20T00:00:00     
+        And so on…      
+        
+- **Seek Pagination:**           
+    - Seek pagination is the next step beyond keyset pagination. Adding the queries after_id and before_id, you can remove the constraints of filters and sorting. 
+    - Unique identifiers are more stable and static than lower cardinality fields such as state enums or category names.
+    - **Disadvantages:**        
+        - It can be challenging to create custom sort orders. 
+        - The other downside of offset pagination is that adding new entries to the table can cause confusion, which is known as page drift.   
+          
+          
+        Client requests a list of the most recent items             
+        GET items?limit=20          
+        Client requests a list of the next 20 items, using the results of the first query           
+        GET /items?limit=20&after_id=20         
+        Client requests the next/scroll page, using the final entry from the second page as the starting point          
+        GET /items?limit=20&after_id=40             
+        
 ### Architectural Constraints   
 1. Uniform interface:   
-    - A resource should contain links (HATEOAS) pointing to relative URIs.
+    - A resource should contain links (HATEOAS) pointing to relative URIs. **HATEOAS** stands for Hypertext As The Engine Of Application State. It means that hypertext should be used to find your way through the API.       
     - The resource representations across the system should follow specific guidelines such as naming conventions, link formats, or data format (XML or/and JSON).
 2. Client–server:       
     - Servers and clients may also be replaced and developed independently, as long as the interface between them is not altered.
@@ -31,26 +167,43 @@
     - But when you need to, you are free to return executable code to support a part of your application, e.g., clients may call your API to get a UI widget rendering code. It is permitted.
  
 ### HTTP Status Codes           
-1xx — It is used to communicate the transfer protocol-level information.        
-2xx — It is used to indicate the request was accepted successfully. Some codes are,     
-200 (OK) — It indicates the request is successfully carried out.        
-201 - CREATED, when a resource is successful created using POST or PUT request. Return link to newly created resource using location header.        
-202 (Accepted) — It indicates the request has been accepted for processing.     
-204 (No Content) — It indicates when a request is declined.     
-3xx — It indicates the client must take additional action to complete the request.      
-302 - redirect       
-304 - NOT MODIFIED, used to reduce network bandwidth usage in case of conditional GET requests. Response body should be empty. Headers should have date, location etc.      
-4xx — It is the client error status code.       
-400 - BAD REQUEST, states that invalid input is provided e.g. validation error, missing data.       
-401 - FORBIDDEN, states that user is not having access to method being used for example, delete access without admin rights.        
-404 - NOT FOUND, states that method is not available.       
-405 - Method_not_allowed      
-409 - CONFLICT, states conflict situation while executing the method for example, adding duplicate entry.       
-5xx — It is the server error status code.           
-500 - INTERNAL SERVER ERROR, states that server has thrown some exception while executing the method.       
-503 - Unavailable       
+**1xx** — It is used to communicate the transfer protocol-level information.        
+**2xx** — It is used to indicate the request was accepted successfully. Some codes are,     
+**200** (OK) — It indicates the request is successfully carried out.        
+**201** - CREATED, when a resource is successful created using POST or PUT request. Return link to newly created resource using location header.        
+**202** (Accepted) — It indicates the request has been accepted for processing.     
+**204** (No Content) — It indicates when a request is declined.     
+**3xx** - It indicates the client must take additional action to complete the request.      
+**301** - It indicates that a page has permanently moved to a new location          
+**302** - It indicates page has moved to a new location, but that it is only temporary           
+**304** - NOT MODIFIED, used to reduce network bandwidth usage in case of conditional GET requests. Response body should be empty. Headers should have date, location etc.      
+**4xx** - It is the client error status code.       
+**400** - BAD REQUEST, states that invalid input is provided e.g. validation error, missing data.       
+**401** - FORBIDDEN, states that user is not having access to method being used for example, delete access without admin rights.        
+**404** - NOT FOUND, states that method is not available.       
+**405** - Method_not_allowed      
+**409** - CONFLICT, states conflict situation while executing the method for example, adding duplicate entry.       
+**429** - TOO_MANY_REQUESTS      
+**5xx** - It is the server error status code.           
+**500** - INTERNAL SERVER ERROR, states that server has thrown some exception while executing the method.       
+**502** - Bad Gateway              
+**503** - Service Unavailable              
+**504** - Gateway Timeout              
         
-### HTTP methods        
+### HTTP methods    
+
+A basic HTTP request consists of a verb (method) and a resource (endpoint).  Below are common HTTP verbs:
+
+| Verb | Description | Idempotent* | Safe | Cacheable |
+|---|---|---|---|---|
+| GET | Reads a resource | Yes | Yes | Yes |
+| POST | Creates a resource or trigger a process that handles data | No | No | Yes if response contains freshness info |
+| PUT | Creates or replace a resource | Yes | No | No |
+| PATCH | Partially updates a resource | No | No | Yes if response contains freshness info |
+| DELETE | Deletes a resource | Yes | No | No |
+
+*Can be called many times without different outcomes.
+    
 GET: It requests a resource at the request URL. It should not contain a request body as it will be discarded. Maybe it can be cached locally or on the server.      
 POST: It submits information to the service for processing; it should typically return the modified or new resource     
 PUT: At the request URL it update the resource      
@@ -64,23 +217,7 @@ For Accept header application/json, server will send the JSON response.
 Content-Type header is used to tell server what is the format of data being sent in the request.        
 If Content-Type header is application/xml then server will try to parse it as XML data. This header is useful in HTTP Post and Put requests.        
         
-### Imp Points          
-1. REST (Representational State Transfer) is web standards based architectural style or approach for communications purpose that is often used in various web services development.     
-It uses HTTP Protocol for data communication and a relatively new aspect of writing web API.                
-2. The options allows the client of the REST API to determine what HTTP methods (GET, HEAD, POST, PUT, DELETE) can be used for the resource identified by the requested URI.        
-The client determines without initiating a resource request.        
-   The REST OPTIONS method is also used for the CORS (Cross-Origin Resource Sharing) request.       
-3. URI (Uniform Resource Identifiers) is used to identify each resource in the REST. An HTTP operation is called by the client application to access the resource.      
-4. XML and JSON are the most popular representations of resources in REST.          
-5. **HATEOAS** stands for Hypertext As The Engine Of Application State. It means that hypertext should be used to find your way through the API.        
-        
-        
-### Explain the caching mechanism       
-Caching is a process of storing server response at the client end. It makes the server save significant time from serving the same resource again and again.        
-The server response holds information which leads a client to perform the caching. It helps the client to decide how long to archive the response or not to store it at all.        
-        
-        
-### difference between PUT and POST     
+### Difference between PUT and POST     
 PUT puts a file or resource at a particular URI and exactly at that URI. If there is already a file or resource at that URI, PUT changes that file or resource. If there is no resource or file there, PUT makes one.       
 POST sends data to a particular URI and expects the resource at that URI to deal with the request. The web server at this point can decide what to do with the data in the context of specified resource.       
 PUT is idempotent meaning, invoking it any number of times will not have an impact on resources.        
@@ -89,32 +226,32 @@ However, POST is not idempotent, meaning if you invoke POST multiple times it ke
             POST /articles      {"name":"book1"}    
             
 ### HTTP request components             
-1. The Verb which indicates HTTP methods such as GET, PUT, POST, DELETE.        
-2. URI stands for Uniform Resource Identifier.It is the identifier for the resource on the server.      
-3. HTTP Version which indicates HTTP version, for example-HTTP v1.1.        
-4. Request Header carries metadata (as key-value pairs) for the HTTP Request message. Metadata could be a client (or browser) type, the format that the client supports, message body format, and cache settings.       
-5. Request Body indicates the message content or resource representation.       
+- The Verb which indicates HTTP methods such as GET, PUT, POST, DELETE.        
+- URI stands for Uniform Resource Identifier.It is the identifier for the resource on the server.      
+- HTTP Version which indicates HTTP version, for example-HTTP v1.1.        
+- Request Header carries metadata (as key-value pairs) for the HTTP Request message. Metadata could be a client (or browser) type, the format that the client supports, message body format, and cache settings.       
+- Request Body indicates the message content or resource representation.       
         
 ### HTTP response components            
-1. Status/Response Code — Indicates Server status for the resource present in the HTTP request. For example, 404 means resource not found, and 200 means response is ok.        
-2. HTTP Version — Indicates HTTP version, for example-HTTP v1.1.        
-3. Response Header — Contains metadata for the HTTP response message stored in the form of key-value pairs. For example, content length, content type, response date, and server type.      
-4. Response Body — Indicates response message content or resource representation.           
+- **Status/Response Code** — Indicates Server status for the resource present in the HTTP request. For example, 404 means resource not found, and 200 means response is ok.        
+- **HTTP Version** — Indicates HTTP version, for example-HTTP v1.1.        
+- **Response Header** — Contains metadata for the HTTP response message stored in the form of key-value pairs. For example, content length, content type, response date, and server type.      
+- **Response Body** — Indicates response message content or resource representation.           
         
-### What are the best practices to be followed while designing a secure RESTful web service             
-Validation − Validate all inputs on the server. Protect your server against SQL or NoSQL injection attacks.     
-Session based authentication − Use session based authentication to authenticate a user whenever a request is made to a Web Service method.      
-No sensitive data in URL − Never use username, password or session token in URL , these values should be passed to Web Service via POST method.     
-Restriction on Method execution − Allow restricted use of methods like GET, POST, DELETE. GET method should not be able to delete data.     
-Validate Malformed XML/JSON − Check for well formed input passed to a web service method.       
-Throw generic Error Messages − A web service method should use HTTP error messages like 403 to show access forbidden etc.       
+### Best practices for designing a secure RESTful web service             
+- **Validation** − Validate all inputs on the server. Protect your server against SQL or NoSQL injection attacks.     
+- **Session based authentication** − Use session based authentication to authenticate a user whenever a request is made to a Web Service method.      
+- **No sensitive data in URL** − Never use username, password or session token in URL , these values should be passed to Web Service via POST method.     
+- **Restriction on Method execution** − Allow restricted use of methods like GET, POST, DELETE. GET method should not be able to delete data.     
+- **Validate Malformed XML/JSON** − Check for well formed input passed to a web service method.       
+- **Throw generic Error Messages** − A web service method should use HTTP error messages like 403 to show access forbidden etc.       
         
-### best practices to create a standard URI for a web service           
-Use Plural Noun − Use plural noun to define resources. For example, we’ve used users to identify users as a resource.       
-Avoid using spaces − Use underscore(_) or hyphen(-) when using a long resource name, for example, use authorized_users instead of authorized%20users.       
-Use lowercase letters − Although URI is case-insensitive, it is good practice to keep url in lower case letters only.       
-Maintain Backward Compatibility − As Web Service is a public service, a URI once made public should always be available. In case, URI gets updated, redirect the older URI to new URI using HTTP Status code, 300.      
-Use HTTP Verb − Always use HTTP Verb like GET, PUT, and DELETE to do the operations on the resource. It is not good to use operations names in URI.             
+### Best practices to create a standard URI for a web service           
+- **Use Plural Noun** − Use plural noun to define resources. For example, we’ve used users to identify users as a resource.       
+- **Avoid using spaces** − Use underscore(_) or hyphen(-) when using a long resource name, for example, use authorized_users instead of authorized%20users.       
+- **Use lowercase letters** − Although URI is case-insensitive, it is good practice to keep url in lower case letters only.       
+- **Maintain Backward Compatibility** − As Web Service is a public service, a URI once made public should always be available. In case, URI gets updated, redirect the older URI to new URI using HTTP Status code, 300.      
+- **Use HTTP Verb** − Always use HTTP Verb like GET, PUT, and DELETE to do the operations on the resource. It is not good to use operations names in URI.             
         
 ### Best Practices      
 [Ref](https://betterprogramming.pub/22-best-practices-to-take-your-api-design-skills-to-the-next-level-65569b200b9)         
@@ -226,7 +363,7 @@ However, this is not completely true. It means: it won't change the resource rep
     This means the following is incorrect, if this would actually delete the blogpost:  GET /blog/1234/delete HTTP/1.1      
     
 
-### Idempotent methods  
+### Idempotency  
 [Stripe Idempotency keys](https://stripe.com/blog/idempotency)
 [Idempotent POST requests](https://medium.com/@saurav200892/how-to-achieve-idempotency-in-post-method-d88d7b08fcdd)
 An idempotent HTTP method is one that can be called many times without different outcomes, whether its called only once, or ten times over result should be the same. Again, this only applies to the result, not the resource itself.      
