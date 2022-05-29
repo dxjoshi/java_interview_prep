@@ -65,7 +65,8 @@
 **OOPS Principles:**        
     - [Aggregation vs Composition?](https://stackoverflow.com/questions/734891/aggregation-versus-composition/734997)       
     - [Interface vs Abstract Class](https://stackoverflow.com/questions/19998454/when-to-use-java-8-interface-default-method-vs-abstract-method)   
-    - [Method Overriding Rules](https://www.geeksforgeeks.org/overriding-in-java/)                  
+    - [Method Overriding Rules](https://www.geeksforgeeks.org/overriding-in-java/)   
+    - [Composition vs Inheritance](https://stackoverflow.com/questions/2399544/difference-between-inheritance-and-composition)                         
         
 **MultiThreading:**     
     - [InterruptedException Handling](https://stackoverflow.com/questions/3976344/handling-interruptedexception-in-java)        
