@@ -102,7 +102,8 @@
     
 **REST APIs**       
     - [PUT vs PATCH](https://stackoverflow.com/questions/28459418/use-of-put-vs-patch-methods-in-rest-api-real-life-scenarios/39338329#39338329)            
-    - [POST vs GET](https://stackoverflow.com/questions/19637459/rest-api-using-post-instead-of-get)            
+    - [POST vs GET](https://stackoverflow.com/questions/19637459/rest-api-using-post-instead-of-get)    
+    - [PathParam vs QueryParam](https://stackoverflow.com/questions/11552248/when-to-use-queryparam-vs-pathparam)                   
        
 **NoSQL**       
     - [Is Cassandra wide-column?](https://stackoverflow.com/questions/13010225/why-many-refer-to-cassandra-as-a-column-oriented-database)       
