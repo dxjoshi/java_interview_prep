@@ -23,7 +23,8 @@
 * [RESTful Web APIs Notes](https://github.com/dxjoshi/book-summaries/blob/fe9c49ca37140ba0c0a0ca99765c373a7f586f2b/Engineering/RestfulWebApis_LeonardRichardson.md)
 * [RestAPI useful tutorials](https://www.restapitutorial.com/)              
 * [Rest API examples](https://restfulapi.net/http-methods/)
-* [Put vs Patch](https://stackoverflow.com/questions/28459418/use-of-put-vs-patch-methods-in-rest-api-real-life-scenarios/39338329#39338329)                      
+* [Put vs Patch](https://stackoverflow.com/questions/28459418/use-of-put-vs-patch-methods-in-rest-api-real-life-scenarios/39338329#39338329)            
+* [HTTP Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers)             
 
 ### Introduction          
 1. REST (Representational State Transfer) is web standards based architectural style or approach for communications purpose that is often used in various web services development.     
@@ -215,7 +216,14 @@ HEAD: About the request URL it returns meta information
 Accept headers tells web service what kind of response client is accepting, so if a web service is capable of sending response in XML and JSON format and client sends Accept header as application/xml then XML response will be sent.         
 For Accept header application/json, server will send the JSON response.     
 Content-Type header is used to tell server what is the format of data being sent in the request.        
-If Content-Type header is application/xml then server will try to parse it as XML data. This header is useful in HTTP Post and Put requests.        
+If Content-Type header is application/xml then server will try to parse it as XML data. This header is useful in HTTP Post and Put requests.
+
+Here are some of the most common API Headers you will encounter when testing any API.
+- **Authorization:** Contains the authentication credentials for HTTP authentication.           
+- **WWW-Authenticate:** The server may send this as an initial response if it needs some form of authentication before responding with the actual resource being requested. Often following this header is the response code 401, which means “unauthorized”.           
+- **Accept-Charset:** This header is set with the request and tells the server which character sets (e.g., UTF-8, ISO-8859-1, Windows-1251, etc.) are acceptable by the client.         
+- **Content-Type:**  Tells the client what media type (e.g., application/json, application/javascript, etc.) a response is sent in. This is an important header field that helps the client know how to process the response body correctly.            
+- **Cache-Control:** The cache policy defined by the server for this response, a cached response can be stored by the client and re-used till the time defined by the Cache-Control header.                 
         
 ### Difference between PUT and POST     
 PUT puts a file or resource at a particular URI and exactly at that URI. If there is already a file or resource at that URI, PUT changes that file or resource. If there is no resource or file there, PUT makes one.       
