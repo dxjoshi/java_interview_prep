@@ -224,6 +224,7 @@ Here are some of the most common API Headers you will encounter when testing any
 - **Accept-Charset:** This header is set with the request and tells the server which character sets (e.g., UTF-8, ISO-8859-1, Windows-1251, etc.) are acceptable by the client.         
 - **Content-Type:**  Tells the client what media type (e.g., application/json, application/javascript, etc.) a response is sent in. This is an important header field that helps the client know how to process the response body correctly.            
 - **Cache-Control:** The cache policy defined by the server for this response, a cached response can be stored by the client and re-used till the time defined by the Cache-Control header.                 
+![HTTP Headers](https://github.com/dxjoshi/java_interview_prep/blob/ba130c5916d91e7f63f2cc4a30f911a4ca09462e/resources/data/http-headers.jpg)                             
         
 ### Difference between PUT and POST     
 PUT puts a file or resource at a particular URI and exactly at that URI. If there is already a file or resource at that URI, PUT changes that file or resource. If there is no resource or file there, PUT makes one.       
