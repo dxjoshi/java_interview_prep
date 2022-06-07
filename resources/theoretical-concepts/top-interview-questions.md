@@ -63,10 +63,14 @@
     - [DB Normalization](https://www.youtube.com/watch?v=GFQaEYEc8_8)                           
                 
 **OOPS Principles:**        
-    - [Aggregation vs Composition?](https://stackoverflow.com/questions/734891/aggregation-versus-composition/734997)       
+    - [Aggregation vs Composition?](https://stackoverflow.com/questions/734891/aggregation-versus-composition/734997)
+    - [Association Aggregation & Composition](https://stackoverflow.com/questions/885937/what-is-the-difference-between-association-aggregation-and-composition?rq=1)
     - [Interface vs Abstract Class](https://stackoverflow.com/questions/19998454/when-to-use-java-8-interface-default-method-vs-abstract-method)   
     - [Method Overriding Rules](https://www.geeksforgeeks.org/overriding-in-java/)   
-    - [Composition vs Inheritance](https://stackoverflow.com/questions/2399544/difference-between-inheritance-and-composition)                         
+    - [Composition vs Inheritance](https://stackoverflow.com/questions/2399544/difference-between-inheritance-and-composition)
+    - [UML Symbols Explained](https://stackoverflow.com/questions/1874049/explanation-of-the-uml-arrows)            
+    - [IS-A vs Has-A](https://stackoverflow.com/questions/36162714/what-is-the-difference-between-is-a-relationship-and-has-a-relationship-in)      
+                             
         
 **MultiThreading:**     
     - [InterruptedException Handling](https://stackoverflow.com/questions/3976344/handling-interruptedexception-in-java)        
