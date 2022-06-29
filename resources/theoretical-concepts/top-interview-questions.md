@@ -37,7 +37,9 @@
     - [Jeff Dean Latency Numbers](http://highscalability.com/blog/2011/1/26/google-pro-tip-use-back-of-the-envelope-calculations-to-choo.html)          
     - [Network Protocols](https://www.geeksforgeeks.org/14-most-common-network-protocols-and-their-vulnerabilities/)        
     - [Video Streaming Protocols](https://www.dacast.com/blog/video-streaming-protocol/)            
-    - [Messaging Protocols](https://www.cometchat.com/blog/popular-chat-and-instant-messaging-protocols)            
+    - [Messaging Protocols](https://www.cometchat.com/blog/popular-chat-and-instant-messaging-protocols)   
+    - [CQRS - Video](https://youtu.be/qJA6MaQ90YY)         
+    - [Microservices Design Principles](https://www.simform.com/blog/microservices-design-principles/)                    
 
 **Computer Networks**        
     - [TLS vs SSL](https://www.geeksforgeeks.org/difference-between-secure-socket-layer-ssl-and-transport-layer-security-tls/)              
@@ -60,7 +62,8 @@
     - [5 ways to improve SQL queries - Video](https://www.youtube.com/watch?v=V-4_PAMBSjY)                         
     - [DB Indexes](https://medium.com/@akshitbansall/indexing-whats-the-fuss-5ad90f0b9235)                           
     - [Data concurrency vs consistency - Oracle Doc](https://docs.oracle.com/cd/B19306_01/server.102/b14220/consist.htm#:~:text=Row%2Dlevel%20locks%20are%20primarily,level%20to%20a%20coarser%20granularity.)      
-    - [DB Normalization](https://www.youtube.com/watch?v=GFQaEYEc8_8)                           
+    - [DB Normalization](https://www.youtube.com/watch?v=GFQaEYEc8_8)                   
+    - [Optimistic vs Pessimistic Locking](https://stackoverflow.com/questions/41006941/implementing-optimistic-locking-in-oracle)                        
                 
 **OOPS Principles:**        
     - [Aggregation vs Composition?](https://stackoverflow.com/questions/734891/aggregation-versus-composition/734997)
@@ -92,7 +95,8 @@
 **Misc**        
     - [JVM internals](https://www.freecodecamp.org/news/jvm-tutorial-java-virtual-machine-architecture-explained-for-beginners/)            
     - [Java Memory Leaks](https://www.baeldung.com/java-memory-leaks)      
-    - [JVM Performance Tuning](https://www.linkedin.com/pulse/java-jvm-performance-tuning-ph%25C3%25A1t-l%25C3%25A0u/?trackingId=iviPJ6LgRwS1WeiAPgGPqA%3D%3D)                
+    - [JVM Performance Tuning](https://www.linkedin.com/pulse/java-jvm-performance-tuning-ph%25C3%25A1t-l%25C3%25A0u/?trackingId=iviPJ6LgRwS1WeiAPgGPqA%3D%3D)      
+    - [Concurrency vs Parallelism](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism)                        
     
 **Serialization**       
     - [Serializable vs Externalizable](https://www.javamadesoeasy.com/2015/07/difference-between-externalizable-and.html)           

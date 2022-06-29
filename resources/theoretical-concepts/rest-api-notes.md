@@ -373,8 +373,8 @@ However, this is not completely true. It means: it won't change the resource rep
     
 
 ### Idempotency  
-[Stripe Idempotency keys](https://stripe.com/blog/idempotency)
-[Idempotent POST requests](https://medium.com/@saurav200892/how-to-achieve-idempotency-in-post-method-d88d7b08fcdd)
+[Stripe Idempotency keys](https://stripe.com/blog/idempotency)                                                                                                                                      
+[Idempotent POST requests](https://medium.com/@saurav200892/how-to-achieve-idempotency-in-post-method-d88d7b08fcdd)                             
 An idempotent HTTP method is one that can be called many times without different outcomes, whether its called only once, or ten times over result should be the same. Again, this only applies to the result, not the resource itself.      
          
          a = 4;     // idempotent
