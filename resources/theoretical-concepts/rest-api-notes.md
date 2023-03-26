@@ -383,7 +383,3 @@ An idempotent HTTP method is one that can be called many times without different
 ### SOAP vs REST
 [SOAP Intro](https://www.geeksforgeeks.org/basics-of-soap-simple-object-access-protocol/?ref=lbp)         
 [Difference](https://www.geeksforgeeks.org/difference-between-rest-api-and-soap-api/?ref=lbp)
-
-         
-         
-                

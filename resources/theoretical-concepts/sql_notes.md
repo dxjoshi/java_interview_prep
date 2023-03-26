@@ -186,3 +186,10 @@
 
 
         select salary from Employee where salary between 10000 and 20000;
+        
+## MySQL Query Optimization:
+- Main considerations are:    
+    - Check if index can be added. If already added, check explain plan to see if the index is being used. 
+    - Isolate or tune out part of query, function call that takes excessive time.
+    - Read explain plan and use it to adjust index, where, join clause etc.
+    
